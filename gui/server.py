@@ -1,6 +1,7 @@
 from threading import *
 from socket import *
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
+from struct import *
 
 
 class Signal(QObject):
@@ -75,11 +76,14 @@ class ServerSocket:
                 print('Recv() Error :', e)
                 break
             else:
-                msg = str(recv, encoding='utf-8')
-                if msg:
-                    self.send(msg)
-                    self.recv.recv_signal.emit(msg)
-                    print('[RECV]:', addr, msg)
+                if recv:               
+                    header = hex(recv[0])
+                    cmd = hex(recv[1])
+                    data = hex((recv[2]<<8) | recv[3])
+
+                    self.recv.recv_signal.emit(header)
+                    self.recv.recv_signal.emit(cmd)
+                    self.recv.recv_signal.emit(data)
 
         self.removeCleint(addr, client)
 

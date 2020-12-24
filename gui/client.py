@@ -1,5 +1,7 @@
 from threading import *
 from socket import *
+import struct
+from struct import *
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 
 
@@ -55,18 +57,20 @@ class ClientSocket:
                 print('Recv() Error :', e)
                 break
             else:
-                msg = str(recv, encoding='utf-8')
-                if msg:
-                    self.recv.recv_signal.emit(msg)
-                    print('[RECV]:', msg)
+                if recv:
+                    header = hex(recv[0])
+                    cmd = hex(recv[1])
+                    data = hex((recv[2]<<8) | recv[3])
 
+                    self.recv.recv_signal.emit(header)
+                    self.recv.recv_signal.emit(cmd)
+                    self.recv.recv_signal.emit(data)
         self.stop()
 
-    def send(self, msg):
+    def send(self, sendData):
         if not self.bConnect:
             return
-
         try:
-            self.client.send(msg.encode())
+            self.client.send(sendData)
         except Exception as e:
             print('Send() Error : ', e)

@@ -3,10 +3,13 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import sys
 import client
+import struct
+import numpy as np
+from struct import *
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
-port = 5614
+port = 5000
 
 
 class CWidget(QWidget):
@@ -33,7 +36,7 @@ class CWidget(QWidget):
 
         label = QLabel('Server IP')
         self.ip = QLineEdit()
-        self.ip.setInputMask('000.000.000.000;_')
+        self.ip.setInputMask('127.0.1.1;_')
         box.addWidget(label)
         box.addWidget(self.ip)
 
@@ -64,9 +67,21 @@ class CWidget(QWidget):
         label = QLabel('보낼 메시지')
         box.addWidget(label)
 
-        self.sendmsg = QTextEdit()
-        self.sendmsg.setFixedHeight(50)
-        box.addWidget(self.sendmsg)
+        # Header
+        self.headerMsg = QTextEdit()
+        self.headerMsg.setFixedHeight(30)
+        self.headerMsg.setText('41')
+        box.addWidget(self.headerMsg)
+        # Cmd
+        self.cmdMsg = QTextEdit()
+        self.cmdMsg.setFixedHeight(30)
+        self.cmdMsg.setText('01')
+        box.addWidget(self.cmdMsg)
+        # data
+        self.dataMsg = QTextEdit()
+        self.dataMsg.setFixedHeight(30)
+        self.dataMsg.setText('1234')
+        box.addWidget(self.dataMsg)
 
         hbox = QHBoxLayout()
 
@@ -95,15 +110,14 @@ class CWidget(QWidget):
             ip = self.ip.text()
             port = self.port.text()
             if self.c.connectServer(ip, int(port)):
+                self.btn.setStyleSheet("background-color: green")
                 self.btn.setText('접속 종료')
             else:
                 self.c.stop()
-                self.sendmsg.clear()
                 self.recvmsg.clear()
                 self.btn.setText('접속')
         else:
             self.c.stop()
-            self.sendmsg.clear()
             self.recvmsg.clear()
             self.btn.setText('접속')
 
@@ -114,16 +128,26 @@ class CWidget(QWidget):
         self.btn.setText('접속')
 
     def sendMsg(self):
-        sendmsg = self.sendmsg.toPlainText()
-        self.c.send(sendmsg)
-        self.sendmsg.clear()
+        header = int(self.headerMsg.toPlainText(), 16)
+        cmd = int(self.cmdMsg.toPlainText(), 16)
+        # float 적용
+        # data = float(self.dataMsg.toPlainText())
+        # data = np.uint16(data)        
+        data = int(self.dataMsg.toPlainText(), 16)
+
+        values = (header, cmd, data)
+        fmt = '>B B H'
+        packer = struct.Struct(fmt)
+        sendData = packer.pack(*values)
+        print(sendData[0])
+
+        self.c.send(sendData)
 
     def clearMsg(self):
         self.recvmsg.clear()
 
     def closeEvent(self, e):
         self.c.stop()
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
