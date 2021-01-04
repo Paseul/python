@@ -1,12 +1,10 @@
 from threading import *
 from socket import *
-import struct
-from struct import *
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 
 
 class Signal(QObject):
-    recv_signal = pyqtSignal(str)
+    recv_signal = pyqtSignal(str, str, str)
     disconn_signal = pyqtSignal()
 
 
@@ -62,9 +60,7 @@ class ClientSocket:
                     cmd = hex(recv[1])
                     data = hex((recv[2]<<8) | recv[3])
 
-                    self.recv.recv_signal.emit(header)
-                    self.recv.recv_signal.emit(cmd)
-                    self.recv.recv_signal.emit(data)
+                    self.recv.recv_signal.emit(header, cmd, data)
         self.stop()
 
     def send(self, sendData):

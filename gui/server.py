@@ -6,7 +6,7 @@ from struct import *
 
 class Signal(QObject):
     conn_signal = pyqtSignal()
-    recv_signal = pyqtSignal(str)
+    recv_signal = pyqtSignal(str, str, str)
 
 
 class ServerSocket:
@@ -81,9 +81,9 @@ class ServerSocket:
                     cmd = hex(recv[1])
                     data = hex((recv[2]<<8) | recv[3])
 
-                    self.recv.recv_signal.emit(header)
-                    self.recv.recv_signal.emit(cmd)
-                    self.recv.recv_signal.emit(data)
+                    self.recv.recv_signal.emit(header, cmd, data)
+                    # self.recv.recv_signal.emit(cmd)
+                    # self.recv.recv_signal.emit(data)
 
         self.removeCleint(addr, client)
 

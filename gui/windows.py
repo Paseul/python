@@ -121,8 +121,10 @@ class CWidget(QWidget):
             self.guest.setItem(i, 1, QTableWidgetItem(str(ip[1])))
             i += 1
 
-    def updateMsg(self, msg):
-        self.msg.addItem(QListWidgetItem(msg))
+    def updateMsg(self, header, cmd, data):
+        self.msg.addItem(QListWidgetItem(header))
+        self.msg.addItem(QListWidgetItem(cmd))
+        self.msg.addItem(QListWidgetItem(data))
         self.msg.setCurrentRow(self.msg.count() - 1)
 
     def sendMsg(self):
