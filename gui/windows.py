@@ -4,10 +4,13 @@ from PyQt5.QtWidgets import *
 import sys
 import socket
 import server
+import struct
+import numpy as np
+from struct import *
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
-port = 5614
+port = 5000
 
 
 class CWidget(QWidget):
@@ -77,10 +80,31 @@ class CWidget(QWidget):
         label = QLabel('보낼 메시지')
         box.addWidget(label)
 
-        self.sendmsg = QLineEdit()
-        box.addWidget(self.sendmsg)
+        hbox = QHBoxLayout()
+        box.addLayout(hbox)
+
+        # Header
+        self.headerMsg = QTextEdit()
+        self.headerMsg.setFixedHeight(30)
+        self.headerMsg.setText('41')
+        hbox.addWidget(self.headerMsg)
+        # Cmd
+        self.cmdMsg = QTextEdit()
+        self.cmdMsg.setFixedHeight(30)
+        self.cmdMsg.setText('01')
+        hbox.addWidget(self.cmdMsg)
+        # data
+        self.dataMsg = QTextEdit()
+        self.dataMsg.setFixedHeight(30)
+        self.dataMsg.setText('1234')
+        hbox.addWidget(self.dataMsg)
 
         hbox = QHBoxLayout()
+
+        # self.sendmsg = QLineEdit()
+        # box.addWidget(self.sendmsg)
+
+        # hbox = QHBoxLayout()
 
         self.sendbtn = QPushButton('보내기')
         self.sendbtn.clicked.connect(self.sendMsg)
@@ -128,14 +152,26 @@ class CWidget(QWidget):
         self.msg.setCurrentRow(self.msg.count() - 1)
 
     def sendMsg(self):
-        if not self.s.bListen:
-            self.sendmsg.clear()
-            return
-        sendmsg = self.sendmsg.text()
-        self.updateMsg(sendmsg)
-        print(sendmsg)
-        self.s.send(sendmsg)
-        self.sendmsg.clear()
+        # if not self.s.bListen:
+        #     self.sendmsg.clear()
+        #     return
+        # sendmsg = self.sendmsg.text()
+        # self.updateMsg(sendmsg)
+        # print(sendmsg)
+
+        header = int(self.headerMsg.toPlainText(), 16)
+        cmd = int(self.cmdMsg.toPlainText(), 16)
+        data = int(self.dataMsg.toPlainText(), 16)
+
+        values = (header, cmd, data)
+        fmt = '>B B H'
+        packer = struct.Struct(fmt)
+        sendData = packer.pack(*values)
+
+        # self.c.send(sendData)
+
+        self.s.send(sendData)
+        # self.sendmsg.clear()
 
     def clearMsg(self):
         self.msg.clear()

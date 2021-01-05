@@ -1,6 +1,7 @@
 from threading import *
 from socket import *
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
+import struct
 
 
 class Signal(QObject):
@@ -34,6 +35,7 @@ class ClientSocket:
         else:
             self.bConnect = True
             self.t = Thread(target=self.receive, args=(self.client,))
+            self.t.daemon = True
             self.t.start()
             print('Connected')
 
@@ -56,11 +58,10 @@ class ClientSocket:
                 break
             else:
                 if recv:
-                    header = hex(recv[0])
-                    cmd = hex(recv[1])
-                    data = hex((recv[2]<<8) | recv[3])
+                    fmt = '>B B H'
+                    unpacked = struct.unpack(fmt, recv)
 
-                    self.recv.recv_signal.emit(header, cmd, data)
+                    self.recv.recv_signal.emit(str(hex(unpacked[0])), str(hex(unpacked[1])), str(unpacked[2]))
         self.stop()
 
     def send(self, sendData):

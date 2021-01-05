@@ -38,6 +38,7 @@ class ServerSocket:
         else:
             self.bListen = True
             self.t = Thread(target=self.listen, args=(self.server,))
+            self.t.daemon = True
             self.t.start()
             print('Server Listening...')
 
@@ -62,6 +63,7 @@ class ServerSocket:
                 self.ip.append(addr)
                 self.conn.conn_signal.emit()
                 t = Thread(target=self.receive, args=(addr, client))
+                t.daemon = True
                 self.threads.append(t)
                 t.start()
 
@@ -90,7 +92,7 @@ class ServerSocket:
     def send(self, msg):
         try:
             for c in self.clients:
-                c.send(msg.encode())
+                c.send(msg)
         except Exception as e:
             print('Send() Error : ', e)
 

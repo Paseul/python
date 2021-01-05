@@ -128,21 +128,17 @@ class CWidget(QWidget):
         box.addLayout(ld1box)
 
         self.ld1btn = QPushButton('LD 1')
-        self.ld1btn.setFixedWidth(100)
         self.ld1btn.setAutoDefault(True)
         self.ld1btn.clicked.connect(self.ld1AmpSet)
         ld1box.addWidget(self.ld1btn)
         self.ld1amp = QTextEdit()
         self.ld1amp.setText('0.123')
-        self.ld1amp.setFixedWidth(200)
         self.ld1amp.setFixedHeight(27)
         ld1box.addWidget(self.ld1amp)
-        self.ld1volrcv = QListWidget()
-        self.ld1volrcv.setFixedWidth(200)
+        self.ld1volrcv = QTextEdit()
         self.ld1volrcv.setFixedHeight(27)
         ld1box.addWidget(self.ld1volrcv)
-        self.ld1amprcv = QListWidget()
-        self.ld1amprcv.setFixedWidth(200)
+        self.ld1amprcv = QTextEdit()
         self.ld1amprcv.setFixedHeight(27)
         ld1box.addWidget(self.ld1amprcv)
 
@@ -153,21 +149,17 @@ class CWidget(QWidget):
         box.addLayout(ld2box)
 
         self.ld2btn = QPushButton('LD 2')
-        self.ld2btn.setFixedWidth(100)
         self.ld2btn.setAutoDefault(True)
         self.ld2btn.clicked.connect(self.ld2AmpSet)
         ld2box.addWidget(self.ld2btn)
         self.ld2amp = QTextEdit()
         self.ld2amp.setText('0.234')
-        self.ld2amp.setFixedWidth(200)
         self.ld2amp.setFixedHeight(27)
         ld2box.addWidget(self.ld2amp)
-        self.ld2volrcv = QListWidget()
-        self.ld2volrcv.setFixedWidth(200)
+        self.ld2volrcv = QTextEdit()
         self.ld2volrcv.setFixedHeight(27)
         ld2box.addWidget(self.ld2volrcv)
-        self.ld2amprcv = QListWidget()
-        self.ld2amprcv.setFixedWidth(200)
+        self.ld2amprcv = QTextEdit()
         self.ld2amprcv.setFixedHeight(27)
         ld2box.addWidget(self.ld2amprcv)
 
@@ -178,21 +170,17 @@ class CWidget(QWidget):
         box.addLayout(ld3box)
 
         self.ld3btn = QPushButton('LD 3')
-        self.ld3btn.setFixedWidth(100)
         self.ld3btn.setAutoDefault(True)
         self.ld3btn.clicked.connect(self.ld3AmpSet)
         ld3box.addWidget(self.ld3btn)
         self.ld3amp = QTextEdit()
         self.ld3amp.setText('0.345')
-        self.ld3amp.setFixedWidth(200)
         self.ld3amp.setFixedHeight(27)
         ld3box.addWidget(self.ld3amp)
-        self.ld3volrcv = QListWidget()
-        self.ld3volrcv.setFixedWidth(200)
+        self.ld3volrcv = QTextEdit()
         self.ld3volrcv.setFixedHeight(27)
         ld3box.addWidget(self.ld3volrcv)
-        self.ld3amprcv = QListWidget()
-        self.ld3amprcv.setFixedWidth(200)
+        self.ld3amprcv = QTextEdit()
         self.ld3amprcv.setFixedHeight(27)
         ld3box.addWidget(self.ld3amprcv)
 
@@ -203,21 +191,17 @@ class CWidget(QWidget):
         box.addLayout(ld4box)
 
         self.ld4btn = QPushButton('LD 4')
-        self.ld4btn.setFixedWidth(100)
         self.ld4btn.setAutoDefault(True)
         self.ld4btn.clicked.connect(self.ld4AmpSet)
         ld4box.addWidget(self.ld4btn)
         self.ld4amp = QTextEdit()
         self.ld4amp.setText('0.456')
-        self.ld4amp.setFixedWidth(200)
         self.ld4amp.setFixedHeight(27)
         ld4box.addWidget(self.ld4amp)
-        self.ld4volrcv = QListWidget()
-        self.ld4volrcv.setFixedWidth(200)
+        self.ld4volrcv = QTextEdit()
         self.ld4volrcv.setFixedHeight(27)
         ld4box.addWidget(self.ld4volrcv)
-        self.ld4amprcv = QListWidget()
-        self.ld4amprcv.setFixedWidth(200)
+        self.ld4amprcv = QTextEdit()
         self.ld4amprcv.setFixedHeight(27)
         ld4box.addWidget(self.ld4amprcv)
 
@@ -228,62 +212,78 @@ class CWidget(QWidget):
         box.addLayout(ld5box)
 
         self.ld5btn = QPushButton('LD 5')
-        self.ld5btn.setFixedWidth(100)
         self.ld5btn.setAutoDefault(True)
         self.ld5btn.clicked.connect(self.ld5AmpSet)
         ld5box.addWidget(self.ld5btn)
         self.ld5amp = QTextEdit()
         self.ld5amp.setText('0.564')
-        self.ld5amp.setFixedWidth(200)
         self.ld5amp.setFixedHeight(27)
         ld5box.addWidget(self.ld5amp)
-        self.ld5volrcv = QListWidget()
-        self.ld5volrcv.setFixedWidth(200)
+        self.ld5volrcv = QTextEdit()
         self.ld5volrcv.setFixedHeight(27)
         ld5box.addWidget(self.ld5volrcv)
-        self.ld5amprcv = QListWidget()
-        self.ld5amprcv.setFixedWidth(200)
+        self.ld5amprcv = QTextEdit()
         self.ld5amprcv.setFixedHeight(27)
         ld5box.addWidget(self.ld5amprcv)
 
         # Temp 설정
-        tempbox = QHBoxLayout()
-        box.addLayout(tempbox)
+        powerBox = QHBoxLayout()
+        box.addLayout(powerBox)
+
+        label = QLabel('1st Front Optical Power')
+        powerBox.addWidget(label)
+        self.frontPower = QTextEdit()
+        self.frontPower.setFixedHeight(27)
+        powerBox.addWidget(self.frontPower)
+
+        label = QLabel('1st Rear Optical Power')
+        powerBox.addWidget(label)
+        self.rearPower = QTextEdit()
+        self.rearPower.setFixedHeight(27)
+        powerBox.addWidget(self.rearPower)
+
+        # Temp 설정
+        tempbox1 = QHBoxLayout()
+        box.addLayout(tempbox1)
 
         label = QLabel('1st temp')
-        tempbox.addWidget(label)
-        self.firsttemp = QListWidget()
-        self.firsttemp.setFixedWidth(100)
+        tempbox1.addWidget(label)
+        self.firsttemp = QTextEdit()
         self.firsttemp.setFixedHeight(27)
-        tempbox.addWidget(self.firsttemp)
+        tempbox1.addWidget(self.firsttemp)
 
         label = QLabel('2nd temp')
-        tempbox.addWidget(label)
-        self.secondtemp = QListWidget()
-        self.secondtemp.setFixedWidth(100)
+        tempbox1.addWidget(label)
+        self.secondtemp = QTextEdit()
         self.secondtemp.setFixedHeight(27)
-        tempbox.addWidget(self.secondtemp)
+        tempbox1.addWidget(self.secondtemp)
 
         label = QLabel('3rd temp')
-        tempbox.addWidget(label)
-        self.thirdtemp = QListWidget()
-        self.thirdtemp.setFixedWidth(100)
+        tempbox1.addWidget(label)
+        self.thirdtemp = QTextEdit()
         self.thirdtemp.setFixedHeight(27)
-        tempbox.addWidget(self.thirdtemp)
+        tempbox1.addWidget(self.thirdtemp)
+
+        tempbox2 = QHBoxLayout()
+        box.addLayout(tempbox2)
+
+        label = QLabel('3rd Plate temp')
+        tempbox2.addWidget(label)
+        self.thirdplatetemp = QTextEdit()
+        self.thirdplatetemp.setFixedHeight(27)
+        tempbox2.addWidget(self.thirdplatetemp)
 
         label = QLabel('CLS')
-        tempbox.addWidget(label)
-        self.clstemp = QListWidget()
-        self.clstemp.setFixedWidth(100)
+        tempbox2.addWidget(label)
+        self.clstemp = QTextEdit()
         self.clstemp.setFixedHeight(27)
-        tempbox.addWidget(self.clstemp)
+        tempbox2.addWidget(self.clstemp)
 
         label = QLabel('PUMP')
-        tempbox.addWidget(label)
-        self.pumptemp = QListWidget()
-        self.pumptemp.setFixedWidth(100)
+        tempbox2.addWidget(label)
+        self.pumptemp = QTextEdit()
         self.pumptemp.setFixedHeight(27)
-        tempbox.addWidget(self.pumptemp)
+        tempbox2.addWidget(self.pumptemp)
 
         gb.setLayout(box)
 
@@ -368,66 +368,71 @@ class CWidget(QWidget):
             self.power = False
 
     def updateMsg(self, header, cmd, data):
-        if header == 0x41:
-            if cmd == 0x07:
+        if header == '0x41':
+            if cmd == '0x7':
                 # LD5 amp
-                self.ld5amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x08:
-                # sss
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x09:
-                # sss
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x0D:
-                # sss
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x0F:
+                self.ld5amprcv.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
+            elif cmd == '0x8':
+                # 1st Front Optical Power
+                self.frontPower.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
+            elif cmd == '0x9':
+                # 1st Rear Optical Power
+                self.rearPower.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
+            elif cmd == '0xd':
+                # Interlock
+                if int(data) & 0b0001 == True:
+                    self.interbtn.setStyleSheet("background-color: red")
+                else:
+                    self.interbtn.setStyleSheet("background-color: lightgray")
+            elif cmd == '0xf':
                 # LD5 vol
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x10:
+                self.ld5volrcv.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
+            elif cmd == '0x10':
                 # LD1 vol
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x11:
+                self.ld1volrcv.setText(str(round((int(data)*0.0012 -0.0540), 4)))
+            elif cmd == '0x11':
                 # LD2 vol
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x12:
+                self.ld2volrcv.setText(str(round((int(data)*0.0012 -0.0332), 4)))
+            elif cmd == '0x12':
                 # LD3 vol
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x13:
+                self.ld3volrcv.setText(str(round((int(data)*0.0012 -0.0615), 4)))
+            elif cmd == '0x13':
                 # LD4 vol
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x14:
+                self.ld4volrcv.setText(str(round((int(data)*0.0012 -0.0136), 4)))
+            elif cmd == '0x14':
                 # LD1 amp
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x15:
+                self.ld1amprcv.setText(str(round(((int(data)+608.0) / 3822.0), 4)))
+            elif cmd == '0x15':
                 # LD2 amp
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x16:
+                self.ld2amprcv.setText(str(round(((int(data)+132.5) / 3817.5), 4)))
+            elif cmd == '0x16':
                 # LD3 amp
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x17:
+                self.ld3amprcv.setText(str(round(((int(data)-432.5) / 3832.5), 4)))
+            elif cmd == '0x17':
                 # LD4 amp
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x18:
+                self.ld4amprcv.setText(str(round(((int(data)+542.5) / 3807.5), 4)))
+            elif cmd == '0x18':
                 # 1st temp
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x19:
+                self.firsttemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1189 - 2.8153),4)))
+            elif cmd == '0x19':
                 # 2nd temp
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x1A:
+                self.secondtemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.2161 - 4.8080), 4)))
+            elif cmd == '0x1a':
                 # 3rd temp
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x1B:
+                self.thirdtemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.4021 - 8.7607), 4)))
+            elif cmd == '0x1b':
                 # 3rd plate temp
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x1C:
+                self.thirdplatetemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1804 - 5.5092), 4)))
+            elif cmd == '0x1c':
                 # CLS temp
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
-            elif cmd == 0x1D:
+                self.clstemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1041 - 2.4323), 4)))
+            elif cmd == '0x1d':
                 # pump temp
-                self.ld2amprcv.setText(str((flaot(data)+207.5) * 3792.5))
+                self.pumptemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1966 - 4.3200), 4)))
 
-        self.recvmsg.addItem(QListWidgetItem(msg))
+        self.recvmsg.addItem(QListWidgetItem(header))
+        self.recvmsg.addItem(QListWidgetItem(cmd))
+        self.recvmsg.addItem(QListWidgetItem(data))
 
     def updateDisconnect(self):
         self.btn.setText('접속')    
@@ -437,7 +442,7 @@ class CWidget(QWidget):
         fmt = '>B B H'
         packer = struct.Struct(fmt)
         sendData = packer.pack(*values)
-        print(sendData[0])
+        print(sendData)
 
         self.c.send(sendData)
 
@@ -460,6 +465,8 @@ class CWidget(QWidget):
             cmd = 0x01
             data = 0x0000
             self.sendMsg(header, cmd, data)
+            if self.power == True and self.ldOnOff == True:
+                self.ldToggle()
             self.mainbtn.setStyleSheet("background-color: lightgray")
             self.mainStart = False
 
@@ -479,7 +486,17 @@ class CWidget(QWidget):
             cmd = 0x11
             data = 0x0000
             self.sendMsg(header, cmd, data)
+            self.ld1 = False
+            self.ld2 = False
+            self.ld3 = False
+            self.ld4 = False
+            self.ld5 = False
             self.ldallbtn.setStyleSheet("background-color: lightgray")
+            self.ldno1btn.setStyleSheet("background-color: lightgray")    
+            self.ldno2btn.setStyleSheet("background-color: lightgray")
+            self.ldno3btn.setStyleSheet("background-color: lightgray")
+            self.ldno4btn.setStyleSheet("background-color: lightgray")
+            self.ldno5btn.setStyleSheet("background-color: lightgray")
             self.ldOnOff = False
 
     def ld1On(self):
