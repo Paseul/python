@@ -18,9 +18,9 @@ class CWidget(QWidget):
         super().__init__()
 
         self.c = client.ClientSocket(self)
-        self.power = False
+        self.connect = False
         self.mainStart = False
-        self.ldOnOff = False
+        self.ldStart = False
         self.ld1 = False
         self.ld2 = False
         self.ld3 = False
@@ -45,7 +45,7 @@ class CWidget(QWidget):
 
         label = QLabel('Server IP')
         self.ip = QLineEdit(str(ip))
-        # self.ip.setInputMask('127.0.1.1;_')
+
         box.addWidget(label)
         box.addWidget(self.ip)
 
@@ -68,36 +68,37 @@ class CWidget(QWidget):
 
         box = QHBoxLayout()
 
-        self.mainbtn = QPushButton('Start')
-        self.mainbtn.clicked.connect(self.mainToggle)
-        box.addWidget(self.mainbtn)
+        self.mainBtn = QPushButton('Start')
+        self.mainBtn.clicked.connect(self.mainToggle)
+        box.addWidget(self.mainBtn)
 
-        self.ldallbtn = QPushButton('LD all On')
-        self.ldallbtn.clicked.connect(self.ldToggle)
-        box.addWidget(self.ldallbtn)
+        self.ldBtn = QPushButton('LD Start')
+        self.ldBtn.clicked.connect(self.ldToggle)
+        box.addWidget(self.ldBtn)
 
-        self.ldno1btn = QPushButton('LD No1')
-        self.ldno1btn.clicked.connect(self.ld1On)
-        box.addWidget(self.ldno1btn)
+        self.ld1Btn = QPushButton('LD No1')
+        self.ld1Btn.clicked.connect(self.ld1On)
+        box.addWidget(self.ld1Btn)
 
-        self.ldno2btn = QPushButton('LD No2')
-        self.ldno2btn.clicked.connect(self.ld2On)
-        box.addWidget(self.ldno2btn)
+        self.ld2Btn = QPushButton('LD No2')
+        self.ld2Btn.clicked.connect(self.ld2On)
+        box.addWidget(self.ld2Btn)
 
-        self.ldno3btn = QPushButton('LD No3')
-        self.ldno3btn.clicked.connect(self.ld3On)
-        box.addWidget(self.ldno3btn)
+        self.ld3Btn = QPushButton('LD No3')
+        self.ld3Btn.clicked.connect(self.ld3On)
+        box.addWidget(self.ld3Btn)
 
-        self.ldno4btn = QPushButton('LD No4')
-        self.ldno4btn.clicked.connect(self.ld4On)
-        box.addWidget(self.ldno4btn)
+        self.ld4Btn = QPushButton('LD No4')
+        self.ld4Btn.clicked.connect(self.ld4On)
+        box.addWidget(self.ld4Btn)
 
-        self.ldno5btn = QPushButton('LD No5')
-        self.ldno5btn.clicked.connect(self.ld5On)
-        box.addWidget(self.ldno5btn)
+        self.ld5Btn = QPushButton('LD No5')
+        self.ld5Btn.clicked.connect(self.ld5On)
+        box.addWidget(self.ld5Btn)
 
-        self.interbtn = QPushButton('Interlock')
-        box.addWidget(self.interbtn)
+        self.interBtn = QPushButton('Interlock')
+        self.interBtn.setEnabled(False)
+        box.addWidget(self.interBtn)
 
         gb.setLayout(box)
 
@@ -127,20 +128,20 @@ class CWidget(QWidget):
         ld1box = QHBoxLayout()
         box.addLayout(ld1box)
 
-        self.ld1btn = QPushButton('LD 1')
-        self.ld1btn.setAutoDefault(True)
-        self.ld1btn.clicked.connect(self.ld1AmpSet)
-        ld1box.addWidget(self.ld1btn)
-        self.ld1amp = QTextEdit()
-        self.ld1amp.setText('0.123')
-        self.ld1amp.setFixedHeight(27)
-        ld1box.addWidget(self.ld1amp)
-        self.ld1volrcv = QTextEdit()
-        self.ld1volrcv.setFixedHeight(27)
-        ld1box.addWidget(self.ld1volrcv)
-        self.ld1amprcv = QTextEdit()
-        self.ld1amprcv.setFixedHeight(27)
-        ld1box.addWidget(self.ld1amprcv)
+        self.ld1SetBtn = QPushButton('LD 1')
+        self.ld1SetBtn.setAutoDefault(True)
+        self.ld1SetBtn.clicked.connect(self.ld1AmpSet)
+        ld1box.addWidget(self.ld1SetBtn)
+        self.ld1Amp = QTextEdit()
+        self.ld1Amp.setText('0.123')
+        self.ld1Amp.setFixedHeight(27)
+        ld1box.addWidget(self.ld1Amp)
+        self.ld1VolRcv = QTextEdit()
+        self.ld1VolRcv.setFixedHeight(27)
+        ld1box.addWidget(self.ld1VolRcv)
+        self.ld1AmpRcv = QTextEdit()
+        self.ld1AmpRcv.setFixedHeight(27)
+        ld1box.addWidget(self.ld1AmpRcv)
 
         # gb.setLayout(box)
 
@@ -148,20 +149,20 @@ class CWidget(QWidget):
         ld2box = QHBoxLayout()
         box.addLayout(ld2box)
 
-        self.ld2btn = QPushButton('LD 2')
-        self.ld2btn.setAutoDefault(True)
-        self.ld2btn.clicked.connect(self.ld2AmpSet)
-        ld2box.addWidget(self.ld2btn)
-        self.ld2amp = QTextEdit()
-        self.ld2amp.setText('0.234')
-        self.ld2amp.setFixedHeight(27)
-        ld2box.addWidget(self.ld2amp)
-        self.ld2volrcv = QTextEdit()
-        self.ld2volrcv.setFixedHeight(27)
-        ld2box.addWidget(self.ld2volrcv)
-        self.ld2amprcv = QTextEdit()
-        self.ld2amprcv.setFixedHeight(27)
-        ld2box.addWidget(self.ld2amprcv)
+        self.ld2SetBtn = QPushButton('LD 2')
+        self.ld2SetBtn.setAutoDefault(True)
+        self.ld2SetBtn.clicked.connect(self.ld2AmpSet)
+        ld2box.addWidget(self.ld2SetBtn)
+        self.ld2Amp = QTextEdit()
+        self.ld2Amp.setText('0.234')
+        self.ld2Amp.setFixedHeight(27)
+        ld2box.addWidget(self.ld2Amp)
+        self.ld2VolRcv = QTextEdit()
+        self.ld2VolRcv.setFixedHeight(27)
+        ld2box.addWidget(self.ld2VolRcv)
+        self.ld2AmpRcv = QTextEdit()
+        self.ld2AmpRcv.setFixedHeight(27)
+        ld2box.addWidget(self.ld2AmpRcv)
 
         # gb.setLayout(box)
 
@@ -169,20 +170,20 @@ class CWidget(QWidget):
         ld3box = QHBoxLayout()
         box.addLayout(ld3box)
 
-        self.ld3btn = QPushButton('LD 3')
-        self.ld3btn.setAutoDefault(True)
-        self.ld3btn.clicked.connect(self.ld3AmpSet)
-        ld3box.addWidget(self.ld3btn)
-        self.ld3amp = QTextEdit()
-        self.ld3amp.setText('0.345')
-        self.ld3amp.setFixedHeight(27)
-        ld3box.addWidget(self.ld3amp)
-        self.ld3volrcv = QTextEdit()
-        self.ld3volrcv.setFixedHeight(27)
-        ld3box.addWidget(self.ld3volrcv)
-        self.ld3amprcv = QTextEdit()
-        self.ld3amprcv.setFixedHeight(27)
-        ld3box.addWidget(self.ld3amprcv)
+        self.ld3SetBtn = QPushButton('LD 3')
+        self.ld3SetBtn.setAutoDefault(True)
+        self.ld3SetBtn.clicked.connect(self.ld3AmpSet)
+        ld3box.addWidget(self.ld3SetBtn)
+        self.ld3Amp = QTextEdit()
+        self.ld3Amp.setText('0.345')
+        self.ld3Amp.setFixedHeight(27)
+        ld3box.addWidget(self.ld3Amp)
+        self.ld3VolRcv = QTextEdit()
+        self.ld3VolRcv.setFixedHeight(27)
+        ld3box.addWidget(self.ld3VolRcv)
+        self.ld3AmpRcv = QTextEdit()
+        self.ld3AmpRcv.setFixedHeight(27)
+        ld3box.addWidget(self.ld3AmpRcv)
 
         # gb.setLayout(box)
 
@@ -190,20 +191,20 @@ class CWidget(QWidget):
         ld4box = QHBoxLayout()
         box.addLayout(ld4box)
 
-        self.ld4btn = QPushButton('LD 4')
-        self.ld4btn.setAutoDefault(True)
-        self.ld4btn.clicked.connect(self.ld4AmpSet)
-        ld4box.addWidget(self.ld4btn)
-        self.ld4amp = QTextEdit()
-        self.ld4amp.setText('0.456')
-        self.ld4amp.setFixedHeight(27)
-        ld4box.addWidget(self.ld4amp)
-        self.ld4volrcv = QTextEdit()
-        self.ld4volrcv.setFixedHeight(27)
-        ld4box.addWidget(self.ld4volrcv)
-        self.ld4amprcv = QTextEdit()
-        self.ld4amprcv.setFixedHeight(27)
-        ld4box.addWidget(self.ld4amprcv)
+        self.ld4SetBtn = QPushButton('LD 4')
+        self.ld4SetBtn.setAutoDefault(True)
+        self.ld4SetBtn.clicked.connect(self.ld4AmpSet)
+        ld4box.addWidget(self.ld4SetBtn)
+        self.ld4Amp = QTextEdit()
+        self.ld4Amp.setText('0.456')
+        self.ld4Amp.setFixedHeight(27)
+        ld4box.addWidget(self.ld4Amp)
+        self.ld4VolRcv = QTextEdit()
+        self.ld4VolRcv.setFixedHeight(27)
+        ld4box.addWidget(self.ld4VolRcv)
+        self.ld4AmpRcv = QTextEdit()
+        self.ld4AmpRcv.setFixedHeight(27)
+        ld4box.addWidget(self.ld4AmpRcv)
 
         # gb.setLayout(box)
 
@@ -211,20 +212,20 @@ class CWidget(QWidget):
         ld5box = QHBoxLayout()
         box.addLayout(ld5box)
 
-        self.ld5btn = QPushButton('LD 5')
-        self.ld5btn.setAutoDefault(True)
-        self.ld5btn.clicked.connect(self.ld5AmpSet)
-        ld5box.addWidget(self.ld5btn)
-        self.ld5amp = QTextEdit()
-        self.ld5amp.setText('0.564')
-        self.ld5amp.setFixedHeight(27)
-        ld5box.addWidget(self.ld5amp)
-        self.ld5volrcv = QTextEdit()
-        self.ld5volrcv.setFixedHeight(27)
-        ld5box.addWidget(self.ld5volrcv)
-        self.ld5amprcv = QTextEdit()
-        self.ld5amprcv.setFixedHeight(27)
-        ld5box.addWidget(self.ld5amprcv)
+        self.ld5SetBtn = QPushButton('LD 5')
+        self.ld5SetBtn.setAutoDefault(True)
+        self.ld5SetBtn.clicked.connect(self.ld5AmpSet)
+        ld5box.addWidget(self.ld5SetBtn)
+        self.ld5Amp = QTextEdit()
+        self.ld5Amp.setText('0.564')
+        self.ld5Amp.setFixedHeight(27)
+        ld5box.addWidget(self.ld5Amp)
+        self.ld5VolRcv = QTextEdit()
+        self.ld5VolRcv.setFixedHeight(27)
+        ld5box.addWidget(self.ld5VolRcv)
+        self.ld5AmpRcv = QTextEdit()
+        self.ld5AmpRcv.setFixedHeight(27)
+        ld5box.addWidget(self.ld5AmpRcv)
 
         # Temp 설정
         powerBox = QHBoxLayout()
@@ -248,42 +249,42 @@ class CWidget(QWidget):
 
         label = QLabel('1st temp')
         tempbox1.addWidget(label)
-        self.firsttemp = QTextEdit()
-        self.firsttemp.setFixedHeight(27)
-        tempbox1.addWidget(self.firsttemp)
+        self.firstTemp = QTextEdit()
+        self.firstTemp.setFixedHeight(27)
+        tempbox1.addWidget(self.firstTemp)
 
         label = QLabel('2nd temp')
         tempbox1.addWidget(label)
-        self.secondtemp = QTextEdit()
-        self.secondtemp.setFixedHeight(27)
-        tempbox1.addWidget(self.secondtemp)
+        self.secondTemp = QTextEdit()
+        self.secondTemp.setFixedHeight(27)
+        tempbox1.addWidget(self.secondTemp)
 
         label = QLabel('3rd temp')
         tempbox1.addWidget(label)
-        self.thirdtemp = QTextEdit()
-        self.thirdtemp.setFixedHeight(27)
-        tempbox1.addWidget(self.thirdtemp)
+        self.thirdTemp = QTextEdit()
+        self.thirdTemp.setFixedHeight(27)
+        tempbox1.addWidget(self.thirdTemp)
 
         tempbox2 = QHBoxLayout()
         box.addLayout(tempbox2)
 
         label = QLabel('3rd Plate temp')
         tempbox2.addWidget(label)
-        self.thirdplatetemp = QTextEdit()
-        self.thirdplatetemp.setFixedHeight(27)
-        tempbox2.addWidget(self.thirdplatetemp)
+        self.thirdPlateTemp = QTextEdit()
+        self.thirdPlateTemp.setFixedHeight(27)
+        tempbox2.addWidget(self.thirdPlateTemp)
 
         label = QLabel('CLS')
         tempbox2.addWidget(label)
-        self.clstemp = QTextEdit()
-        self.clstemp.setFixedHeight(27)
-        tempbox2.addWidget(self.clstemp)
+        self.clsTemp = QTextEdit()
+        self.clsTemp.setFixedHeight(27)
+        tempbox2.addWidget(self.clsTemp)
 
         label = QLabel('PUMP')
         tempbox2.addWidget(label)
-        self.pumptemp = QTextEdit()
-        self.pumptemp.setFixedHeight(27)
-        tempbox2.addWidget(self.pumptemp)
+        self.pumpTemp = QTextEdit()
+        self.pumpTemp.setFixedHeight(27)
+        tempbox2.addWidget(self.pumpTemp)
 
         gb.setLayout(box)
 
@@ -325,15 +326,15 @@ class CWidget(QWidget):
         hbox = QHBoxLayout()
 
         box.addLayout(hbox)
-        self.sendbtn = QPushButton('보내기')
-        self.sendbtn.setAutoDefault(True)
-        self.sendbtn.clicked.connect(self.defaultMsg)
+        self.sendBtn = QPushButton('보내기')
+        self.sendBtn.setAutoDefault(True)
+        self.sendBtn.clicked.connect(self.defaultMsg)
 
-        self.clearbtn = QPushButton('채팅창 지움')
-        self.clearbtn.clicked.connect(self.clearMsg)
+        self.clearBtn = QPushButton('채팅창 지움')
+        self.clearBtn.clicked.connect(self.clearMsg)
 
-        hbox.addWidget(self.sendbtn)
-        hbox.addWidget(self.clearbtn)
+        hbox.addWidget(self.sendBtn)
+        hbox.addWidget(self.clearBtn)
         gb.setLayout(box)
 
         # 전체 배치
@@ -353,25 +354,25 @@ class CWidget(QWidget):
             if self.c.connectServer(ip, int(port)):
                 self.btn.setStyleSheet("background-color: green")
                 self.btn.setText('접속 종료')
-                self.power = True
+                self.connect = True
             else:
                 self.c.stop()
                 self.recvmsg.clear()
                 self.btn.setText('접속')
                 self.btn.setStyleSheet("background-color: lightgray")
-                self.power = False
+                self.connect = False
         else:
             self.c.stop()
             self.recvmsg.clear()
             self.btn.setText('접속')
             self.btn.setStyleSheet("background-color: lightgray")
-            self.power = False
+            self.connect = False
 
     def updateMsg(self, header, cmd, data):
         if header == '0x41':
             if cmd == '0x7':
                 # LD5 amp
-                self.ld5amprcv.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
+                self.ld5AmpRcv.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
             elif cmd == '0x8':
                 # 1st Front Optical Power
                 self.frontPower.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
@@ -381,54 +382,54 @@ class CWidget(QWidget):
             elif cmd == '0xd':
                 # Interlock
                 if int(data) & 0b0001 == True:
-                    self.interbtn.setStyleSheet("background-color: red")
+                    self.interBtn.setStyleSheet("background-color: red")
                 else:
-                    self.interbtn.setStyleSheet("background-color: lightgray")
+                    self.interBtn.setStyleSheet("background-color: lightgray")
             elif cmd == '0xf':
                 # LD5 vol
-                self.ld5volrcv.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
+                self.ld5VolRcv.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
             elif cmd == '0x10':
                 # LD1 vol
-                self.ld1volrcv.setText(str(round((int(data)*0.0012 -0.0540), 4)))
+                self.ld1VolRcv.setText(str(round((int(data)*0.0012 -0.0540), 4)))
             elif cmd == '0x11':
                 # LD2 vol
-                self.ld2volrcv.setText(str(round((int(data)*0.0012 -0.0332), 4)))
+                self.ld2VolRcv.setText(str(round((int(data)*0.0012 -0.0332), 4)))
             elif cmd == '0x12':
                 # LD3 vol
-                self.ld3volrcv.setText(str(round((int(data)*0.0012 -0.0615), 4)))
+                self.ld3VolRcv.setText(str(round((int(data)*0.0012 -0.0615), 4)))
             elif cmd == '0x13':
                 # LD4 vol
-                self.ld4volrcv.setText(str(round((int(data)*0.0012 -0.0136), 4)))
+                self.ld4VolRcv.setText(str(round((int(data)*0.0012 -0.0136), 4)))
             elif cmd == '0x14':
                 # LD1 amp
-                self.ld1amprcv.setText(str(round(((int(data)+608.0) / 3822.0), 4)))
+                self.ld1AmpRcv.setText(str(round(((int(data)+608.0) / 3822.0), 4)))
             elif cmd == '0x15':
                 # LD2 amp
-                self.ld2amprcv.setText(str(round(((int(data)+132.5) / 3817.5), 4)))
+                self.ld2AmpRcv.setText(str(round(((int(data)+132.5) / 3817.5), 4)))
             elif cmd == '0x16':
                 # LD3 amp
-                self.ld3amprcv.setText(str(round(((int(data)-432.5) / 3832.5), 4)))
+                self.ld3AmpRcv.setText(str(round(((int(data)-432.5) / 3832.5), 4)))
             elif cmd == '0x17':
                 # LD4 amp
-                self.ld4amprcv.setText(str(round(((int(data)+542.5) / 3807.5), 4)))
+                self.ld4AmpRcv.setText(str(round(((int(data)+542.5) / 3807.5), 4)))
             elif cmd == '0x18':
                 # 1st temp
-                self.firsttemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1189 - 2.8153),4)))
+                self.firstTemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1189 - 2.8153),4)))
             elif cmd == '0x19':
                 # 2nd temp
-                self.secondtemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.2161 - 4.8080), 4)))
+                self.secondTemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.2161 - 4.8080), 4)))
             elif cmd == '0x1a':
                 # 3rd temp
-                self.thirdtemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.4021 - 8.7607), 4)))
+                self.thirdTemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.4021 - 8.7607), 4)))
             elif cmd == '0x1b':
                 # 3rd plate temp
-                self.thirdplatetemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1804 - 5.5092), 4)))
+                self.thirdPlateTemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1804 - 5.5092), 4)))
             elif cmd == '0x1c':
                 # CLS temp
-                self.clstemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1041 - 2.4323), 4)))
+                self.clsTemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1041 - 2.4323), 4)))
             elif cmd == '0x1d':
                 # pump temp
-                self.pumptemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1966 - 4.3200), 4)))
+                self.pumpTemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1966 - 4.3200), 4)))
 
         self.recvmsg.addItem(QListWidgetItem(header))
         self.recvmsg.addItem(QListWidgetItem(cmd))
@@ -442,7 +443,6 @@ class CWidget(QWidget):
         fmt = '>B B H'
         packer = struct.Struct(fmt)
         sendData = packer.pack(*values)
-        print(sendData)
 
         self.c.send(sendData)
 
@@ -453,25 +453,27 @@ class CWidget(QWidget):
         self.sendMsg(header, cmd, data)
     
     def mainToggle(self):
-        if self.power == True and self.mainStart == False:
+        if self.connect == True and self.mainStart == False:
             header = 0x41
             cmd = 0x01
             data = 0x0001
             self.sendMsg(header, cmd, data)
-            self.mainbtn.setStyleSheet("background-color: green")
+            self.mainBtn.setText('Stop')
+            self.mainBtn.setStyleSheet("background-color: green")
             self.mainStart = True
-        elif self.power == True and self.mainStart == True:
+        elif self.connect == True and self.mainStart == True:
             header = 0x41
             cmd = 0x01
             data = 0x0000
             self.sendMsg(header, cmd, data)
-            if self.power == True and self.ldOnOff == True:
+            if self.connect == True and self.ldStart == True:
                 self.ldToggle()
-            self.mainbtn.setStyleSheet("background-color: lightgray")
+            self.mainBtn.setText('Start')
+            self.mainBtn.setStyleSheet("background-color: lightgray")
             self.mainStart = False
 
     def ldToggle(self):
-        if self.power == True and self.ldOnOff == False:
+        if self.connect == True and self.ldStart == False:
             header = 0x41
             cmd = 0x11
             data = 0x0001
@@ -479,9 +481,10 @@ class CWidget(QWidget):
             cmd = 0x01
             data = 0x0004
             self.sendMsg(header, cmd, data)
-            self.ldallbtn.setStyleSheet("background-color: green")
-            self.ldOnOff = True
-        elif self.power == True and self.ldOnOff == True:
+            self.ldBtn.setText('LD Stop')
+            self.ldBtn.setStyleSheet("background-color: green")
+            self.ldStart = True
+        elif self.connect == True and self.ldStart == True:
             header = 0x41
             cmd = 0x11
             data = 0x0000
@@ -491,64 +494,65 @@ class CWidget(QWidget):
             self.ld3 = False
             self.ld4 = False
             self.ld5 = False
-            self.ldallbtn.setStyleSheet("background-color: lightgray")
-            self.ldno1btn.setStyleSheet("background-color: lightgray")    
-            self.ldno2btn.setStyleSheet("background-color: lightgray")
-            self.ldno3btn.setStyleSheet("background-color: lightgray")
-            self.ldno4btn.setStyleSheet("background-color: lightgray")
-            self.ldno5btn.setStyleSheet("background-color: lightgray")
-            self.ldOnOff = False
+            self.ldBtn.setText('LD Strat')
+            self.ldBtn.setStyleSheet("background-color: lightgray")
+            self.ld1Btn.setStyleSheet("background-color: lightgray")    
+            self.ld2Btn.setStyleSheet("background-color: lightgray")
+            self.ld3Btn.setStyleSheet("background-color: lightgray")
+            self.ld4Btn.setStyleSheet("background-color: lightgray")
+            self.ld5Btn.setStyleSheet("background-color: lightgray")
+            self.ldStart = False
 
     def ld1On(self):
-        if self.ldOnOff == True:
+        if self.ldStart == True:
             header = 0x41
             cmd = 0x11
             data = 0x0002
             self.sendMsg(header, cmd, data)
             self.ld1 = True
-            self.ldno1btn.setStyleSheet("background-color: green")            
+            self.ld1Btn.setStyleSheet("background-color: green")            
 
     def ld2On(self):
-        if self.ldOnOff == True:
+        if self.ldStart == True:
             header = 0x41
             cmd = 0x11
             data = 0x0004
             self.sendMsg(header, cmd, data)
             self.ld2 = True
-            self.ldno2btn.setStyleSheet("background-color: green")
+            self.ld2Btn.setStyleSheet("background-color: green")
 
     def ld3On(self):
-        if self.ldOnOff == True:
+        if self.ldStart == True:
             header = 0x41
             cmd = 0x11
             data = 0x0008
             self.sendMsg(header, cmd, data)
             self.ld3 = True
-            self.ldno3btn.setStyleSheet("background-color: green")
+            self.ld3Btn.setStyleSheet("background-color: green")
 
     def ld4On(self):
-        if self.ldOnOff == True:
+        if self.ldStart == True:
             header = 0x41
             cmd = 0x11
             data = 0x0010
             self.sendMsg(header, cmd, data)
             self.ld4 = True
-            self.ldno4btn.setStyleSheet("background-color: green")
+            self.ld4Btn.setStyleSheet("background-color: green")
 
     def ld5On(self):
-        if self.ldOnOff == True:
+        if self.ldStart == True:
             header = 0x41
             cmd = 0x01
             data = 0x0010
             self.sendMsg(header, cmd, data)
             self.ld5 = True
-            self.ldno5btn.setStyleSheet("background-color: green")
+            self.ld5Btn.setStyleSheet("background-color: green")
 
     def ld1AmpSet(self):
         if self.ld1 == True:
             header = 0x41
             cmd = 0x14
-            data = float(self.ld1amp.toPlainText())
+            data = float(self.ld1Amp.toPlainText())
             data = np.uint16(3822.0*data - 608)   
             self.sendMsg(header, cmd, data)
 
@@ -556,7 +560,7 @@ class CWidget(QWidget):
         if self.ld2 == True:
             header = 0x41
             cmd = 0x15
-            data = float(self.ld2amp.toPlainText())
+            data = float(self.ld2Amp.toPlainText())
             data = np.uint16(3817.5 * data - 132.5)   
             self.sendMsg(header, cmd, data)
 
@@ -564,7 +568,7 @@ class CWidget(QWidget):
         if self.ld3 == True:
             header = 0x41
             cmd = 0x16
-            data = float(self.ld3amp.toPlainText())
+            data = float(self.ld3Amp.toPlainText())
             data = np.uint16(3832.5 * data + 432.5)   
             self.sendMsg(header, cmd, data)
 
@@ -572,7 +576,7 @@ class CWidget(QWidget):
         if self.ld4 == True:
             header = 0x41
             cmd = 0x17
-            data = float(self.ld4amp.toPlainText())
+            data = float(self.ld4Amp.toPlainText())
             data = np.uint16(3807.5 * data - 207.5)   
             self.sendMsg(header, cmd, data)
 
@@ -580,7 +584,7 @@ class CWidget(QWidget):
         if self.ld5 == True:
             header = 0x41
             cmd = 0x03
-            data = float(self.ld5amp.toPlainText())
+            data = float(self.ld5Amp.toPlainText())
             data = np.uint16(3792.5 * data - 207.5)   
             self.sendMsg(header, cmd, data)
 
