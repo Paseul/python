@@ -10,11 +10,33 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
+class PopUpProgress(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.pbar = QProgressBar(self)
+        self.pbar.setGeometry(30, 40, 500, 75)
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.pbar)
+        self.setLayout(self.layout)
+        self.setGeometry(700, 500, 550, 100)
+        self.setWindowTitle('Calculating')
+
+        self.thread = QThread()
+
+    def start_progress(self):  # To restart the progress every time
+        self.show()
+        self.pbar.setValue(0)
+        self.thread.start()
+    
+    def move_progress(self, val):  # To restart the progress every time
+        self.pbar.setValue(val)
+
 class CWidget(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.setGeometry(250, 0, 1400, 1080)
+        self.setGeometry(250, 24, 1400, 1020)
 
         self.initUI()
 
@@ -66,8 +88,10 @@ class CWidget(QWidget):
         self.onStep2CbChanged()
         self.onStep3CbChanged()
 
+        self.popup = PopUpProgress()        
+
     def initUI(self):
-        self.setWindowTitle('효과도 분석 프로그램')
+        self.setWindowTitle('레이저 외란 시뮬레이터')
 
         # 클라이언트 설정 부분
         parambox = QVBoxLayout()
@@ -303,8 +327,8 @@ class CWidget(QWidget):
         calcbox = QHBoxLayout()
 
         gb = QGroupBox('Calculation')
-        gb.setFixedWidth(1024)
-        gb.setFixedHeight(1024)
+        gb.setFixedWidth(1000)
+        gb.setFixedHeight(1000)
         calcbox.addWidget(gb)
 
         box = QVBoxLayout()
@@ -619,17 +643,21 @@ class CWidget(QWidget):
     def Step2(self):
         self.step1Btn.setEnabled(False)
         self.step2Btn.setEnabled(False)
+        self.popup.start_progress()
         self.step2 = calc.Step2Thread(self.N, self.z, self.l2, self.move_pixel, self.mu, float(self.v_wind.toPlainText()),
                                  self.u1, self.k, float(self.Z.toPlainText()), self.r, float(self.D0.toPlainText()),
                                  self.P, float(self.wvl.toPlainText()), self.x1, self.delta_z, self.d1, self.n0,
                                  self.r0sw)
         self.step2.result.connect(self.Step2Result)
+        self.step2.progress.connect(self.progressControl)
         self.step2.start()
 
     def Step2Result(self, img):
         self.step2Results = img
         self.onStep2CbChanged()
         print('step2 End')
+        self.popup.thread.quit()
+        self.popup.hide()
         self.step2Btn.setEnabled(True)
         self.step3Btn.setEnabled(True)
 
@@ -663,12 +691,14 @@ class CWidget(QWidget):
         self.step1Btn.setEnabled(False)
         self.step2Btn.setEnabled(False)
         self.step3Btn.setEnabled(False)
+        self.popup.start_progress()
         self.step3 = calc.Step3Thread(self.material, float(self.dwell_time.toPlainText()), self.N,
                                  self.z, self.n_iter, self.l2, self.move_pixel, self.mu,
                                  float(self.v_wind.toPlainText()), self.u1, self.k, float(self.Z.toPlainText()), self.r,
                                  float(self.D0.toPlainText()), self.P, float(self.P0.toPlainText()), float(self.wvl.toPlainText()), self.x1, self.y1,
                                  self.delta_z, self.d1, self.n0, self.r0sw, self.delta_t)
         self.step3.result.connect(self.Step3Result)
+        self.step3.progress.connect(self.progressControl)
         self.step3.start()
 
     def Step3Result(self, img, img_hole):
@@ -676,6 +706,8 @@ class CWidget(QWidget):
         self.step3Holes = img_hole
         self.onStep3CbChanged()
         print('step3 End')
+        self.popup.thread.quit()
+        self.popup.hide()
         self.step3Btn.setEnabled(True)
 
     def onStep3CbChanged(self):
@@ -724,6 +756,9 @@ class CWidget(QWidget):
         if self.expand >= 25:
             self.expand = 25
         self.onStep3CbChanged()
+
+    def progressControl(self, count):
+        self.popup.move_progress(count)
 
     def Save(self):
         screen = QApplication.primaryScreen().grabWindow(w.winId())

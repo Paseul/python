@@ -3,24 +3,6 @@ from PyQt5.QtWidgets import *
 import numpy as np
 import func
 
-class PopUpProgress(QWidget):
-
-    def __init__(self):
-        super().__init__()
-        self.pbar = QProgressBar(self)
-        self.pbar.setGeometry(30, 40, 500, 75)
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.pbar)
-        self.setLayout(self.layout)
-        self.setGeometry(700, 500, 550, 100)
-        self.setWindowTitle('Calculating')
-
-        self.thread = QThread()
-
-    def start_progress(self):  # To restart the progress every time
-        self.show()
-        self.thread.start()
-
 class Step1Thread(QThread):
     result = pyqtSignal(np.ndarray)
 
@@ -88,6 +70,7 @@ class Step1Thread(QThread):
 
 class Step2Thread(QThread):
     result = pyqtSignal(np.ndarray)
+    progress = pyqtSignal(int)
 
     def __init__(self, N, z, l2, move_pixel, mu, v_wind, u1, k, Z, r, D0, P, wvl, x1, delta_z, d1, n0, r0sw):
         super().__init__()
@@ -108,9 +91,7 @@ class Step2Thread(QThread):
         self.delta_z = delta_z
         self.d1 = d1
         self.n0 = n0
-        self.r0sw = r0sw
-        self.popup = PopUpProgress()
-        self.popup.start_progress()
+        self.r0sw = r0sw        
 
     def run(self):
         # With Thermal Blooming & Atmosphere
@@ -152,13 +133,12 @@ class Step2Thread(QThread):
             img = np.uint8(img * 255 / np.max(img))
             Uout_turbs[:, :, i] = img
             count += 100 / (len(self.z) - 1)
-            self.popup.pbar.setValue(int(count))
-        self.popup.thread.quit()
-        self.popup.hide()
+            self.progress.emit(int(count))
         self.result.emit(Uout_turbs)
 
 class Step3Thread(QThread):
     result = pyqtSignal(np.ndarray, np.ndarray)
+    progress = pyqtSignal(int)
 
     def __init__(self, material, dwell_time, N, z, n_iter, l2, move_pixel, mu, v_wind, u1, k, Z, r, D0, P, P0, wvl, x1, y1, delta_z, d1, n0, r0sw, delta_t):
         super().__init__()
@@ -186,8 +166,6 @@ class Step3Thread(QThread):
         self.n0 = n0
         self.r0sw = r0sw
         self.delta_t = delta_t
-        self.popup = PopUpProgress()
-        self.popup.start_progress()
 
     def run(self):
         ## Energy fot the Destruction
@@ -238,7 +216,7 @@ class Step3Thread(QThread):
                                          max(self.x1[:]), self.delta_z / 2, \
                                          self.d1, self.delta_z / 2, self.n0)
                 count += 100 / (self.n_iter * (len(self.z) - 1))
-                self.popup.pbar.setValue(int(count))
+                self.progress.emit(int(count))
             l2_target2_turb = np.abs(np.power(Uout_turb, 2))
             A0 = np.trapz(np.trapz(l2_target2_turb, self.x1, axis=1), self.y1)
             l2_target2_turb = l2_target2_turb * (1 / A0) * self.P0
@@ -250,6 +228,4 @@ class Step3Thread(QThread):
             img2 = np.zeros(shape=l3.shape, dtype=np.uint8)
             img2[np.where(l3 > reqPower)] = 255
             target2_holes[:, :, j] = img2
-        self.popup.thread.quit()
-        self.popup.hide()
         self.result.emit(target2_turbs, target2_holes)
