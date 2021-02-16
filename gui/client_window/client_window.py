@@ -3,6 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import sys
 import client
+import cooler_client
 import struct
 import numpy as np
 from struct import *
@@ -18,7 +19,9 @@ class CWidget(QWidget):
         super().__init__()
 
         self.c = client.ClientSocket(self)
+        self.cc = cooler_client.ClientSocket(self)
         self.connect = False
+        self.cconnect = False
         self.mainStart = False
         self.ldStart = False
         self.ld1 = False
@@ -288,6 +291,103 @@ class CWidget(QWidget):
 
         gb.setLayout(box)
 
+        # 클라이언트 설정 부분
+        ipbox2 = QHBoxLayout()
+
+        gb = QGroupBox('서버 설정')
+        ipbox2.addWidget(gb)
+
+        box = QHBoxLayout()
+
+        label = QLabel('Server IP')
+        self.c_ip = QLineEdit(str(ip))
+
+        box.addWidget(label)
+        box.addWidget(self.ip)
+
+        label = QLabel('Server Port')
+        self.c_port = QLineEdit(str(port))
+        box.addWidget(label)
+        box.addWidget(self.c_port)
+
+        self.c_btn = QPushButton('접속')
+        self.c_btn.clicked.connect(self.coolerConnectClicked)
+        box.addWidget(self.c_btn)
+
+        self.cPowerBtn = QPushButton('On')
+        self.cPowerBtn.clicked.connect(self.coolerConnectClicked)
+        box.addWidget(self.cPowerBtn)
+
+        gb.setLayout(box)
+
+        # 세부 설정
+        cbitbox = QHBoxLayout()
+
+        gb = QGroupBox('Cooler Status')
+        cbitbox.addWidget(gb)
+
+        box = QVBoxLayout()
+
+        # Cbox1 설정
+        c1box = QHBoxLayout()
+        box.addLayout(c1box)
+
+        self.compInBtn = QPushButton('압축기 입구')
+        self.compInBtn.setAutoDefault(True)
+        self.compInBtn.clicked.connect(self.ld1AmpSet)
+        c1box.addWidget(self.compInBtn)
+        self.compIn = QTextEdit()
+        self.compIn.setText('0.123')
+        self.compIn.setFixedHeight(27)
+        c1box.addWidget(self.compIn)
+        self.compOutBtn = QPushButton('압축기 출구')
+        self.compOutBtn.setAutoDefault(True)
+        self.compOutBtn.clicked.connect(self.ld1AmpSet)
+        c1box.addWidget(self.compOutBtn)
+        self.compOut = QTextEdit()
+        self.compOut.setText('0.123')
+        self.compOut.setFixedHeight(27)
+        c1box.addWidget(self.compOut)
+        self.evapoTempBtn = QPushButton('증발기 표면')
+        self.evapoTempBtn.setAutoDefault(True)
+        self.evapoTempBtn.clicked.connect(self.ld1AmpSet)
+        c1box.addWidget(self.evapoTempBtn)
+        self.evapoTemp = QTextEdit()
+        self.evapoTemp.setText('0.123')
+        self.evapoTemp.setFixedHeight(27)
+        c1box.addWidget(self.evapoTemp)
+
+        # Cbox1 설정
+        c2box = QHBoxLayout()
+        box.addLayout(c2box)
+
+        self.ibitBtn = QPushButton('IBIT')
+        self.ibitBtn.setAutoDefault(True)
+        self.ibitBtn.clicked.connect(self.ld1AmpSet)
+        c2box.addWidget(self.ibitBtn)
+        self.ibit = QTextEdit()
+        self.ibit.setText('정상')
+        self.ibit.setFixedHeight(27)
+        c2box.addWidget(self.ibit)
+        self.cond1Btn = QPushButton('응축기 팬1 주파수')
+        self.cond1Btn.setAutoDefault(True)
+        self.cond1Btn.clicked.connect(self.ld1AmpSet)
+        c2box.addWidget(self.cond1Btn)
+        self.cond1 = QTextEdit()
+        self.cond1.setText('0.123')
+        self.cond1.setFixedHeight(27)
+        c2box.addWidget(self.cond1)
+        self.cond2Btn = QPushButton('응축기 팬2 주파수')
+        self.cond2Btn.setAutoDefault(True)
+        self.cond2Btn.clicked.connect(self.ld1AmpSet)
+        c2box.addWidget(self.cond2Btn)
+        self.cond2 = QTextEdit()
+        self.cond2.setText('0.123')
+        self.cond2.setFixedHeight(27)
+        c2box.addWidget(self.cond2)
+
+        gb.setLayout(box)
+
         # 채팅창 부분
         infobox = QHBoxLayout()
         gb = QGroupBox('메시지')
@@ -342,6 +442,8 @@ class CWidget(QWidget):
         vbox.addLayout(ipbox)
         vbox.addLayout(btbox)
         vbox.addLayout(bitbox)
+        vbox.addLayout(ipbox2)
+        vbox.addLayout(cbitbox)
         vbox.addLayout(infobox)
         self.setLayout(vbox)
 
@@ -367,6 +469,27 @@ class CWidget(QWidget):
             self.btn.setText('접속')
             self.btn.setStyleSheet("background-color: lightgray")
             self.connect = False
+
+    def coolerConnectClicked(self):
+        if self.cc.bConnect == False:
+            ip = self.c_ip.text()
+            port = self.c_port.text()
+            if self.cc.connectServer(ip, int(port)):
+                self.c_btn.setStyleSheet("background-color: green")
+                self.c_btn.setText('접속 종료')
+                self.cconnect = True
+            else:
+                self.cc.stop()
+                self.recvmsg.clear()
+                self.c_btn.setText('접속')
+                self.c_btn.setStyleSheet("background-color: lightgray")
+                self.cconnect = False
+        else:
+            self.cc.stop()
+            self.recvmsg.clear()
+            self.c_btn.setText('접속')
+            self.c_btn.setStyleSheet("background-color: lightgray")
+            self.cconnect = False
 
     def updateMsg(self, header, cmd, data):
         if header == '0x41':
@@ -437,6 +560,9 @@ class CWidget(QWidget):
 
     def updateDisconnect(self):
         self.btn.setText('접속')    
+
+    def coolerUpdateDisconnect(self):
+        self.c_btn.setText('접속')  
 
     def sendMsg(self, header, cmd, data):
         values = (header, cmd, data)
