@@ -1,4 +1,5 @@
 import numpy as np
+import jax.numpy as jnp
 import time
 
 def make_nanmask(r,  ca):
@@ -41,12 +42,12 @@ def propagator(lamb, Nx, Ny, Xmax, delta_x, delta_z, n0):
     return P
 
 def ft2(g, delta):
-    G = np.fft.fftshift(np.fft.fft2(np.fft.fftshift(g))) * np.power(delta, 2)
+    G = jnp.fft.fftshift(jnp.fft.fft2(jnp.fft.fftshift(g))) * jnp.power(delta, 2)
     return G
 
 def ift2(g, delta):
     N = len(g)
-    G = np.fft.ifftshift(np.fft.ifft2(np.fft.ifftshift(g))) * np.power(N * delta, 2)
+    G = jnp.fft.ifftshift(jnp.fft.ifft2(jnp.fft.ifftshift(g))) * jnp.power(N * delta, 2)
     return G
 
 def ft_phase_screen(r0, N, delta, L0, l0):
@@ -58,31 +59,32 @@ def ft_phase_screen(r0, N, delta, L0, l0):
         tmp.append(-256 + i)
     for i in range(512):
         fx.append(tmp)
-    fx = np.array(fx)
+    fx = jnp.array(fx)
     # frequency grid [1/m]
-    fy = np.transpose(fx)
+    fy = jnp.transpose(fx)
     f, th = cart2pol(fx, fy)
-    fm = 5.92/l0/(2*np.pi)
+    fm = 5.92/l0/(2*jnp.pi)
     f0 = 1/L0
     # modified von Karman atmospheric phase PSD
-    PSD_phi = 0.023*np.power(r0, -5/3) * np.exp(-np.power((f/fm), 2))/ np.power((np.power(f, 2) + np.power(f0, 2)), 11/6)
+    PSD_phi = 0.023*jnp.power(r0, -5/3) * jnp.exp(-jnp.power((f/fm), 2))/ jnp.power((jnp.power(f, 2) + jnp.power(f0, 2)), 11/6)
+    PSD_phi = np.array(PSD_phi)
     PSD_phi[256][256] = 0
     # random draws of Fourier coefficients
     A = np.random.randn(N, N)
     B = np.random.randn(N, N)
 
-    cn = (A + complex("j")*B) * np.sqrt(PSD_phi)*del_f
-    phz = np.real(ift2(cn,1))
+    cn = (A + complex("j")*B) * jnp.sqrt(PSD_phi)*del_f
+    phz = jnp.real(ift2(cn,1))
     return phz
 
 def cart2pol(x, y):
-    rho = np.sqrt(x**2 + y**2)
-    phi = np.arctan2(y, x)
+    rho = jnp.sqrt(x**2 + y**2)
+    phi = jnp.arctan2(y, x)
     return(rho, phi)
 
 def lens_against_ft(Uin, wvl, d1, f):
     N = len(Uin[:,0])
-    k = 2 * np.pi / wvl
+    k = 2 * jnp.pi / wvl
     fx = []
     x2 = []
     y2 = []
@@ -90,8 +92,8 @@ def lens_against_ft(Uin, wvl, d1, f):
         fx.append((-256 + i) * wvl * f)
     for i in range(512):
         x2.append(fx)
-    y2 = np.transpose(x2)
-    Uout = np.exp(complex("j") * k / (2*f) * (np.power(x2, 2) + np.power(y2, 2))) / (complex("j")*wvl*f) * ft2(Uin, d1)
+    y2 = jnp.transpose(x2)
+    Uout = jnp.exp(complex("j") * k / (2*f) * (jnp.power(x2, 2) + jnp.power(y2, 2))) / (complex("j")*wvl*f) * ft2(Uin, d1)
     return Uout, np.array(x2), np.array(y2)
 
 def dm():

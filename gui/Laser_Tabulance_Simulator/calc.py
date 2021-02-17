@@ -1,5 +1,6 @@
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+import jax.numpy as jnp
 import numpy as np
 import func
 
@@ -102,19 +103,19 @@ class Step2Thread(QThread):
         delta_n = np.ndarray((512, 512, 51))
         for i in range(len(self.z)):
             # print(l2[:,:,i])
-            l2_new[:, :, i] = np.roll(self.l2[:, :, i], np.int(np.round(self.move_pixel / n_step) * i))
+            l2_new[:, :, i] = jnp.roll(self.l2[:, :, i], np.int(jnp.round(self.move_pixel / n_step) * i))
             n_temp = -self.mu / self.v_wind * l2_new[:, :, i]
             delta_n[:, :, i] = n_temp
 
         # Input Phase -> Uin = U * lens_aperture * phase_TB * phase_turb
-        Uin = self.u1[:, :, 0] * np.exp(complex("0+j") * self.k / (2 * self.Z) * self.r ** 2) \
+        Uin = self.u1[:, :, 0] * jnp.exp(complex("0+j") * self.k / (2 * self.Z) * self.r ** 2) \
               * func.make_nanmask(self.r / (self.D0 / 2.67), 1)
         Uout_turb = Uin
 
         phz_turbs = np.zeros((self.N, self.N, len(self.z)))
         Uout_turbs = np.zeros((self.N, self.N, len(self.z)))
-        img = np.abs(np.power(Uout_turb, 2))
-        img = np.uint8(img * 255 / np.max(img))
+        img = jnp.abs(jnp.power(Uout_turb, 2))
+        img = np.uint8(img * 255 / jnp.max(img))
         Uout_turbs[:, :, 0] = img
         for i in range(1, len(self.z)):
             Uout_turb = func.fft_BPM(Uout_turb, self.P, self.wvl, max(self.x1[:]), max(self.x1[:]),
@@ -123,14 +124,14 @@ class Step2Thread(QThread):
             phz_turb = func.ft_phase_screen(self.r0sw, self.N, self.d1, 100, 0.01)
             phz_turbs[:, :, i] = phz_turb
             delta_n2 = self.k * np.trapz(delta_n[:, :, i - 1:i + 1], [i - 1, i], axis=2)
-            delta_n2 = delta_n2 / np.min(delta_n2)
-            Uout_turb = Uout_turb * np.exp(complex("j") * delta_n2) * np.exp(
-                complex("j") * np.sum(phz_turbs, axis=2) / len(self.z))
+            delta_n2 = delta_n2 / jnp.min(delta_n2)
+            Uout_turb = Uout_turb * jnp.exp(complex("j") * delta_n2) * jnp.exp(
+                complex("j") * jnp.sum(phz_turbs, axis=2) / len(self.z))
             Uout_turb = func.fft_BPM(Uout_turb, self.P, self.wvl, max(self.x1[:]), max(self.x1[:]), self.delta_z / 2,
                                      self.d1, self.delta_z / 2, self.n0)
 
-            img = np.abs(np.power(Uout_turb, 2))
-            img = np.uint8(img * 255 / np.max(img))
+            img = jnp.abs(jnp.power(Uout_turb, 2))
+            img = np.uint8(img * 255 / jnp.max(img))            
             Uout_turbs[:, :, i] = img
             count += 100 / (len(self.z) - 1)
             self.progress.emit(int(count))
@@ -183,7 +184,7 @@ class Step3Thread(QThread):
         delta_n = np.ndarray((512, 512, 51))
         for i in range(len(self.z)):
             # print(l2[:,:,i])
-            l2_new[:, :, i] = np.roll(self.l2[:, :, i], np.int(np.round(self.move_pixel / n_step) * i))
+            l2_new[:, :, i] = jnp.roll(self.l2[:, :, i], np.int(jnp.round(self.move_pixel / n_step) * i))
             n_temp = -self.mu / self.v_wind * l2_new[:, :, i]
             delta_n[:, :, i] = n_temp
 
@@ -194,7 +195,7 @@ class Step3Thread(QThread):
         target2_holes = np.zeros((self.N, self.N, self.n_iter))
 
         for j in range(self.n_iter):
-            Uin = self.u1[:, :, 0] * np.exp(complex("0+j") * self.k / (2 * self.Z) * self.r ** 2) \
+            Uin = self.u1[:, :, 0] * jnp.exp(complex("0+j") * self.k / (2 * self.Z) * self.r ** 2) \
                   * func.make_nanmask(self.r / (self.D0 / 2.67), 1)
             Uout_turb = Uin
 
@@ -206,24 +207,24 @@ class Step3Thread(QThread):
                 phz_turb = func.ft_phase_screen(self.r0sw, self.N, self.d1, 100, 0.01)
                 phz_turbs[:, :, i, j] = phz_turb
                 delta_n2 = self.k * np.trapz(delta_n[:, :, i - 1:i + 1], [i - 1, i], axis=2)
-                delta_n2 = delta_n2 / np.min(delta_n2)
-                phz_total = delta_n2 + np.sum(phz_turbs[:, :, :, j], axis=2) / len(self.z)
-                cmd = np.dot(invs, phz_total.reshape(512 ** 2, 1))
-                recon_phz = np.dot(infl_t, cmd)
+                delta_n2 = delta_n2 / jnp.min(delta_n2)
+                phz_total = delta_n2 + jnp.sum(phz_turbs[:, :, :, j], axis=2) / len(self.z)
+                cmd = jnp.dot(invs, phz_total.reshape(512 ** 2, 1))
+                recon_phz = jnp.dot(infl_t, cmd)
                 resi = phz_total - recon_phz.reshape(512, 512)
-                Uout_turb = Uout_turb * np.exp(complex("j") * resi)
+                Uout_turb = Uout_turb * jnp.exp(complex("j") * resi)
                 Uout_turb = func.fft_BPM(Uout_turb, self.P, self.wvl, max(self.x1[:]),
                                          max(self.x1[:]), self.delta_z / 2, \
                                          self.d1, self.delta_z / 2, self.n0)
                 count += 100 / (self.n_iter * (len(self.z) - 1))
                 self.progress.emit(int(count))
-            l2_target2_turb = np.abs(np.power(Uout_turb, 2))
+            l2_target2_turb = jnp.abs(jnp.power(Uout_turb, 2))
             A0 = np.trapz(np.trapz(l2_target2_turb, self.x1, axis=1), self.y1)
             l2_target2_turb = l2_target2_turb * (1 / A0) * self.P0
 
             l2_target2_turbs[:, :, j] = l2_target2_turb * self.delta_t
-            l3 = np.sum(l2_target2_turbs, axis=2)
-            img = np.uint8(l3 * 255 / np.max(l3))
+            l3 = jnp.sum(l2_target2_turbs, axis=2)
+            img = np.uint8(l3 * 255 / jnp.max(l3))
             target2_turbs[:, :, j] = img
             img2 = np.zeros(shape=l3.shape, dtype=np.uint8)
             img2[np.where(l3 > reqPower)] = 255
