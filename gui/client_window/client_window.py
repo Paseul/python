@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import *
 import sys
 import client
 import cooler_client
+import ser
 import struct
 import numpy as np
 from struct import *
@@ -20,8 +21,10 @@ class CWidget(QWidget):
 
         self.c = client.ClientSocket(self)
         self.cc = cooler_client.ClientSocket(self)
+        self.ser = ser.SerialSocket(self)
         self.connect = False
         self.cconnect = False
+        self.serConnect = False
         self.mainStart = False
         self.ldStart = False
         self.ld1 = False
@@ -36,355 +39,400 @@ class CWidget(QWidget):
         self.c.stop()
 
     def initUI(self):
-        self.setWindowTitle('클라이언트')
+        self.setWindowTitle('휴대용 레이저 제어 프로그램')
 
-        # 클라이언트 설정 부분
-        ipbox = QHBoxLayout()
+        # 레이저 제어부
+        laserBox = QHBoxLayout()
 
-        gb = QGroupBox('서버 설정')
-        ipbox.addWidget(gb)
+        gb = QGroupBox('레이저 제어부')
+        laserBox.addWidget(gb)
 
-        box = QHBoxLayout()
+        box = QVBoxLayout()
+
+        laserIpBox = QHBoxLayout()
+        box.addLayout(laserIpBox)
 
         label = QLabel('Server IP')
         self.ip = QLineEdit(str(ip))
 
-        box.addWidget(label)
-        box.addWidget(self.ip)
+        laserIpBox.addWidget(label)
+        laserIpBox.addWidget(self.ip)
 
         label = QLabel('Server Port')
         self.port = QLineEdit(str(port))
-        box.addWidget(label)
-        box.addWidget(self.port)
+        laserIpBox.addWidget(label)
+        laserIpBox.addWidget(self.port)
 
         self.btn = QPushButton('접속')
         self.btn.clicked.connect(self.connectClicked)
-        box.addWidget(self.btn)
+        laserIpBox.addWidget(self.btn)
 
-        gb.setLayout(box)
-
-        # 버튼 설정
-        btbox = QHBoxLayout()
-
-        gb = QGroupBox('실행 버튼')
-        btbox.addWidget(gb)
-
-        box = QHBoxLayout()
+        # Enable 버튼 설정
+        laserBtBox = QHBoxLayout()
+        box.addLayout(laserBtBox)
 
         self.mainBtn = QPushButton('Start')
         self.mainBtn.clicked.connect(self.mainToggle)
-        box.addWidget(self.mainBtn)
+        laserBtBox.addWidget(self.mainBtn)
 
         self.ldBtn = QPushButton('LD Start')
         self.ldBtn.clicked.connect(self.ldToggle)
-        box.addWidget(self.ldBtn)
+        laserBtBox.addWidget(self.ldBtn)
 
         self.ld1Btn = QPushButton('LD No1')
         self.ld1Btn.clicked.connect(self.ld1On)
-        box.addWidget(self.ld1Btn)
+        laserBtBox.addWidget(self.ld1Btn)
 
         self.ld2Btn = QPushButton('LD No2')
         self.ld2Btn.clicked.connect(self.ld2On)
-        box.addWidget(self.ld2Btn)
+        laserBtBox.addWidget(self.ld2Btn)
 
         self.ld3Btn = QPushButton('LD No3')
         self.ld3Btn.clicked.connect(self.ld3On)
-        box.addWidget(self.ld3Btn)
+        laserBtBox.addWidget(self.ld3Btn)
 
         self.ld4Btn = QPushButton('LD No4')
         self.ld4Btn.clicked.connect(self.ld4On)
-        box.addWidget(self.ld4Btn)
+        laserBtBox.addWidget(self.ld4Btn)
 
         self.ld5Btn = QPushButton('LD No5')
         self.ld5Btn.clicked.connect(self.ld5On)
-        box.addWidget(self.ld5Btn)
+        laserBtBox.addWidget(self.ld5Btn)
 
         self.interBtn = QPushButton('Interlock')
         self.interBtn.setEnabled(False)
-        box.addWidget(self.interBtn)
+        laserBtBox.addWidget(self.interBtn)
 
-        gb.setLayout(box)
-
-        # 세부 설정
-        bitbox = QHBoxLayout()
-
-        gb = QGroupBox('BIT')
-        bitbox.addWidget(gb)
-
-        box = QVBoxLayout()
-
-        hbox = QHBoxLayout()
-        box.addLayout(hbox)
+        # 라벨
+        laserLabelBox = QHBoxLayout()
+        box.addLayout(laserLabelBox)
 
         label = QLabel('LD No.')
-        hbox.addWidget(label)
+        laserLabelBox.addWidget(label)
         label = QLabel('Amp Set')
-        hbox.addWidget(label)
+        laserLabelBox.addWidget(label)
         label = QLabel('Voltage')
-        hbox.addWidget(label)
+        laserLabelBox.addWidget(label)
         label = QLabel('Amp')
-        hbox.addWidget(label)
-
-        # gb.setLayout(box)
+        laserLabelBox.addWidget(label)
 
         # LD1 설정
-        ld1box = QHBoxLayout()
-        box.addLayout(ld1box)
+        ld1Box = QHBoxLayout()
+        box.addLayout(ld1Box)
 
         self.ld1SetBtn = QPushButton('LD 1')
         self.ld1SetBtn.setAutoDefault(True)
         self.ld1SetBtn.clicked.connect(self.ld1AmpSet)
-        ld1box.addWidget(self.ld1SetBtn)
+        ld1Box.addWidget(self.ld1SetBtn)
         self.ld1Amp = QTextEdit()
         self.ld1Amp.setText('0.123')
         self.ld1Amp.setFixedHeight(27)
-        ld1box.addWidget(self.ld1Amp)
+        ld1Box.addWidget(self.ld1Amp)
         self.ld1VolRcv = QTextEdit()
         self.ld1VolRcv.setFixedHeight(27)
-        ld1box.addWidget(self.ld1VolRcv)
+        ld1Box.addWidget(self.ld1VolRcv)
         self.ld1AmpRcv = QTextEdit()
         self.ld1AmpRcv.setFixedHeight(27)
-        ld1box.addWidget(self.ld1AmpRcv)
-
-        # gb.setLayout(box)
+        ld1Box.addWidget(self.ld1AmpRcv)
 
         # LD2 설정
-        ld2box = QHBoxLayout()
-        box.addLayout(ld2box)
+        ld2Box = QHBoxLayout()
+        box.addLayout(ld2Box)
 
         self.ld2SetBtn = QPushButton('LD 2')
         self.ld2SetBtn.setAutoDefault(True)
         self.ld2SetBtn.clicked.connect(self.ld2AmpSet)
-        ld2box.addWidget(self.ld2SetBtn)
+        ld2Box.addWidget(self.ld2SetBtn)
         self.ld2Amp = QTextEdit()
         self.ld2Amp.setText('0.234')
         self.ld2Amp.setFixedHeight(27)
-        ld2box.addWidget(self.ld2Amp)
+        ld2Box.addWidget(self.ld2Amp)
         self.ld2VolRcv = QTextEdit()
         self.ld2VolRcv.setFixedHeight(27)
-        ld2box.addWidget(self.ld2VolRcv)
+        ld2Box.addWidget(self.ld2VolRcv)
         self.ld2AmpRcv = QTextEdit()
         self.ld2AmpRcv.setFixedHeight(27)
-        ld2box.addWidget(self.ld2AmpRcv)
-
-        # gb.setLayout(box)
+        ld2Box.addWidget(self.ld2AmpRcv)
 
         # LD3 설정
-        ld3box = QHBoxLayout()
-        box.addLayout(ld3box)
+        ld3Box = QHBoxLayout()
+        box.addLayout(ld3Box)
 
         self.ld3SetBtn = QPushButton('LD 3')
         self.ld3SetBtn.setAutoDefault(True)
         self.ld3SetBtn.clicked.connect(self.ld3AmpSet)
-        ld3box.addWidget(self.ld3SetBtn)
+        ld3Box.addWidget(self.ld3SetBtn)
         self.ld3Amp = QTextEdit()
         self.ld3Amp.setText('0.345')
         self.ld3Amp.setFixedHeight(27)
-        ld3box.addWidget(self.ld3Amp)
+        ld3Box.addWidget(self.ld3Amp)
         self.ld3VolRcv = QTextEdit()
         self.ld3VolRcv.setFixedHeight(27)
-        ld3box.addWidget(self.ld3VolRcv)
+        ld3Box.addWidget(self.ld3VolRcv)
         self.ld3AmpRcv = QTextEdit()
         self.ld3AmpRcv.setFixedHeight(27)
-        ld3box.addWidget(self.ld3AmpRcv)
-
-        # gb.setLayout(box)
+        ld3Box.addWidget(self.ld3AmpRcv)
 
         # LD4 설정
-        ld4box = QHBoxLayout()
-        box.addLayout(ld4box)
+        ld4Box = QHBoxLayout()
+        box.addLayout(ld4Box)
 
         self.ld4SetBtn = QPushButton('LD 4')
         self.ld4SetBtn.setAutoDefault(True)
         self.ld4SetBtn.clicked.connect(self.ld4AmpSet)
-        ld4box.addWidget(self.ld4SetBtn)
+        ld4Box.addWidget(self.ld4SetBtn)
         self.ld4Amp = QTextEdit()
         self.ld4Amp.setText('0.456')
         self.ld4Amp.setFixedHeight(27)
-        ld4box.addWidget(self.ld4Amp)
+        ld4Box.addWidget(self.ld4Amp)
         self.ld4VolRcv = QTextEdit()
         self.ld4VolRcv.setFixedHeight(27)
-        ld4box.addWidget(self.ld4VolRcv)
+        ld4Box.addWidget(self.ld4VolRcv)
         self.ld4AmpRcv = QTextEdit()
         self.ld4AmpRcv.setFixedHeight(27)
-        ld4box.addWidget(self.ld4AmpRcv)
-
-        # gb.setLayout(box)
+        ld4Box.addWidget(self.ld4AmpRcv)
 
         # LD5 설정
-        ld5box = QHBoxLayout()
-        box.addLayout(ld5box)
+        ld5Box = QHBoxLayout()
+        box.addLayout(ld5Box)
 
         self.ld5SetBtn = QPushButton('LD 5')
         self.ld5SetBtn.setAutoDefault(True)
         self.ld5SetBtn.clicked.connect(self.ld5AmpSet)
-        ld5box.addWidget(self.ld5SetBtn)
+        ld5Box.addWidget(self.ld5SetBtn)
         self.ld5Amp = QTextEdit()
         self.ld5Amp.setText('0.564')
         self.ld5Amp.setFixedHeight(27)
-        ld5box.addWidget(self.ld5Amp)
+        ld5Box.addWidget(self.ld5Amp)
         self.ld5VolRcv = QTextEdit()
         self.ld5VolRcv.setFixedHeight(27)
-        ld5box.addWidget(self.ld5VolRcv)
+        ld5Box.addWidget(self.ld5VolRcv)
         self.ld5AmpRcv = QTextEdit()
         self.ld5AmpRcv.setFixedHeight(27)
-        ld5box.addWidget(self.ld5AmpRcv)
+        ld5Box.addWidget(self.ld5AmpRcv)
 
-        # Temp 설정
-        powerBox = QHBoxLayout()
-        box.addLayout(powerBox)
+        # 레이저 BIT 설정
+        laserBitBox = QHBoxLayout()
+        box.addLayout(laserBitBox)
 
-        label = QLabel('1st Front Optical Power')
-        powerBox.addWidget(label)
+        label = QLabel('1단 프론트')
+        laserBitBox.addWidget(label)
         self.frontPower = QTextEdit()
         self.frontPower.setFixedHeight(27)
-        powerBox.addWidget(self.frontPower)
+        laserBitBox.addWidget(self.frontPower)
 
-        label = QLabel('1st Rear Optical Power')
-        powerBox.addWidget(label)
+        label = QLabel('1단 리어')
+        laserBitBox.addWidget(label)
         self.rearPower = QTextEdit()
         self.rearPower.setFixedHeight(27)
-        powerBox.addWidget(self.rearPower)
+        laserBitBox.addWidget(self.rearPower)
 
-        # Temp 설정
-        tempbox1 = QHBoxLayout()
-        box.addLayout(tempbox1)
-
-        label = QLabel('1st temp')
-        tempbox1.addWidget(label)
+        label = QLabel('1단 온도')
+        laserBitBox.addWidget(label)
         self.firstTemp = QTextEdit()
         self.firstTemp.setFixedHeight(27)
-        tempbox1.addWidget(self.firstTemp)
+        laserBitBox.addWidget(self.firstTemp)
 
-        label = QLabel('2nd temp')
-        tempbox1.addWidget(label)
+        label = QLabel('2단 온도')
+        laserBitBox.addWidget(label)
         self.secondTemp = QTextEdit()
         self.secondTemp.setFixedHeight(27)
-        tempbox1.addWidget(self.secondTemp)
+        laserBitBox.addWidget(self.secondTemp)
 
-        label = QLabel('3rd temp')
-        tempbox1.addWidget(label)
+        label = QLabel('3단 온도')
+        laserBitBox.addWidget(label)
         self.thirdTemp = QTextEdit()
         self.thirdTemp.setFixedHeight(27)
-        tempbox1.addWidget(self.thirdTemp)
+        laserBitBox.addWidget(self.thirdTemp)
 
-        tempbox2 = QHBoxLayout()
-        box.addLayout(tempbox2)
-
-        label = QLabel('3rd Plate temp')
-        tempbox2.addWidget(label)
+        label = QLabel('3단 플레이트')
+        laserBitBox.addWidget(label)
         self.thirdPlateTemp = QTextEdit()
         self.thirdPlateTemp.setFixedHeight(27)
-        tempbox2.addWidget(self.thirdPlateTemp)
+        laserBitBox.addWidget(self.thirdPlateTemp)
 
         label = QLabel('CLS')
-        tempbox2.addWidget(label)
+        laserBitBox.addWidget(label)
         self.clsTemp = QTextEdit()
         self.clsTemp.setFixedHeight(27)
-        tempbox2.addWidget(self.clsTemp)
+        laserBitBox.addWidget(self.clsTemp)
 
-        label = QLabel('PUMP')
-        tempbox2.addWidget(label)
+        label = QLabel('펌프')
+        laserBitBox.addWidget(label)
         self.pumpTemp = QTextEdit()
         self.pumpTemp.setFixedHeight(27)
-        tempbox2.addWidget(self.pumpTemp)
+        laserBitBox.addWidget(self.pumpTemp)
 
         gb.setLayout(box)
 
-        # 클라이언트 설정 부분
-        ipbox2 = QHBoxLayout()
+        # 냉각장치 제어부
+        coolerBox = QVBoxLayout()
 
-        gb = QGroupBox('서버 설정')
-        ipbox2.addWidget(gb)
+        gb = QGroupBox('냉각장치 제어부')
+        coolerBox.addWidget(gb)
 
-        box = QHBoxLayout()
+        box = QVBoxLayout()
+
+        coolerIpBox = QHBoxLayout()
+        box.addLayout(coolerIpBox)
 
         label = QLabel('Server IP')
         self.c_ip = QLineEdit(str(ip))
 
-        box.addWidget(label)
-        box.addWidget(self.ip)
+        coolerIpBox.addWidget(label)
+        coolerIpBox.addWidget(self.c_ip)
 
         label = QLabel('Server Port')
         self.c_port = QLineEdit(str(port))
-        box.addWidget(label)
-        box.addWidget(self.c_port)
+        coolerIpBox.addWidget(label)
+        coolerIpBox.addWidget(self.c_port)
 
         self.c_btn = QPushButton('접속')
         self.c_btn.clicked.connect(self.coolerConnectClicked)
-        box.addWidget(self.c_btn)
+        coolerIpBox.addWidget(self.c_btn)
+      
+        # 냉각장치 BIT
+        coolerBitBox = QHBoxLayout()
+        box.addLayout(coolerBitBox)
 
-        self.cPowerBtn = QPushButton('On')
+        self.cPowerBtn = QPushButton('전원')
         self.cPowerBtn.clicked.connect(self.coolerConnectClicked)
-        box.addWidget(self.cPowerBtn)
-
-        gb.setLayout(box)
-
-        # 세부 설정
-        cbitbox = QHBoxLayout()
-
-        gb = QGroupBox('Cooler Status')
-        cbitbox.addWidget(gb)
-
-        box = QVBoxLayout()
-
-        # Cbox1 설정
-        c1box = QHBoxLayout()
-        box.addLayout(c1box)
+        coolerBitBox.addWidget(self.cPowerBtn)
 
         self.compInBtn = QPushButton('압축기 입구')
         self.compInBtn.setAutoDefault(True)
         self.compInBtn.clicked.connect(self.ld1AmpSet)
-        c1box.addWidget(self.compInBtn)
+        coolerBitBox.addWidget(self.compInBtn)
+
         self.compIn = QTextEdit()
         self.compIn.setText('0.123')
         self.compIn.setFixedHeight(27)
-        c1box.addWidget(self.compIn)
+        coolerBitBox.addWidget(self.compIn)
+
         self.compOutBtn = QPushButton('압축기 출구')
         self.compOutBtn.setAutoDefault(True)
         self.compOutBtn.clicked.connect(self.ld1AmpSet)
-        c1box.addWidget(self.compOutBtn)
+        coolerBitBox.addWidget(self.compOutBtn)
+
         self.compOut = QTextEdit()
         self.compOut.setText('0.123')
         self.compOut.setFixedHeight(27)
-        c1box.addWidget(self.compOut)
+        coolerBitBox.addWidget(self.compOut)
+
         self.evapoTempBtn = QPushButton('증발기 표면')
         self.evapoTempBtn.setAutoDefault(True)
         self.evapoTempBtn.clicked.connect(self.ld1AmpSet)
-        c1box.addWidget(self.evapoTempBtn)
+        coolerBitBox.addWidget(self.evapoTempBtn)
+
         self.evapoTemp = QTextEdit()
         self.evapoTemp.setText('0.123')
         self.evapoTemp.setFixedHeight(27)
-        c1box.addWidget(self.evapoTemp)
-
-        # Cbox1 설정
-        c2box = QHBoxLayout()
-        box.addLayout(c2box)
+        coolerBitBox.addWidget(self.evapoTemp)
 
         self.ibitBtn = QPushButton('IBIT')
         self.ibitBtn.setAutoDefault(True)
         self.ibitBtn.clicked.connect(self.ld1AmpSet)
-        c2box.addWidget(self.ibitBtn)
+        coolerBitBox.addWidget(self.ibitBtn)
+        
         self.ibit = QTextEdit()
         self.ibit.setText('정상')
         self.ibit.setFixedHeight(27)
-        c2box.addWidget(self.ibit)
+        coolerBitBox.addWidget(self.ibit)
+
         self.cond1Btn = QPushButton('응축기 팬1 주파수')
         self.cond1Btn.setAutoDefault(True)
         self.cond1Btn.clicked.connect(self.ld1AmpSet)
-        c2box.addWidget(self.cond1Btn)
+        coolerBitBox.addWidget(self.cond1Btn)
+
         self.cond1 = QTextEdit()
         self.cond1.setText('0.123')
         self.cond1.setFixedHeight(27)
-        c2box.addWidget(self.cond1)
+        coolerBitBox.addWidget(self.cond1)
+
         self.cond2Btn = QPushButton('응축기 팬2 주파수')
         self.cond2Btn.setAutoDefault(True)
         self.cond2Btn.clicked.connect(self.ld1AmpSet)
-        c2box.addWidget(self.cond2Btn)
+        coolerBitBox.addWidget(self.cond2Btn)
+
         self.cond2 = QTextEdit()
         self.cond2.setText('0.123')
         self.cond2.setFixedHeight(27)
-        c2box.addWidget(self.cond2)
+        coolerBitBox.addWidget(self.cond2)
+
+        gb.setLayout(box)
+
+        # 전원 제어부
+        powerBox = QHBoxLayout()
+
+        gb = QGroupBox('전원 제어부')
+        powerBox.addWidget(gb)
+
+        box = QVBoxLayout()
+
+        # 전원 BIT 라벨
+        powerBitLabelBox = QHBoxLayout()
+        box.addLayout(powerBitLabelBox)
+
+        label = QLabel('접속')
+        powerBitLabelBox.addWidget(label)
+        label = QLabel('최고 전압(mV)')
+        powerBitLabelBox.addWidget(label)
+        label = QLabel('최저 전압(mV)')
+        powerBitLabelBox.addWidget(label)
+        label = QLabel('최고 온도(℃)')
+        powerBitLabelBox.addWidget(label)
+        label = QLabel('최저 온도(℃)')
+        powerBitLabelBox.addWidget(label)
+        label = QLabel('충전 잔량(%)')
+        powerBitLabelBox.addWidget(label)
+        label = QLabel('잔류 전류(AH)')
+        powerBitLabelBox.addWidget(label)
+        label = QLabel('방전 시간(min)')
+        powerBitLabelBox.addWidget(label)
+
+        # 전원 BIT
+        powerBitBox = QHBoxLayout()
+        box.addLayout(powerBitBox)
+
+        self.p_Btn = QPushButton('접속')
+        self.p_Btn.setAutoDefault(True)
+        self.p_Btn.clicked.connect(self.powerConnect)
+        powerBitBox.addWidget(self.p_Btn)
+
+        self.max_volt = QTextEdit()
+        self.max_volt.setText('3.999')
+        self.max_volt.setFixedHeight(27)
+        powerBitBox.addWidget(self.max_volt)
+
+        self.min_volt = QTextEdit()
+        self.min_volt.setText('3.799')
+        self.min_volt.setFixedHeight(27)
+        powerBitBox.addWidget(self.min_volt)
+
+        self.max_temp = QTextEdit()
+        self.max_temp.setText('21.0')
+        self.max_temp.setFixedHeight(27)
+        powerBitBox.addWidget(self.max_temp)
+
+        self.min_temp = QTextEdit()
+        self.min_temp.setText('20.5')
+        self.min_temp.setFixedHeight(27)
+        powerBitBox.addWidget(self.min_temp)
+
+        self.s_o_charge = QTextEdit()
+        self.s_o_charge.setText('99.99')
+        self.s_o_charge.setFixedHeight(27)
+        powerBitBox.addWidget(self.s_o_charge)
+
+        self.a_capacity = QTextEdit()
+        self.a_capacity.setText('5.0')
+        self.a_capacity.setFixedHeight(27)
+        powerBitBox.addWidget(self.a_capacity)
+
+        self.t_t_discharge = QTextEdit()
+        self.t_t_discharge.setText('99')
+        self.t_t_discharge.setFixedHeight(27)
+        powerBitBox.addWidget(self.t_t_discharge)
 
         gb.setLayout(box)
 
@@ -404,46 +452,41 @@ class CWidget(QWidget):
         label = QLabel('보낼 메시지')
         box.addWidget(label)
 
-        hbox = QHBoxLayout()
-        box.addLayout(hbox)
+        messageBox = QHBoxLayout()
+        box.addLayout(messageBox)
 
         # Header
         self.headerMsg = QTextEdit()
         self.headerMsg.setFixedHeight(30)
         self.headerMsg.setText('41')
-        hbox.addWidget(self.headerMsg)
+        messageBox.addWidget(self.headerMsg)
         # Cmd
         self.cmdMsg = QTextEdit()
         self.cmdMsg.setFixedHeight(30)
         self.cmdMsg.setText('01')
-        hbox.addWidget(self.cmdMsg)
+        messageBox.addWidget(self.cmdMsg)
         # data
         self.dataMsg = QTextEdit()
         self.dataMsg.setFixedHeight(30)
         self.dataMsg.setText('1234')
-        hbox.addWidget(self.dataMsg)
-
-        hbox = QHBoxLayout()
-
-        box.addLayout(hbox)
+        messageBox.addWidget(self.dataMsg)
+        # 전송
         self.sendBtn = QPushButton('보내기')
         self.sendBtn.setAutoDefault(True)
         self.sendBtn.clicked.connect(self.defaultMsg)
-
+        messageBox.addWidget(self.sendBtn)
+        # 채팅창 삭제
         self.clearBtn = QPushButton('채팅창 지움')
-        self.clearBtn.clicked.connect(self.clearMsg)
+        self.clearBtn.clicked.connect(self.clearMsg)        
+        messageBox.addWidget(self.clearBtn)
 
-        hbox.addWidget(self.sendBtn)
-        hbox.addWidget(self.clearBtn)
         gb.setLayout(box)
 
         # 전체 배치
         vbox = QVBoxLayout()
-        vbox.addLayout(ipbox)
-        vbox.addLayout(btbox)
-        vbox.addLayout(bitbox)
-        vbox.addLayout(ipbox2)
-        vbox.addLayout(cbitbox)
+        vbox.addLayout(laserBox)
+        vbox.addLayout(coolerBox)
+        vbox.addLayout(powerBox)
         vbox.addLayout(infobox)
         self.setLayout(vbox)
 
@@ -490,6 +533,25 @@ class CWidget(QWidget):
             self.c_btn.setText('접속')
             self.c_btn.setStyleSheet("background-color: lightgray")
             self.cconnect = False
+
+    def powerConnect(self):
+        if self.ser.bConnect == False:
+            if self.ser.connect():
+                self.p_Btn.setStyleSheet("background-color: green")
+                self.p_Btn.setText('접속 종료')
+                self.serConnect = True
+            else:
+                self.ser.stop()
+                self.recvmsg.clear()
+                self.p_Btn.setText('접속')
+                self.p_Btn.setStyleSheet("background-color: lightgray")
+                self.serConnect = False
+        else:
+            self.ser.stop()
+            self.recvmsg.clear()
+            self.p_Btn.setText('접속')
+            self.p_Btn.setStyleSheet("background-color: lightgray")
+            self.serConnect = False
 
     def updateMsg(self, header, cmd, data):
         if header == '0x41':
@@ -558,10 +620,16 @@ class CWidget(QWidget):
         self.recvmsg.addItem(QListWidgetItem(cmd))
         self.recvmsg.addItem(QListWidgetItem(data))
 
+    def updateSerial(self, line):
+        print(line)
+
     def updateDisconnect(self):
         self.btn.setText('접속')    
 
     def coolerUpdateDisconnect(self):
+        self.c_btn.setText('접속')  
+
+    def serialDisconnect(self):
         self.c_btn.setText('접속')  
 
     def sendMsg(self, header, cmd, data):
