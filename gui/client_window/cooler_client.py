@@ -5,7 +5,7 @@ import struct
 
 
 class Signal(QObject):
-    recv_signal = pyqtSignal(str, str, str)
+    recv_signal = pyqtSignal(int, int, int, int)
     disconn_signal = pyqtSignal()
 
 
@@ -15,9 +15,9 @@ class ClientSocket:
         self.parent = parent
 
         self.recv = Signal()
-        self.recv.recv_signal.connect(self.parent.updateMsg)
+        self.recv.recv_signal.connect(self.parent.updateCooler)
         self.disconn = Signal()
-        self.disconn.disconn_signal.connect(self.parent.coolerUpdateDisconnect)
+        self.disconn.disconn_signal.connect(self.parent.coolerDisconnect)
 
         self.bConnect = False
 
@@ -51,17 +51,17 @@ class ClientSocket:
 
     def receive(self, client):
         while self.bConnect:
-            try:
+            try:               
                 recv = client.recv(1024)
             except Exception as e:
                 print('Recv() Error :', e)
                 break
             else:
                 if recv:                    
-                    fmt = '>B B B H'
+                    fmt = '>B B B B H H B'
                     unpacked = struct.unpack(fmt, recv)
 
-                    self.recv.recv_signal.emit(str(hex(unpacked[0])), str(hex(unpacked[1])), str(unpacked[2]))
+                    self.recv.recv_signal.emit(unpacked[3], unpacked[4], unpacked[5], unpacked[6])
         self.stop()
 
     def send(self, sendData):

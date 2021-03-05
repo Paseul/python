@@ -1,5 +1,4 @@
 # sudo chmod 666 /dev/ttyUSB0
-# sudo python serial.py
 # ls -al /dev/ttyUSB*
 
 from threading import *
@@ -15,7 +14,7 @@ port = '/dev/ttyUSB0' # 시리얼 포트
 baud = 115200 # 시리얼 보드레이트(통신속도)
 
 class Signal(QObject):
-    recv_signal = pyqtSignal(line)
+    recv_signal = pyqtSignal(int, int, int, int, int, int, int)
     disconn_signal = pyqtSignal()
 
 
@@ -25,9 +24,9 @@ class SerialSocket:
         self.parent = parent
 
         self.recv = Signal()
-        self.recv.recv_signal.connect(self.parent.updateSerial)
+        self.recv.recv_signal.connect(self.parent.updatePower)
         self.disconn = Signal()
-        self.disconn.disconn_signal.connect(self.parent.serialDisconnect)
+        self.disconn.disconn_signal.connect(self.parent.powerDisconnect)
 
         self.line = [] #라인 단위로 데이터 가져올 리스트 변수
 
@@ -71,5 +70,12 @@ class SerialSocket:
                 # print(hex(c))
                 if len(self.line) == 20 and c == 3:  #라인의 끝을 만나면..
                     #데이터 처리 함수로 호출
-                    self.recv.recv_signal.emit(self.line)
+                    max_volt = line[4]<<8 | line[3]
+                    min_volt = line[6]<<8 | line[5]
+                    max_temp = line[8]<<8 | line[7]
+                    min_temp = line[10]<<8 | line[9]
+                    s_o_charge = line[12]<<8 | line[11]
+                    a_capacity = line[14]<<8 | line[13]
+                    t_t_discharge = line[16]<<8 | line[15]
+                    self.recv.recv_signal.emit(max_volt, min_volt, max_temp, min_temp, s_o_charge, a_capacity, t_t_discharge)
         self.stop()

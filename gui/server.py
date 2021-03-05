@@ -6,7 +6,7 @@ from struct import *
 
 class Signal(QObject):
     conn_signal = pyqtSignal()
-    recv_signal = pyqtSignal(str, str, str)
+    recv_signal = pyqtSignal(str, str, str, str)
 
 
 class ServerSocket:
@@ -81,9 +81,10 @@ class ServerSocket:
                 if recv:               
                     header = hex(recv[0])
                     cmd = hex(recv[1])
-                    data = hex((recv[2]<<8) | recv[3])
+                    addr = hex((recv[2]<<8) | recv[3])
+                    data = hex((recv[4]<<8) | recv[5])
 
-                    self.recv.recv_signal.emit(header, cmd, data)
+                    self.recv.recv_signal.emit(header, cmd, addr, data)
                     # self.recv.recv_signal.emit(cmd)
                     # self.recv.recv_signal.emit(data)
 

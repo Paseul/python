@@ -86,18 +86,53 @@ class CWidget(QWidget):
         # Header
         self.headerMsg = QTextEdit()
         self.headerMsg.setFixedHeight(30)
-        self.headerMsg.setText('41')
+        self.headerMsg.setText('1')
         hbox.addWidget(self.headerMsg)
         # Cmd
         self.cmdMsg = QTextEdit()
         self.cmdMsg.setFixedHeight(30)
-        self.cmdMsg.setText('01')
+        self.cmdMsg.setText('4')
         hbox.addWidget(self.cmdMsg)
         # data
-        self.dataMsg = QTextEdit()
-        self.dataMsg.setFixedHeight(30)
-        self.dataMsg.setText('1234')
-        hbox.addWidget(self.dataMsg)
+        self.dataLen = QTextEdit()
+        self.dataLen.setFixedHeight(30)
+        self.dataLen.setText('12')
+        hbox.addWidget(self.dataLen)
+        # data
+        self.data1 = QTextEdit()
+        self.data1.setFixedHeight(30)
+        self.data1.setText('FF')
+        hbox.addWidget(self.data1)
+        # Header
+        self.data2 = QTextEdit()
+        self.data2.setFixedHeight(30)
+        self.data2.setText('42C8')
+        hbox.addWidget(self.data2)
+        # Cmd
+        self.data3 = QTextEdit()
+        self.data3.setFixedHeight(30)
+        self.data3.setText('1212')
+        hbox.addWidget(self.data3)
+        # # data
+        # self.data4 = QTextEdit()
+        # self.data4.setFixedHeight(30)
+        # self.data4.setText('4212')
+        # hbox.addWidget(self.data4)
+        # data
+        self.data5 = QTextEdit()
+        self.data5.setFixedHeight(30)
+        self.data5.setText('1')
+        hbox.addWidget(self.data5)
+        # # data
+        # self.data6 = QTextEdit()
+        # self.data6.setFixedHeight(30)
+        # self.data6.setText('672')
+        # hbox.addWidget(self.data6)
+        # # data
+        # self.data7 = QTextEdit()
+        # self.data7.setFixedHeight(30)
+        # self.data7.setText('673')
+        # hbox.addWidget(self.data7)
 
         hbox = QHBoxLayout()
 
@@ -145,9 +180,10 @@ class CWidget(QWidget):
             self.guest.setItem(i, 1, QTableWidgetItem(str(ip[1])))
             i += 1
 
-    def updateMsg(self, header, cmd, data):
+    def updateMsg(self, header, cmd, addr, data):
         self.msg.addItem(QListWidgetItem(header))
         self.msg.addItem(QListWidgetItem(cmd))
+        self.msg.addItem(QListWidgetItem(addr))
         self.msg.addItem(QListWidgetItem(data))
         self.msg.setCurrentRow(self.msg.count() - 1)
 
@@ -161,10 +197,17 @@ class CWidget(QWidget):
 
         header = int(self.headerMsg.toPlainText(), 16)
         cmd = int(self.cmdMsg.toPlainText(), 16)
-        data = int(self.dataMsg.toPlainText(), 16)
+        datalen = int(self.dataLen.toPlainText(), 16)
+        datan1 = int(self.data1.toPlainText(), 16)
+        datan2 = int(self.data2.toPlainText(), 16)
+        datan3 = int(self.data3.toPlainText(), 16)
+        # datan4 = int(self.data4.toPlainText(), 16)
+        datan5 = int(self.data5.toPlainText(), 16)
+        # datan6 = int(self.data6.toPlainText(), 16)
+        # datan7 = int(self.data7.toPlainText(), 16)
 
-        values = (header, cmd, data)
-        fmt = '>B B H'
+        values = (header, cmd, datalen, datan1, datan2, datan3, datan5)
+        fmt = '>B B B B H H B'
         packer = struct.Struct(fmt)
         sendData = packer.pack(*values)
 
