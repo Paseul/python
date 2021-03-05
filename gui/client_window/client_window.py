@@ -610,14 +610,14 @@ class CWidget(QWidget):
             self.ibit.setText('정상')         
 
     def updatePower(self, max_v, min_v, max_t, min_t, charge, capacity, discharge):
-        if line[0] == 2:
-            self.max_volt.setText(str(max_v/1000))
-            self.min_volt.setText(str(min_v/1000))
-            self.max_temp.setText(str(max_t/10))
-            self.min_temp.setText(str((min_t/10))
-            self.s_o_charge.setText(str(charge/10))
-            self.a_capacity.setText(str(capacity/10))
-            self.t_t_discharge.setText(str(discharge))
+        print(max_v, min_v, max_t, min_t, charge, capacity, discharge)
+        self.max_volt.setText(str(max_v/1000))
+        self.min_volt.setText(str(min_v/1000))
+        self.max_temp.setText(str(max_t/10))
+        self.min_temp.setText(str(min_t/10))
+        self.s_o_charge.setText(str(charge/10))
+        self.a_capacity.setText(str(capacity/10))
+        self.t_t_discharge.setText(str(discharge))
 
     def laserDisconnect(self):
         self.btn.setText('접속')    
