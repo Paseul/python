@@ -21,6 +21,10 @@ class Thread(QThread):
         # converting to opencv bgr format
         self.converter.OutputPixelFormat = pylon.PixelType_BGR8packed
         self.converter.OutputBitAlignment = pylon.OutputBitAlignment_MsbAligned
+
+        # # Control Exposure Time
+        # self.camera.ExposureTime.SetValue(10000)
+
         self.play = True
 
     def run(self):
