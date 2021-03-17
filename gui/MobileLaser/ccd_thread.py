@@ -27,7 +27,7 @@ class Thread(QThread):
                 h, w, ch = frame.shape
                 bytesPerLine = ch * w                
                 convertToQtFormat = QImage(frame.data, w, h, bytesPerLine, QImage.Format_RGB888)
-                p = convertToQtFormat.scaled(1280, 720, Qt.KeepAspectRatio)
+                p = convertToQtFormat.scaled(960, 540, Qt.KeepAspectRatio)
                 self.changePixmap.emit(p)
 
     def stop(self):

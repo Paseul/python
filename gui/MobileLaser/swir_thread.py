@@ -45,7 +45,7 @@ class Thread(QThread):
                 h, w, ch = frame.shape
                 bytesPerLine = ch * w             
                 convertToQtFormat = QImage(frame.data, w, h, bytesPerLine, QImage.Format_RGB888)
-                p = convertToQtFormat.scaled(640, 360, Qt.KeepAspectRatio)
+                p = convertToQtFormat.scaled(480, 270, Qt.KeepAspectRatio)
                 self.changePixmap.emit(p)
             grabResult.Release()
             if self.play == False:
