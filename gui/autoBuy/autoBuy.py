@@ -7,6 +7,7 @@
 # 원문 : https://little-pig.tistory.com/entry/11%EB%B2%88%EA%B0%80-%EB%A7%A4%ED%81%AC%EB%A1%9C%EC%98%A4%ED%86%A0%EB%A7%A4%ED%81%AC%EB%A1%9Cselenium%EC%9E%90%EB%8F%99%EA%B5%AC%EB%A7%A4%EC%98%88%EC%95%BD%EA%B5%AC%EB%A7%A4
 
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 import time
 
 from selenium.webdriver.support.ui import WebDriverWait
@@ -18,26 +19,29 @@ url1 = "https://login.11st.co.kr/auth/front/login.tmall?returnURL=https%3A%2F%2F
 #상품url
 # url2 = 'http://www.11st.co.kr/products/3167879989?trTypeCd=03&trCtgrNo=2050639'
 url2 = 'http://www.11st.co.kr/products/3326702930?trTypeCd=03&trCtgrNo=2051889'
-
+url3 = 'https://buy.11st.co.kr/cart/CartAction.tmall?method=getCartList'
 
 print('페이지 로딩중...')
 
-#크롬다르이버 다운로드 주소입니다.
-# driver = webdriver.Chrome("/usr/local/bin/chromedriver")
-mobile_emulation = { "deviceName": "iPhone X" }
+mobile_emulation = { "deviceName": "Galaxy S5" }
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
-driver = webdriver.Chrome("C:\chromedriver_win32\chromedriver", options=chrome_options)
+driver = webdriver.Chrome("/home/jh/chromedriver", options=chrome_options)
+driver2 = webdriver.Chrome("/home/jh/chromedriver")
+# driver = webdriver.Chrome("C:\chromedriver_win32\chromedriver", options=chrome_options)
 
 driver.get(url1)
+driver2.get(url1)
 
 #send_keys부분에 아이디를 적어주세요
 driver.find_element_by_name('loginName').send_keys('machianb')
+driver2.find_element_by_name('loginName').send_keys('machianb')
 #send_keys부분에 비밀번를 적어주세요
 driver.find_element_by_name('passWord').send_keys('!Phoenix7')
+driver2.find_element_by_name('passWord').send_keys('!Phoenix7')
 
-login = driver.find_element_by_class_name("btn_Atype")
-login.click()
+driver.find_element_by_class_name("btn_Atype").click()
+driver2.find_element_by_class_name("btn_Atype").click()
 print('로그인 완료')
 
 driver.get(url2)
@@ -56,15 +60,35 @@ while True:
         buy = driver.find_element_by_class_name("buy")
         buy.click()
         opt = driver.find_element_by_class_name("opt_lists")
-        print(driver.find_elements_by_css_selector('button.select_opt'))
+        # print(opt.find)
+        driver.find_element_by_xpath('//*[@id="optionContainer"]/div[1]/div[1]/button').send_keys(Keys.ENTER)
+        driver.find_element_by_xpath('//*[@id="optlst_0"]/li[1]/a/span[2]').click()
+        time.sleep(0.5)
+        driver.find_element_by_xpath('//*[@id="basketButton"]').click()
+        driver2.get(url3)
+        driver2.implicitly_wait(10)
+        time.sleep(1)
+        driver2.find_element_by_xpath('//*[@id="doOrderBt"]').click()
+        # driver.implicitly_wait(10)
+        time.sleep(1)
+        driver2.find_element_by_xpath('//*[@id="btnAccount"]').click()
+        # # driver.find_element_by_class_name("btn_pay").click()
+        time.sleep(3)
+        driver2.find_element_by_xpath('//*[@id="keypad11pay-keypad-0"]').click()
+        # driver.find_element_by_xpath('// *[ @ id = "keypad11pay-keypad-0"]').click()
+        # driver.find_element_by_xpath('// *[ @ id = "keypad11pay-keypad-1"]').click()
+        # driver.find_element_by_xpath('// *[ @ id = "keypad11pay-keypad-1"]').click()
+        # driver.find_element_by_xpath('// *[ @ id = "keypad11pay-keypad-0"]').click()
+
+        # driver.find_elements_by_css_selector('button.select_opt').click()
 
         break
 time.sleep(2)
 
 #결제 시스템 부분
-print("일반결제...")
-radio=WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.XPATH,"//input[@id='payOthers']/following::span[1]")))
-driver.execute_script("arguments[0].click();", radio)
+# print("일반결제...")
+# radio=WebDriverWait(driver,10).until(EC.visibility_of_element_located((By.XPATH,"//input[@id='payOthers']/following::span[1]")))
+# driver.execute_script("arguments[0].click();", radio)
 # noaccount_table = driver.find_element_by_id("paymentGeneralTab5")
 # print("무통장입금 선택")
 # noaccount_table.click()
