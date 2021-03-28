@@ -14,12 +14,16 @@ url3 = 'https://buy.11st.co.kr/cart/CartAction.tmall?method=getCartList'
 print('페이지 로딩중...')
 
 mobile_emulation = { "deviceName": "Galaxy S5" }
+prefs = {"profile.managed_default_content_settings.images": 2}
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
+chrome_options.add_experimental_option("prefs", prefs)
+chrome_options2 = webdriver.ChromeOptions()
+chrome_options2.add_experimental_option("prefs", prefs)
 # driver = webdriver.Chrome("/home/jh/chromedriver", options=chrome_options)
 # driver2 = webdriver.Chrome("/home/jh/chromedriver")
 driver = webdriver.Chrome("C:\chromedriver_win32\chromedriver", options=chrome_options)
-driver2 = webdriver.Chrome("C:\chromedriver_win32\chromedriver")
+driver2 = webdriver.Chrome("C:\chromedriver_win32\chromedriver", options=chrome_options2)
 driver2.maximize_window()
 
 driver.get(url1)
@@ -35,13 +39,16 @@ driver2.find_element_by_name('passWord').send_keys('wlgP7942')
 driver.find_element_by_class_name("btn_Atype").click()
 driver2.find_element_by_class_name("btn_Atype").click()
 print('로그인 완료')
-
+driver.implicitly_wait(10)
+driver2.implicitly_wait(10)
 driver.get(url2)
+driver2.get(url3)
 print('구매실행프로세스 대기중')
-time.sleep(1)
+driver.implicitly_wait(10)
+driver2.implicitly_wait(10)
 print('구매실행프로세스 작동시작')
 #상품구매 반복문
-driver2.get(url3)
+
 
 def order(driver):
     print("order_t")
@@ -78,7 +85,6 @@ while True:
     else:
         driver2.find_element_by_xpath('//*[@id="doOrderBt"]').click()
         driver2.implicitly_wait(10)
-        # time.sleep(1)
 
         driver2.find_element_by_xpath('//*[@id="btnAccount"]').click()
         driver2.implicitly_wait(10)
