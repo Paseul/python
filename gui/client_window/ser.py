@@ -66,8 +66,12 @@ class SerialSocket:
             for c in self.ser.read():
                 #line 변수에 차곡차곡 추가하여 넣는다.
                 self.line.append(c)
-                if len(self.line) == 20 and c == 3:  #라인의 끝을 만나면..
-                    #데이터 처리 함수로 호출                    
+                if self.line[0] != 2:
+                    del self.line[:]
+                    continue
+                if len(self.line) = 20 and c == 3:  #라인의 끝을 만나면..
+                    #데이터 처리 함수로 호출
+                    max_length = len(self.line)
                     max_volt = self.line[4]<<8 | self.line[3]
                     min_volt = self.line[6]<<8 | self.line[5]
                     max_temp = self.line[8]<<8 | self.line[7]
@@ -77,5 +81,5 @@ class SerialSocket:
                     t_t_discharge = self.line[16]<<8 | self.line[15]
                     self.recv.recv_signal.emit(max_volt, min_volt, max_temp, min_temp, s_o_charge, a_capacity, t_t_discharge)
                     #line 변수 초기화
-                    del self.line[:]   
+                    del self.line[:]
         self.stop()
