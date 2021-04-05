@@ -15,7 +15,7 @@ QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 port = 5000
 ip = '127.0.1.1'
 coolerPort = 502
-collerIp = '192.168.0.3'
+coolerIp = '192.168.0.3'
 
 
 class CWidget(QWidget):
@@ -24,9 +24,11 @@ class CWidget(QWidget):
 
         self.lc = laser_client.ClientSocket(self)
         self.cc = cooler_client.ClientSocket(self)
+        self.ccc = cooler_client.ClientSocket(self)
         self.ser = ser.SerialSocket(self)
         self.lconnect = False
         self.cconnect = False
+        self.ccconnect = False
         self.serConnect = False
         self.mainStart = False
         self.ldStart = False
@@ -37,11 +39,17 @@ class CWidget(QWidget):
         self.ld4 = False
         self.ld5 = False
 
+        self.coolerPower = 0
+        self.coolerInTemp = 0
+        self.coolerOutTemp = 0
+        self.coolBit = 0
+
         self.initUI()
 
     def __del__(self):
         self.lc.stop()
         self.cc.stop()
+        self.ccc.stop()
         # self.pc.stop()
 
     def initUI(self):
@@ -283,13 +291,13 @@ class CWidget(QWidget):
         box.addLayout(coolerIpBox)
 
         label = QLabel('Server IP')
-        self.c_ip = QLineEdit(str(ip))      # coolerIp
+        self.c_ip = QLineEdit(str(coolerIp))      # coolerIp
 
         coolerIpBox.addWidget(label)
         coolerIpBox.addWidget(self.c_ip)
 
         label = QLabel('Server Port')
-        self.c_port = QLineEdit(str(port))  # coolerPort
+        self.c_port = QLineEdit(str(coolerPort))  # coolerPort
         coolerIpBox.addWidget(label)
         coolerIpBox.addWidget(self.c_port)
 
@@ -507,6 +515,18 @@ class CWidget(QWidget):
             self.c_btn.setStyleSheet("background-color: lightgray")
             self.cconnect = False
 
+        if self.ccc.bConnect == False:
+            ip = '192.168.0.4'
+            port = self.c_port.text()
+            if self.ccc.connectServer(ip, int(port)):
+                self.ccconnect = True
+            else:
+                self.ccc.stop()
+                self.ccconnect = False
+        else:
+            self.ccc.stop()
+            self.ccconnect = False
+
     def powerConnect(self):
         if self.ser.bConnect == False:
             if self.ser.connect():
@@ -591,19 +611,24 @@ class CWidget(QWidget):
         self.recvmsg.addItem(QListWidgetItem(data))
 
     def updateCooler(self, cmd, inTemp, outTemp, bit):
-        if cmd == 65280:
+        self.coolerPower = cmd
+        self.coolerInTemp = inTemp
+        self.coolerOutTemp = outTemp
+        self.coolBit = bit
+
+        if self.coolerPower == 65280:
             self.cPowerBtn.setStyleSheet("background-color: green")
-        elif cmd == 0:
+        elif self.coolerPower == 0:
             self.cPowerBtn.setStyleSheet("background-color: lightgray")
         else:
             self.cPowerBtn.setStyleSheet("background-color: red")
-        inTemp = (inTemp/65535)*500 - 100
-        outTemp = (outTemp/65535)*500 - 100
-        self.compIn.setText(str(round(inTemp, 4)))
-        self.compOut.setText(str(round(outTemp, 4)))
-        if bit == 1:
+        self.coolerInTemp = (self.coolerInTemp/65535)*500 - 100
+        self.coolerOutTemp = (self.coolerOutTemp/65535)*500 - 100
+        self.compIn.setText(str(round(self.coolerInTemp, 4)))
+        self.compOut.setText(str(round(self.coolerOutTemp, 4)))
+        if self.coolBit == 1:
             self.ibit.setText('고장')
-        elif bit == 0:
+        elif self.coolBit == 0:
             self.ibit.setText('정상')         
 
     def updatePower(self, max_v, min_v, max_t, min_t, charge, capacity, discharge):
@@ -640,6 +665,14 @@ class CWidget(QWidget):
         sendData = packer.pack(*values)
 
         self.cc.send(sendData)
+
+    def sendcCooler(self, header, cmd, addrH, addrL, data):
+        values = (header, cmd, addrH, addrL, data)
+        fmt = '>B B B B H'
+        packer = struct.Struct(fmt)
+        sendData = packer.pack(*values)
+
+        self.ccc.send(sendData)
 
     def defaultMsg(self):
         header = int(self.headerMsg.toPlainText(), 16)
@@ -806,14 +839,14 @@ class CWidget(QWidget):
         addrH = 0x00
         addrL = 0x01
         data = 0x0003
-        self.sendCooler(header, cmd, addrH, addrL, data)    
+        self.sendcCooler(header, cmd, addrH, addrL, data)    
         self.t1 = threading.Timer(1, self.coolerTemp)
         self.t1.deamon = True
         self.t1.start()
 
     def coolerBit(self):
         header = 0x01
-        cmd = 0x04
+        cmd = 0x01
         addrH = 0x00
         addrL = 0x19
         data = 0x0001

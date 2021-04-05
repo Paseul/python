@@ -82,4 +82,7 @@ class SerialSocket:
                     self.recv.recv_signal.emit(max_volt, min_volt, max_temp, min_temp, s_o_charge, a_capacity, t_t_discharge)
                     #line 변수 초기화
                     del self.line[:]
+                elif if len(self.line) == 20:
+                    print(self.line)
+                    del self.line[:]
         self.stop()

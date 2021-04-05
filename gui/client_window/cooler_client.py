@@ -62,18 +62,18 @@ class ClientSocket:
             else:
                 if recv:
                     if recv[1] == 5:
-                        self.pwoer = recv[4]<<8 | recv[5]
+                        power = recv[4]<<8 | recv[5]
                     elif recv[1] == 4:
-                        self.inTemp = recv[3]<<8 | recv[4]
-                        self.outTemp = recv[5]<<8 | recv[6]
+                        inTemp = recv[3]<<8 | recv[4]
+                        outTemp = recv[5]<<8 | recv[6]
                     elif recv[1] == 1:
-                        self.bit = recv[4]
+                        bit = recv[4]
 
                     # fmt = '>B B B B H H B'
                     # unpacked = struct.unpack(fmt, recv)
                     
 
-                    self.recv.recv_signal.emit(self.pwoer, self.inTemp, self.outTemp, self.bit)
+                    self.recv.recv_signal.emit(power, inTemp, outTemp, bit)
         self.stop()
 
     def send(self, sendData):
