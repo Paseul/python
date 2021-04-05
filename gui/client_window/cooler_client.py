@@ -18,7 +18,10 @@ class ClientSocket:
         self.recv.recv_signal.connect(self.parent.updateCooler)
         self.disconn = Signal()
         self.disconn.disconn_signal.connect(self.parent.coolerDisconnect)
-
+        self.power = 0
+        self.inTemp = 0
+        self.outTemp = 0
+        self.bit = 0
         self.bConnect = False
 
     def __del__(self):
@@ -57,11 +60,20 @@ class ClientSocket:
                 print('Recv() Error :', e)
                 break
             else:
-                if recv:                    
-                    fmt = '>B B B B H H B'
-                    unpacked = struct.unpack(fmt, recv)
+                if recv:
+                    if recv[1] == 5:
+                        self.pwoer = recv[4]<<8 | recv[5]
+                    elif recv[1] == 4:
+                        self.inTemp = recv[3]<<8 | recv[4]
+                        self.outTemp = recv[5]<<8 | recv[6]
+                    elif recv[1] == 1:
+                        self.bit = recv[4]
 
-                    self.recv.recv_signal.emit(unpacked[3], unpacked[4], unpacked[5], unpacked[6])
+                    # fmt = '>B B B B H H B'
+                    # unpacked = struct.unpack(fmt, recv)
+                    
+
+                    self.recv.recv_signal.emit(self.pwoer, self.inTemp, self.outTemp, self.bit)
         self.stop()
 
     def send(self, sendData):

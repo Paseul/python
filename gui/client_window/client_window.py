@@ -307,7 +307,6 @@ class CWidget(QWidget):
 
         self.compInBtn = QPushButton('압축기 입구')
         self.compInBtn.setAutoDefault(True)
-        self.compInBtn.clicked.connect(self.compInSet)
         coolerBitBox.addWidget(self.compInBtn)
 
         self.compIn = QTextEdit()
@@ -317,7 +316,6 @@ class CWidget(QWidget):
 
         self.compOutBtn = QPushButton('압축기 출구')
         self.compOutBtn.setAutoDefault(True)
-        self.compOutBtn.clicked.connect(self.compOutSet)
         coolerBitBox.addWidget(self.compOutBtn)
 
         self.compOut = QTextEdit()
@@ -327,7 +325,6 @@ class CWidget(QWidget):
 
         self.ibitBtn = QPushButton('IBIT')
         self.ibitBtn.setAutoDefault(True)
-        self.ibitBtn.clicked.connect(self.ibitSet)
         coolerBitBox.addWidget(self.ibitBtn)
         
         self.ibit = QTextEdit()
@@ -594,7 +591,7 @@ class CWidget(QWidget):
         self.recvmsg.addItem(QListWidgetItem(data))
 
     def updateCooler(self, cmd, inTemp, outTemp, bit):
-        if cmd == 255:
+        if cmd == 65280:
             self.cPowerBtn.setStyleSheet("background-color: green")
         elif cmd == 0:
             self.cPowerBtn.setStyleSheet("background-color: lightgray")
@@ -636,9 +633,9 @@ class CWidget(QWidget):
 
         self.lc.send(sendData)
     
-    def sendCooler(self, header, cmd, addr, data):
-        values = (header, cmd, addr, data)
-        fmt = '>B B H H'
+    def sendCooler(self, header, cmd, addrH, addrL, data):
+        values = (header, cmd, addrH, addrL, data)
+        fmt = '>B B B B H'
         packer = struct.Struct(fmt)
         sendData = packer.pack(*values)
 
@@ -789,47 +786,41 @@ class CWidget(QWidget):
     def cPower(self):
         header = 0x01
         cmd = 0x05
-        addr = 0x0024
+        addrH = 0x00
+        addrL = 0x24
         if self.coolerStart == False:
             data = 0x00FF
             self.coolerStart = True
-            self.coolerBit()            
+            self.coolerBit()       
+            self.coolerTemp()     
         else:
             data = 0x0000
             self.coolerStart = False
-            self.t.cancel()
-        self.sendCooler(header, cmd, addr, data)        
+            self.t1.cancel()
+            self.t2.cancel()
+        self.sendCooler(header, cmd, addrH, addrL, data)        
 
-    def compInSet(self):
+    def coolerTemp(self):
         header = 0x01
         cmd = 0x04
-        addr = 0x0001
-        data = 0x0001
-        self.sendCooler(header, cmd, addr, data)      
-
-    def compOutSet(self):
-        header = 0x01
-        cmd = 0x04
-        addr = 0x0002
-        data = 0x0001
-        self.sendCooler(header, cmd, addr, data)    
-
-    def ibitSet(self):
-        header = 0x01
-        cmd = 0x04
-        addr = 0x0019
-        data = 0x0001
-        self.sendCooler(header, cmd, addr, data)    
+        addrH = 0x00
+        addrL = 0x01
+        data = 0x0003
+        self.sendCooler(header, cmd, addrH, addrL, data)    
+        self.t1 = threading.Timer(1, self.coolerTemp)
+        self.t1.deamon = True
+        self.t1.start()
 
     def coolerBit(self):
         header = 0x01
         cmd = 0x04
-        addr = 0x0077
-        data = 0x0006
-        self.sendCooler(header, cmd, addr, data)    
-        self.t = threading.Timer(1, self.coolerBit)
-        self.t.deamon = True
-        self.t.start()
+        addrH = 0x00
+        addrL = 0x19
+        data = 0x0001
+        self.sendCooler(header, cmd, addrH, addrL, data)   
+        self.t2 = threading.Timer(1, self.coolerBit)
+        self.t2.deamon = True
+        self.t2.start()
 
     def clearMsg(self):
         self.recvmsg.clear()

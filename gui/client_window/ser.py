@@ -69,7 +69,7 @@ class SerialSocket:
                 if self.line[0] != 2:
                     del self.line[:]
                     continue
-                if len(self.line) = 20 and c == 3:  #라인의 끝을 만나면..
+                if len(self.line) == 20 and c == 3:  #라인의 끝을 만나면..
                     #데이터 처리 함수로 호출
                     max_length = len(self.line)
                     max_volt = self.line[4]<<8 | self.line[3]
