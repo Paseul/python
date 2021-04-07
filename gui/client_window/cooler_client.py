@@ -5,7 +5,7 @@ import struct
 
 
 class Signal(QObject):
-    recv_signal = pyqtSignal(int, int, int, int)
+    recv_signal = pyqtSignal(int, int, int, int, int)
     disconn_signal = pyqtSignal()
 
 
@@ -18,10 +18,7 @@ class ClientSocket:
         self.recv.recv_signal.connect(self.parent.updateCooler)
         self.disconn = Signal()
         self.disconn.disconn_signal.connect(self.parent.coolerDisconnect)
-        self.power = 0
-        self.inTemp = 0
-        self.outTemp = 0
-        self.bit = 0
+
         self.bConnect = False
 
     def __del__(self):
@@ -29,6 +26,7 @@ class ClientSocket:
 
     def connectServer(self, ip, port):
         self.client = socket(AF_INET, SOCK_STREAM)
+        print(ip)
 
         try:
             self.client.connect((ip, port))
@@ -63,23 +61,38 @@ class ClientSocket:
                 if recv:
                     if recv[1] == 5:
                         power = recv[4]<<8 | recv[5]
+                        inTemp = 0
+                        outTemp = 0
+                        step = 0
+                        bit = 0
                     elif recv[1] == 4:
                         inTemp = recv[3]<<8 | recv[4]
                         outTemp = recv[5]<<8 | recv[6]
+                        power = 0
+                        bit = 0
+                        step = 1
                     elif recv[1] == 1:
                         bit = recv[4]
+                        power = 0
+                        inTemp = 0
+                        outTemp = 0
+                        step = 0
+                    else:
+                        power = 0
+                        bit = 0
+                        inTemp = 0
+                        outTemp = 0
+                        step = 0
 
-                    # fmt = '>B B B B H H B'
-                    # unpacked = struct.unpack(fmt, recv)
-                    
-
-                    self.recv.recv_signal.emit(power, inTemp, outTemp, bit)
+                    print(recv)
+                    self.recv.recv_signal.emit(step, power, inTemp, outTemp, bit)
         self.stop()
 
     def send(self, sendData):
         if not self.bConnect:
             return
         try:
+            print(sendData)
             self.client.send(sendData)
         except Exception as e:
             print('Send() Error : ', e)

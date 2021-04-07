@@ -32,7 +32,7 @@ class CWidget(QWidget):
         self.serConnect = False
         self.mainStart = False
         self.ldStart = False
-        self.coolerStart = False
+        self.coolerStart = True
         self.ld1 = False
         self.ld2 = False
         self.ld3 = False
@@ -315,6 +315,7 @@ class CWidget(QWidget):
 
         self.compInBtn = QPushButton('압축기 입구')
         self.compInBtn.setAutoDefault(True)
+        self.compInBtn.clicked.connect(self.coolerTemp)
         coolerBitBox.addWidget(self.compInBtn)
 
         self.compIn = QTextEdit()
@@ -333,6 +334,7 @@ class CWidget(QWidget):
 
         self.ibitBtn = QPushButton('IBIT')
         self.ibitBtn.setAutoDefault(True)
+        self.ibitBtn.clicked.connect(self.coolerBit)
         coolerBitBox.addWidget(self.ibitBtn)
         
         self.ibit = QTextEdit()
@@ -498,21 +500,15 @@ class CWidget(QWidget):
         if self.cc.bConnect == False:
             ip = self.c_ip.text()
             port = self.c_port.text()
-            if self.cc.connectServer(ip, int(port)):
-                self.c_btn.setStyleSheet("background-color: green")
-                self.c_btn.setText('접속 종료')
+            if self.cc.connectServer(ip, int(port)):                
                 self.cconnect = True
             else:
                 self.cc.stop()
-                self.recvmsg.clear()
-                self.c_btn.setText('접속')
-                self.c_btn.setStyleSheet("background-color: lightgray")
+                self.recvmsg.clear()                
                 self.cconnect = False
         else:
             self.cc.stop()
             self.recvmsg.clear()
-            self.c_btn.setText('접속')
-            self.c_btn.setStyleSheet("background-color: lightgray")
             self.cconnect = False
 
         if self.ccc.bConnect == False:
@@ -526,6 +522,13 @@ class CWidget(QWidget):
         else:
             self.ccc.stop()
             self.ccconnect = False
+
+        if self.cc.bConnect == True and self.ccc.bConnect == True:
+            self.c_btn.setStyleSheet("background-color: green")
+            self.c_btn.setText('접속 종료')
+        else:
+            self.c_btn.setText('접속')
+            self.c_btn.setStyleSheet("background-color: lightgray")
 
     def powerConnect(self):
         if self.ser.bConnect == False:
@@ -610,11 +613,13 @@ class CWidget(QWidget):
         self.recvmsg.addItem(QListWidgetItem(cmd))
         self.recvmsg.addItem(QListWidgetItem(data))
 
-    def updateCooler(self, cmd, inTemp, outTemp, bit):
-        self.coolerPower = cmd
-        self.coolerInTemp = inTemp
-        self.coolerOutTemp = outTemp
-        self.coolBit = bit
+    def updateCooler(self, step, cmd, inTemp, outTemp, bit):
+        if step:
+            self.coolerInTemp = inTemp
+            self.coolerOutTemp = outTemp
+        else:
+            self.coolerPower = cmd
+            self.coolBit = bit
 
         if self.coolerPower == 65280:
             self.cPowerBtn.setStyleSheet("background-color: green")
@@ -658,17 +663,23 @@ class CWidget(QWidget):
 
         self.lc.send(sendData)
     
-    def sendCooler(self, header, cmd, addrH, addrL, data):
-        values = (header, cmd, addrH, addrL, data)
-        fmt = '>B B B B H'
+    def sendCooler(self, header, cmd, addr, data):
+        trans = 0
+        proto = 0
+        length = 6
+        values = (trans, proto, length, header, cmd, addr, data)
+        fmt = '>H H H B B H H'
         packer = struct.Struct(fmt)
         sendData = packer.pack(*values)
 
         self.cc.send(sendData)
 
-    def sendcCooler(self, header, cmd, addrH, addrL, data):
-        values = (header, cmd, addrH, addrL, data)
-        fmt = '>B B B B H'
+    def sendcCooler(self, header, cmd, addr, data):
+        trans = 0
+        proto = 0
+        length = 6
+        values = (trans, proto, length, header, cmd, addr, data)
+        fmt = '>H H H B B H H'
         packer = struct.Struct(fmt)
         sendData = packer.pack(*values)
 
@@ -817,43 +828,41 @@ class CWidget(QWidget):
             self.sendLaser(header, cmd, data)
     
     def cPower(self):
-        header = 0x01
-        cmd = 0x05
-        addrH = 0x00
-        addrL = 0x24
+        header = 1
+        cmd = 5
+
+        addr = 0x0017
         if self.coolerStart == False:
-            data = 0x00FF
+            data = 0xFF00
             self.coolerStart = True
-            self.coolerBit()       
-            self.coolerTemp()     
+            # self.coolerBit()       
+            # self.coolerTemp()     
         else:
-            data = 0x0000
+            data = 0
             self.coolerStart = False
-            self.t1.cancel()
-            self.t2.cancel()
-        self.sendCooler(header, cmd, addrH, addrL, data)        
+            # self.t1.cancel()
+            # self.t2.cancel()
+        self.sendcCooler(header, cmd, addr, data)        
 
     def coolerTemp(self):
-        header = 0x01
-        cmd = 0x04
-        addrH = 0x00
-        addrL = 0x01
-        data = 0x0003
-        self.sendcCooler(header, cmd, addrH, addrL, data)    
-        self.t1 = threading.Timer(1, self.coolerTemp)
-        self.t1.deamon = True
-        self.t1.start()
+        header = 1
+        cmd = 4
+        addr = 1
+        data = 3
+        self.sendCooler(header, cmd, addr, data)    
+        # self.t1 = threading.Timer(1, self.coolerTemp)
+        # self.t1.deamon = True
+        # self.t1.start()
 
     def coolerBit(self):
-        header = 0x01
-        cmd = 0x01
-        addrH = 0x00
-        addrL = 0x19
-        data = 0x0001
-        self.sendCooler(header, cmd, addrH, addrL, data)   
-        self.t2 = threading.Timer(1, self.coolerBit)
-        self.t2.deamon = True
-        self.t2.start()
+        header = 1
+        cmd = 1
+        addr = 0x0001
+        data = 0x0008
+        self.sendcCooler(header, cmd, addr, data)   
+        # self.t2 = threading.Timer(1, self.coolerBit)
+        # self.t2.deamon = True
+        # self.t2.start()
 
     def clearMsg(self):
         self.recvmsg.clear()
