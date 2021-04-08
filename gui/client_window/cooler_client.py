@@ -5,7 +5,7 @@ import struct
 
 
 class Signal(QObject):
-    recv_signal = pyqtSignal(int, int, int, int, int)
+    recv_signal = pyqtSignal(int, int, int)
     disconn_signal = pyqtSignal()
 
 
@@ -60,32 +60,23 @@ class ClientSocket:
             else:
                 if recv:
                     if recv[1] == 5:
-                        power = recv[4]<<8 | recv[5]
-                        inTemp = 0
-                        outTemp = 0
-                        step = 0
-                        bit = 0
+                        val1 = recv[4]<<8 | recv[5]
+                        val2 = 0
+
                     elif recv[1] == 4:
-                        inTemp = recv[3]<<8 | recv[4]
-                        outTemp = recv[5]<<8 | recv[6]
-                        power = 0
-                        bit = 0
-                        step = 1
+                        val1 = recv[3]<<8 | recv[4]     # in temp
+                        val2 = recv[5]<<8 | recv[6]     # out temp
+
                     elif recv[1] == 1:
-                        bit = recv[4]
-                        power = 0
-                        inTemp = 0
-                        outTemp = 0
-                        step = 0
+                        val1 = recv[4]
+                        val2 = 0
+
                     else:
-                        power = 0
-                        bit = 0
-                        inTemp = 0
-                        outTemp = 0
-                        step = 0
+                        val1 = 0
+                        val2 = 0
 
                     print(recv)
-                    self.recv.recv_signal.emit(step, power, inTemp, outTemp, bit)
+                    self.recv.recv_signal.emit(recv[1], val1, val2)
         self.stop()
 
     def send(self, sendData):

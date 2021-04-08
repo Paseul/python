@@ -16,7 +16,7 @@ port = 5000
 ip = '127.0.1.1'
 coolerPort = 502
 coolerIp = '192.168.0.3'
-
+coolerIp2 = '192.168.0.4'
 
 class CWidget(QWidget):
     def __init__(self):
@@ -290,20 +290,26 @@ class CWidget(QWidget):
         coolerIpBox = QHBoxLayout()
         box.addLayout(coolerIpBox)
 
-        label = QLabel('Server IP')
-        self.c_ip = QLineEdit(str(coolerIp))      # coolerIp
+        label = QLabel('냉각장치 모니터링 IP')
+        self.c_ip1 = QLineEdit(str(coolerIp))      # coolerIp
 
         coolerIpBox.addWidget(label)
-        coolerIpBox.addWidget(self.c_ip)
+        coolerIpBox.addWidget(self.c_ip1)
 
-        label = QLabel('Server Port')
+        label = QLabel('냉각장치 제어 IP')
+        self.c_ip2 = QLineEdit(str(coolerIp2))      # coolerIp
+
+        coolerIpBox.addWidget(label)
+        coolerIpBox.addWidget(self.c_ip2)
+
+        label = QLabel('Port')
         self.c_port = QLineEdit(str(coolerPort))  # coolerPort
         coolerIpBox.addWidget(label)
         coolerIpBox.addWidget(self.c_port)
 
         self.c_btn = QPushButton('접속')
         self.c_btn.clicked.connect(self.coolerConnect)
-        coolerIpBox.addWidget(self.c_btn)
+        coolerIpBox.addWidget(self.c_btn)        
       
         # 냉각장치 BIT
         coolerBitBox = QHBoxLayout()
@@ -313,19 +319,21 @@ class CWidget(QWidget):
         self.cPowerBtn.clicked.connect(self.cPower)
         coolerBitBox.addWidget(self.cPowerBtn)
 
-        self.compInBtn = QPushButton('압축기 입구')
-        self.compInBtn.setAutoDefault(True)
-        self.compInBtn.clicked.connect(self.coolerTemp)
-        coolerBitBox.addWidget(self.compInBtn)
+        self.tempMonitor = QPushButton('온도 모니터링')
+        self.tempMonitor.setAutoDefault(True)
+        self.tempMonitor.clicked.connect(self.coolerTemp)
+        coolerBitBox.addWidget(self.tempMonitor)        
+
+        label = QLabel('압축기 입구')
+        coolerBitBox.addWidget(label)
 
         self.compIn = QTextEdit()
         self.compIn.setText('0.123')
         self.compIn.setFixedHeight(27)
         coolerBitBox.addWidget(self.compIn)
 
-        self.compOutBtn = QPushButton('압축기 출구')
-        self.compOutBtn.setAutoDefault(True)
-        coolerBitBox.addWidget(self.compOutBtn)
+        label = QLabel('압축기 출구')
+        coolerBitBox.addWidget(label)
 
         self.compOut = QTextEdit()
         self.compOut.setText('0.123')
@@ -336,11 +344,22 @@ class CWidget(QWidget):
         self.ibitBtn.setAutoDefault(True)
         self.ibitBtn.clicked.connect(self.coolerBit)
         coolerBitBox.addWidget(self.ibitBtn)
+
+        label = QLabel('압축기1 IBIT')
+        coolerBitBox.addWidget(label)        
         
-        self.ibit = QTextEdit()
-        self.ibit.setText('정상')
-        self.ibit.setFixedHeight(27)
-        coolerBitBox.addWidget(self.ibit)
+        self.ibit1 = QTextEdit()
+        self.ibit1.setText('정상')
+        self.ibit1.setFixedHeight(27)
+        coolerBitBox.addWidget(self.ibit1)
+
+        label = QLabel('압축기2 IBIT')
+        coolerBitBox.addWidget(label) 
+
+        self.ibit2 = QTextEdit()
+        self.ibit2.setText('정상')
+        self.ibit2.setFixedHeight(27)
+        coolerBitBox.addWidget(self.ibit2)
 
         gb.setLayout(box)
 
@@ -613,28 +632,28 @@ class CWidget(QWidget):
         self.recvmsg.addItem(QListWidgetItem(cmd))
         self.recvmsg.addItem(QListWidgetItem(data))
 
-    def updateCooler(self, step, cmd, inTemp, outTemp, bit):
-        if step:
-            self.coolerInTemp = inTemp
-            self.coolerOutTemp = outTemp
-        else:
-            self.coolerPower = cmd
-            self.coolBit = bit
+    def updateCooler(self, func, val1, val2):
+        if func == 5:
+            if val1 == 65280:
+                self.cPowerBtn.setStyleSheet("background-color: green")
+            elif val1 == 0:
+                self.cPowerBtn.setStyleSheet("background-color: lightgray")
+            else:
+                self.cPowerBtn.setStyleSheet("background-color: red")
+                
+        elif func == 4:
+            coolerInTemp = (val1/65535)*500 - 100
+            coolerOutTemp = (val2/65535)*500 - 100
+            self.compIn.setText(str(round(coolerInTemp, 4)))
+            self.compOut.setText(str(round(coolerOutTemp, 4)))
 
-        if self.coolerPower == 65280:
-            self.cPowerBtn.setStyleSheet("background-color: green")
-        elif self.coolerPower == 0:
-            self.cPowerBtn.setStyleSheet("background-color: lightgray")
-        else:
-            self.cPowerBtn.setStyleSheet("background-color: red")
-        self.coolerInTemp = (self.coolerInTemp/65535)*500 - 100
-        self.coolerOutTemp = (self.coolerOutTemp/65535)*500 - 100
-        self.compIn.setText(str(round(self.coolerInTemp, 4)))
-        self.compOut.setText(str(round(self.coolerOutTemp, 4)))
-        if self.coolBit == 1:
-            self.ibit.setText('고장')
-        elif self.coolBit == 0:
-            self.ibit.setText('정상')         
+        elif func == 1:
+            if val1 == 0:
+                self.ibit.setText('정상')
+            elif val1 == 0:
+                self.ibit.setText('고장')     
+            else:
+                self.ibit.setText('Unknown')
 
     def updatePower(self, max_v, min_v, max_t, min_t, charge, capacity, discharge):
         print(max_v, min_v, max_t, min_t, charge, capacity, discharge)
