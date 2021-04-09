@@ -3,13 +3,14 @@ import sys
 import io
 import os
 import folium
+import numpy as np
 import ccd_thread
-import swir_thread
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from imutils.video import FPS
+from cv2 import dnn_superres
 
 class App(QWidget):
     def __init__(self):
@@ -27,24 +28,29 @@ class App(QWidget):
         self.ccd = ccd_thread.Thread(self)
         self.ccd.changePixmap.connect(self.setCcdImage)        
         self.ccd.deamon = True
-        self.ccd.start()
-        self.swir = swir_thread.Thread(self)
-        self.swir.changePixmap.connect(self.setSwirImage)        
-        self.swir.deamon = True
-        self.swir.start()        
+        self.ccd.start()        
 
     def closeEvent(self, e):
         self.ccd.stop()
-        self.swir.stop()
 
-    @pyqtSlot(QImage)
-    def setCcdImage(self, image):
+    @pyqtSlot(QImage, QImage)
+    def setCcdImage(self, image, image2):
         self.ccdLabel.setPixmap(QPixmap.fromImage(image))
-    
-    @pyqtSlot(QImage)
-    def setSwirImage(self, image):
-        self.swirLabel.setPixmap(QPixmap.fromImage(image))
+        self.swirLabel.setPixmap(QPixmap.fromImage(image2))
 
+    def convertQImageToMat(self, incomingImage):
+        '''  Converts a QImage into an opencv MAT format  '''
+
+        incomingImage = incomingImage.convertToFormat(4)
+
+        width = incomingImage.width()
+        height = incomingImage.height()
+
+        ptr = incomingImage.bits()
+        ptr.setsize(incomingImage.byteCount())
+        arr = np.array(ptr).reshape(height, width, 4)  #  Copies the data
+        return arr
+    
     def loadMap(self, x, y):
         m = folium.Map(zoom_start=16, location=(x,y))
         m.save(self.data, close_file=False)
@@ -59,7 +65,7 @@ class App(QWidget):
         ccdBox = QVBoxLayout()
         # create a label
         self.ccdLabel = QLabel(self)
-        self.ccdLabel.resize(960, 540)
+        self.ccdLabel.resize(1920, 1080)
         ccdBox.addWidget(self.ccdLabel)
         gb.setLayout(ccdBox)
            
@@ -70,7 +76,7 @@ class App(QWidget):
         swirGpsBox = QVBoxLayout() 
         box.addLayout(swirGpsBox)
         self.swirLabel = QLabel(self)
-        self.swirLabel.resize(540, 270)
+        self.swirLabel.resize(640, 360)
         swirGpsBox.addWidget(self.swirLabel)
         self.webView = QWebEngineView()
         filepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "map.html"))
