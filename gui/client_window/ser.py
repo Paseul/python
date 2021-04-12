@@ -83,6 +83,11 @@ class SerialSocket:
                     #line 변수 초기화
                     del self.line[:]
                 elif len(self.line) == 20:
-                    print(self.line)
-                    del self.line[:]
+                    # print(self.line)
+                    del self.line[0]
+                    for i in range(len(self.line)):
+                        if self.line[0] == 2:
+                            break
+                        else:
+                            del self.line[0]
         self.stop()
