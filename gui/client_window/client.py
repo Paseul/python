@@ -568,70 +568,32 @@ class CWidget(QWidget):
             self.p_Btn.setStyleSheet("background-color: lightgray")
             self.serConnect = False
 
-    def updateLaser(self, header, cmd, data):
-        if header == '0x41':
-            if cmd == '0x7':
-                # LD5 amp
-                self.ld5AmpRcv.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
-            elif cmd == '0x8':
-                # 1st Front Optical Power
-                self.frontPower.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
-            elif cmd == '0x9':
-                # 1st Rear Optical Power
-                self.rearPower.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
-            elif cmd == '0xd':
-                # Interlock
-                if int(data) & 0b0001 == True:
-                    self.interBtn.setStyleSheet("background-color: red")
-                else:
-                    self.interBtn.setStyleSheet("background-color: lightgray")
-            elif cmd == '0xf':
-                # LD5 vol
-                self.ld5VolRcv.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
-            elif cmd == '0x10':
-                # LD1 vol
-                self.ld1VolRcv.setText(str(round((int(data)*0.0012 -0.0540), 4)))
-            elif cmd == '0x11':
-                # LD2 vol
-                self.ld2VolRcv.setText(str(round((int(data)*0.0012 -0.0332), 4)))
-            elif cmd == '0x12':
-                # LD3 vol
-                self.ld3VolRcv.setText(str(round((int(data)*0.0012 -0.0615), 4)))
-            elif cmd == '0x13':
-                # LD4 vol
-                self.ld4VolRcv.setText(str(round((int(data)*0.0012 -0.0136), 4)))
-            elif cmd == '0x14':
-                # LD1 amp
-                self.ld1AmpRcv.setText(str(round(((int(data)+608.0) / 3822.0), 4)))
-            elif cmd == '0x15':
-                # LD2 amp
-                self.ld2AmpRcv.setText(str(round(((int(data)+132.5) / 3817.5), 4)))
-            elif cmd == '0x16':
-                # LD3 amp
-                self.ld3AmpRcv.setText(str(round(((int(data)-432.5) / 3832.5), 4)))
-            elif cmd == '0x17':
-                # LD4 ampcompInSet
-                self.firstTemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1189 - 2.8153),4)))
-            elif cmd == '0x19':
-                # 2nd temp
-                self.secondTemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.2161 - 4.8080), 4)))
-            elif cmd == '0x1a':
-                # 3rd temp
-                self.thirdTemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.4021 - 8.7607), 4)))
-            elif cmd == '0x1b':
-                # 3rd plate temp
-                self.thirdPlateTemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1804 - 5.5092), 4)))
-            elif cmd == '0x1c':
-                # CLS temp
-                self.clsTemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1041 - 2.4323), 4)))
-            elif cmd == '0x1d':
-                # pump temp
-                self.pumpTemp.setText(str(round(((1/((np.log(int(data)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1966 - 4.3200), 4)))
+    def updateLaser(self, ld1volt, ld2volt, ld3volt, ld4volt, ld5volt, temp1, temp2, temp3, temp3plate, tempcls, temppump, frontpower, rearpower, mdstatus):
+        self.ld1VolRcv.setText(str(round(ld1volt*0.0012 -0.0540), 4))
+        self.ld2VolRcv.setText(str(round(ld2volt*0.0012 -0.0332), 4))
+        self.ld3VolRcv.setText(str(round(ld3volt*0.0012 -0.0615), 4))
+        self.ld4VolRcv.setText(str(round(ld4volt*0.0012 -0.0136), 4))
+        self.ld5VolRcv.setText(str(round(((ld5volt+207.5) / 3792.5), 4)))
+        self.firstTemp.setText(str(round(((1/((np.log(temp1/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1189 - 2.8153),4)))
+        self.secondTemp.setText(str(round(((1/((np.log(temp2/26214.0) / 3950.0)+(1/298.0))-273.0)*1.2161 - 4.8080), 4)))
+        self.thirdTemp.setText(str(round(((1/((np.log(temp3/26214.0) / 3950.0)+(1/298.0))-273.0)*1.4021 - 8.7607), 4)))
+        self.thirdPlateTemp.setText(str(round(((1/((np.log(temp3plate/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1804 - 5.5092), 4)))
+        self.clsTemp.setText(str(round(((1/((np.log(tempcls/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1041 - 2.4323), 4)))
+        self.pumpTemp.setText(str(round(((1/((np.log(temppump/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1966 - 4.3200), 4)))
+        self.frontPower.setText(str(round(((frontpower+207.5) / 3792.5), 4)))
+        self.rearPower.setText(str(round(((rearpower+207.5) / 3792.5), 4)))
+        # Interlock
+        if mdstatus & 0b0001 == True:
+            self.interBtn.setStyleSheet("background-color: red")
+        else:
+            self.interBtn.setStyleSheet("background-color: lightgray")
 
-        self.recvmsg.addItem(QListWidgetItem(header))
-        self.recvmsg.addItem(QListWidgetItem(cmd))
-        self.recvmsg.addItem(QListWidgetItem(data))
-
+        # self.ld1AmpRcv.setText(str(round(((int(data)+608.0) / 3822.0), 4)))
+        # self.ld2AmpRcv.setText(str(round(((int(data)+132.5) / 3817.5), 4)))
+        # self.ld3AmpRcv.setText(str(round(((int(data)-432.5) / 3832.5), 4)))
+        # self.ld4AmpRcv.setText(str(round(((int(data)+542.5) / 3807.5), 4)))
+        # self.ld5AmpRcv.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
+        
     def updateCooler(self, func, val1, val2):
         if func == 5:
             if val1 == 65280:
@@ -713,22 +675,22 @@ class CWidget(QWidget):
     def mainToggle(self):
         if self.lconnect == True and self.mainStart == False:
             header = 0x41
-            cmd = 0x01
+            cmd = 0x21
             data = 0x0001
             self.sendLaser(header, cmd, data)
-            self.mainBtn.setText('Stop')
-            self.mainBtn.setStyleSheet("background-color: green")
-            self.mainStart = True
-        elif self.lconnect == True and self.mainStart == True:
-            header = 0x41
-            cmd = 0x01
-            data = 0x0000
-            self.sendLaser(header, cmd, data)
-            if self.lconnect == True and self.ldStart == True:
-                self.ldToggle()
-            self.mainBtn.setText('Start')
-            self.mainBtn.setStyleSheet("background-color: lightgray")
-            self.mainStart = False
+            # self.mainBtn.setText('Stop')
+            # self.mainBtn.setStyleSheet("background-color: green")
+            # self.mainStart = True
+        # elif self.lconnect == True and self.mainStart == True:
+        #     header = 0x41
+        #     cmd = 0x01
+        #     data = 0x0000
+        #     self.sendLaser(header, cmd, data)
+        #     if self.lconnect == True and self.ldStart == True:
+        #         self.ldToggle()
+        #     self.mainBtn.setText('Start')
+        #     self.mainBtn.setStyleSheet("background-color: lightgray")
+        #     self.mainStart = False
 
     def ldToggle(self):
         if self.lconnect == True and self.ldStart == False:

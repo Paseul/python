@@ -5,7 +5,7 @@ import struct
 
 
 class Signal(QObject):
-    recv_signal = pyqtSignal(str, str, str)
+    recv_signal = pyqtSignal(int, int, int, int, int, int, int, int, int, int, int, int, int, int)
     disconn_signal = pyqtSignal()
 
 
@@ -58,10 +58,12 @@ class ClientSocket:
                 break
             else:
                 if recv:
-                    fmt = '>B B H'
-                    unpacked = struct.unpack(fmt, recv)
+                    print(recv)
+                    if recv[0] == 65 and recv[1] == 33:
+                        fmt = '>B B H H H H H H H H H H H H H H'
+                        unpacked = struct.unpack(fmt, recv)
 
-                    self.recv.recv_signal.emit(str(hex(unpacked[0])), str(hex(unpacked[1])), str(unpacked[2]))
+                        self.recv.recv_signal.emit(unpacked[2], unpacked[3], unpacked[4], unpacked[5], unpacked[6], unpacked[7], unpacked[8], unpacked[9], unpacked[10], unpacked[11], unpacked[12], unpacked[13], unpacked[14], unpacked[15])
         self.stop()
 
     def send(self, sendData):
