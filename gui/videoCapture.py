@@ -18,14 +18,12 @@ fps = FPS().start()
 while True:
 	# grab the frame from the video stream, resize it, and convert it
 	frame = vs.read()	
-
-	# show the output frame
-	cv2.imshow("Frame", frame)
+	frame = cv2.flip(frame, 0)	
 
 	if init == 0:
 		# initialize our video writer
 		fourcc = cv2.VideoWriter_fourcc(*"MJPG")
-		writer = cv2.VideoWriter("output.mp4", fourcc, 275,
+		writer = cv2.VideoWriter("output.mp4", fourcc, 125,
 			(frame.shape[1], frame.shape[0]), True)
 		init = 1
 
@@ -33,6 +31,9 @@ while True:
 	fps.stop()
 	text = "{:.2f}".format(fps.fps())
 	cv2.putText(frame, text, (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+
+	# show the output frame
+	cv2.imshow("Frame", frame)
 
 	writer.write(frame)	
 
