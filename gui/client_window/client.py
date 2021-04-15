@@ -13,7 +13,7 @@ from struct import *
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
 port = 5000
-ip = '127.0.1.1'
+ip = '127.0.1.1' #'192.168.0.99'
 coolerPort = 502
 coolerIp = '192.168.0.3'
 coolerIp2 = '192.168.0.4'
@@ -142,88 +142,88 @@ class CWidget(QWidget):
         self.ld1Amp.setText('0.123')
         self.ld1Amp.setFixedHeight(27)
         ld1Box.addWidget(self.ld1Amp)
-        self.ld1VolRcv = QTextEdit()
-        self.ld1VolRcv.setFixedHeight(27)
-        ld1Box.addWidget(self.ld1VolRcv)
+        # self.ld1VolRcv = QTextEdit()
+        # self.ld1VolRcv.setFixedHeight(27)
+        # ld1Box.addWidget(self.ld1VolRcv)
         self.ld1AmpRcv = QTextEdit()
         self.ld1AmpRcv.setFixedHeight(27)
         ld1Box.addWidget(self.ld1AmpRcv)
 
         # LD2 설정
-        ld2Box = QHBoxLayout()
-        box.addLayout(ld2Box)
+        # ld2Box = QHBoxLayout()
+        # box.addLayout(ld2Box)
 
         self.ld2SetBtn = QPushButton('LD 2')
         self.ld2SetBtn.setAutoDefault(True)
         self.ld2SetBtn.clicked.connect(self.ld2AmpSet)
-        ld2Box.addWidget(self.ld2SetBtn)
+        ld1Box.addWidget(self.ld2SetBtn)
         self.ld2Amp = QTextEdit()
         self.ld2Amp.setText('0.234')
         self.ld2Amp.setFixedHeight(27)
-        ld2Box.addWidget(self.ld2Amp)
-        self.ld2VolRcv = QTextEdit()
-        self.ld2VolRcv.setFixedHeight(27)
-        ld2Box.addWidget(self.ld2VolRcv)
+        ld1Box.addWidget(self.ld2Amp)
+        # self.ld2VolRcv = QTextEdit()
+        # self.ld2VolRcv.setFixedHeight(27)
+        # ld2Box.addWidget(self.ld2VolRcv)
         self.ld2AmpRcv = QTextEdit()
         self.ld2AmpRcv.setFixedHeight(27)
-        ld2Box.addWidget(self.ld2AmpRcv)
+        ld1Box.addWidget(self.ld2AmpRcv)
 
-        # LD3 설정
-        ld3Box = QHBoxLayout()
-        box.addLayout(ld3Box)
+        # # LD3 설정
+        # ld3Box = QHBoxLayout()
+        # box.addLayout(ld3Box)
 
         self.ld3SetBtn = QPushButton('LD 3')
         self.ld3SetBtn.setAutoDefault(True)
         self.ld3SetBtn.clicked.connect(self.ld3AmpSet)
-        ld3Box.addWidget(self.ld3SetBtn)
+        ld1Box.addWidget(self.ld3SetBtn)
         self.ld3Amp = QTextEdit()
         self.ld3Amp.setText('0.345')
         self.ld3Amp.setFixedHeight(27)
-        ld3Box.addWidget(self.ld3Amp)
-        self.ld3VolRcv = QTextEdit()
-        self.ld3VolRcv.setFixedHeight(27)
-        ld3Box.addWidget(self.ld3VolRcv)
+        ld1Box.addWidget(self.ld3Amp)
+        # self.ld3VolRcv = QTextEdit()
+        # self.ld3VolRcv.setFixedHeight(27)
+        # ld3Box.addWidget(self.ld3VolRcv)
         self.ld3AmpRcv = QTextEdit()
         self.ld3AmpRcv.setFixedHeight(27)
-        ld3Box.addWidget(self.ld3AmpRcv)
+        ld1Box.addWidget(self.ld3AmpRcv)
 
         # LD4 설정
-        ld4Box = QHBoxLayout()
-        box.addLayout(ld4Box)
+        # ld4Box = QHBoxLayout()
+        # box.addLayout(ld4Box)
 
         self.ld4SetBtn = QPushButton('LD 4')
         self.ld4SetBtn.setAutoDefault(True)
         self.ld4SetBtn.clicked.connect(self.ld4AmpSet)
-        ld4Box.addWidget(self.ld4SetBtn)
+        ld1Box.addWidget(self.ld4SetBtn)
         self.ld4Amp = QTextEdit()
         self.ld4Amp.setText('0.456')
         self.ld4Amp.setFixedHeight(27)
-        ld4Box.addWidget(self.ld4Amp)
-        self.ld4VolRcv = QTextEdit()
-        self.ld4VolRcv.setFixedHeight(27)
-        ld4Box.addWidget(self.ld4VolRcv)
+        ld1Box.addWidget(self.ld4Amp)
+        # self.ld4VolRcv = QTextEdit()
+        # self.ld4VolRcv.setFixedHeight(27)
+        # ld4Box.addWidget(self.ld4VolRcv)
         self.ld4AmpRcv = QTextEdit()
         self.ld4AmpRcv.setFixedHeight(27)
-        ld4Box.addWidget(self.ld4AmpRcv)
+        ld1Box.addWidget(self.ld4AmpRcv)
 
         # LD5 설정
-        ld5Box = QHBoxLayout()
-        box.addLayout(ld5Box)
+        # ld5Box = QHBoxLayout()
+        # box.addLayout(ld5Box)
 
         self.ld5SetBtn = QPushButton('LD 5')
         self.ld5SetBtn.setAutoDefault(True)
         self.ld5SetBtn.clicked.connect(self.ld5AmpSet)
-        ld5Box.addWidget(self.ld5SetBtn)
+        ld1Box.addWidget(self.ld5SetBtn)
         self.ld5Amp = QTextEdit()
         self.ld5Amp.setText('0.564')
         self.ld5Amp.setFixedHeight(27)
-        ld5Box.addWidget(self.ld5Amp)
-        self.ld5VolRcv = QTextEdit()
-        self.ld5VolRcv.setFixedHeight(27)
-        ld5Box.addWidget(self.ld5VolRcv)
+        ld1Box.addWidget(self.ld5Amp)
+        # self.ld5VolRcv = QTextEdit()
+        # self.ld5VolRcv.setFixedHeight(27)
+        # ld5Box.addWidget(self.ld5VolRcv)
         self.ld5AmpRcv = QTextEdit()
         self.ld5AmpRcv.setFixedHeight(27)
-        ld5Box.addWidget(self.ld5AmpRcv)
+        ld1Box.addWidget(self.ld5AmpRcv)
 
         # 레이저 BIT 설정
         laserBitBox = QHBoxLayout()
@@ -568,12 +568,12 @@ class CWidget(QWidget):
             self.p_Btn.setStyleSheet("background-color: lightgray")
             self.serConnect = False
 
-    def updateLaser(self, ld1volt, ld2volt, ld3volt, ld4volt, ld5volt, temp1, temp2, temp3, temp3plate, tempcls, temppump, frontpower, rearpower, mdstatus):
-        self.ld1VolRcv.setText(str(round(ld1volt*0.0012 -0.0540), 4))
-        self.ld2VolRcv.setText(str(round(ld2volt*0.0012 -0.0332), 4))
-        self.ld3VolRcv.setText(str(round(ld3volt*0.0012 -0.0615), 4))
-        self.ld4VolRcv.setText(str(round(ld4volt*0.0012 -0.0136), 4))
-        self.ld5VolRcv.setText(str(round(((ld5volt+207.5) / 3792.5), 4)))
+    def updateLaser(self, ld1amp, ld2amp, ld3amp, ld4amp, ld5amp, temp1, temp2, temp3, temp3plate, tempcls, temppump, frontpower, rearpower, mdstatus):
+        self.ld1AmpRcv.setText(str(round((ld1amp+608.0) / 3822.0, 4)))
+        self.ld2AmpRcv.setText(str(round((ld2amp+132.5) / 3817.5, 4)))
+        self.ld3AmpRcv.setText(str(round((ld3amp-432.5) / 3832.5, 4)))
+        self.ld4AmpRcv.setText(str(round((ld4amp+542.5) / 3807.5, 4)))
+        self.ld5AmpRcv.setText(str(round((ld5amp+207.5) / 3792.5, 4)))
         self.firstTemp.setText(str(round(((1/((np.log(temp1/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1189 - 2.8153),4)))
         self.secondTemp.setText(str(round(((1/((np.log(temp2/26214.0) / 3950.0)+(1/298.0))-273.0)*1.2161 - 4.8080), 4)))
         self.thirdTemp.setText(str(round(((1/((np.log(temp3/26214.0) / 3950.0)+(1/298.0))-273.0)*1.4021 - 8.7607), 4)))
@@ -588,11 +588,16 @@ class CWidget(QWidget):
         else:
             self.interBtn.setStyleSheet("background-color: lightgray")
 
-        # self.ld1AmpRcv.setText(str(round(((int(data)+608.0) / 3822.0), 4)))
-        # self.ld2AmpRcv.setText(str(round(((int(data)+132.5) / 3817.5), 4)))
-        # self.ld3AmpRcv.setText(str(round(((int(data)-432.5) / 3832.5), 4)))
-        # self.ld4AmpRcv.setText(str(round(((int(data)+542.5) / 3807.5), 4)))
-        # self.ld5AmpRcv.setText(str(round(((int(data)+207.5) / 3792.5), 4)))
+        self.recvmsg.addItem("[Laser]: " + str(hex(ld1amp)) + " /" + str(hex(ld2amp)) + " /" + str(hex(ld3amp)) + " /" + str(hex(ld4amp)) + " /" + str(hex(ld5amp))\
+             + " /" + str(hex(temp1)) + " /" + str(hex(temp2)) + " /" + str(hex(temp3)) + " /" + str(hex(temp3plate)) + " /" + str(hex(tempcls)) + " /" + str(hex(temppump))\
+                  + " /" + str(hex(frontpower)) + " /" + str(hex(rearpower)) + " /" + str(hex(mdstatus)))
+
+        # self.ld1VolRcv.setText(str(round(ld1volt*0.0012 -0.0540, 4)))
+        # self.ld2VolRcv.setText(str(round(ld2volt*0.0012 -0.0332, 4)))
+        # self.ld3VolRcv.setText(str(round(ld3volt*0.0012 -0.0615, 4)))
+        # self.ld4VolRcv.setText(str(round(ld4volt*0.0012 -0.0136, 4)))
+        # self.ld5VolRcv.setText(str(round((ld5volt+207.5) / 3792.5, 4)))
+
         
     def updateCooler(self, func, val1, val2):
         if func == 5:

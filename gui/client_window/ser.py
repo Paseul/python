@@ -61,6 +61,11 @@ class SerialSocket:
             self.disconn.disconn_signal.emit()
 
     def receive(self, ser):
+        basename = "battery"
+        suffix = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
+        filename = "_".join([basename, suffix + ".csv"])
+        csvfile = open(filename, 'w', newline='') 
+        writer = csv.writer(csvfile) 
         while self.bConnect:
             #데이터가 있있다면
             for c in self.ser.read():
@@ -80,6 +85,10 @@ class SerialSocket:
                     a_capacity = self.line[14]<<8 | self.line[13]
                     t_t_discharge = self.line[16]<<8 | self.line[15]
                     self.recv.recv_signal.emit(max_volt, min_volt, max_temp, min_temp, s_o_charge, a_capacity, t_t_discharge)
+
+                    suffix = datetime.datetime.now().strftime("%H:%M:%S")
+                    self.line.insert(0, suffix)
+                    writer.writerow(self.line)
                     #line 변수 초기화
                     del self.line[:]
                 elif len(self.line) == 20:
