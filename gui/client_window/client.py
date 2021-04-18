@@ -460,7 +460,7 @@ class CWidget(QWidget):
         # Header
         self.headerMsg = QTextEdit()
         self.headerMsg.setFixedHeight(30)
-        self.headerMsg.setText('41')
+        self.headerMsg.setText('29')
         messageBox.addWidget(self.headerMsg)
         # Cmd
         self.cmdMsg = QTextEdit()
@@ -574,12 +574,18 @@ class CWidget(QWidget):
         self.ld3AmpRcv.setText(str(round((ld3amp-432.5) / 3832.5, 4)))
         self.ld4AmpRcv.setText(str(round((ld4amp+542.5) / 3807.5, 4)))
         self.ld5AmpRcv.setText(str(round((ld5amp+207.5) / 3792.5, 4)))
-        self.firstTemp.setText(str(round(((1/((np.log(temp1/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1189 - 2.8153),4)))
-        self.secondTemp.setText(str(round(((1/((np.log(temp2/26214.0) / 3950.0)+(1/298.0))-273.0)*1.2161 - 4.8080), 4)))
-        self.thirdTemp.setText(str(round(((1/((np.log(temp3/26214.0) / 3950.0)+(1/298.0))-273.0)*1.4021 - 8.7607), 4)))
-        self.thirdPlateTemp.setText(str(round(((1/((np.log(temp3plate/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1804 - 5.5092), 4)))
-        self.clsTemp.setText(str(round(((1/((np.log(tempcls/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1041 - 2.4323), 4)))
-        self.pumpTemp.setText(str(round(((1/((np.log(temppump/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1966 - 4.3200), 4)))
+        if temp1 != 0:
+            self.firstTemp.setText(str(round(((1/((np.log(temp1/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1189 - 2.8153),4)))
+        if temp2 != 0:
+            self.secondTemp.setText(str(round(((1/((np.log(temp2/26214.0) / 3950.0)+(1/298.0))-273.0)*1.2161 - 4.8080), 4)))
+        if temp3 != 0:
+            self.thirdTemp.setText(str(round(((1/((np.log(temp3/26214.0) / 3950.0)+(1/298.0))-273.0)*1.4021 - 8.7607), 4)))
+        if temp3plate != 0:
+            self.thirdPlateTemp.setText(str(round(((1/((np.log(temp3plate/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1804 - 5.5092), 4)))
+        if tempcls != 0:
+            self.clsTemp.setText(str(round(((1/((np.log(tempcls/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1041 - 2.4323), 4)))
+        if temppump != 0:
+            self.pumpTemp.setText(str(round(((1/((np.log(temppump/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1966 - 4.3200), 4)))
         self.frontPower.setText(str(round(((frontpower+207.5) / 3792.5), 4)))
         self.rearPower.setText(str(round(((rearpower+207.5) / 3792.5), 4)))
         # Interlock
@@ -648,6 +654,14 @@ class CWidget(QWidget):
         sendData = packer.pack(*values)
 
         self.lc.send(sendData)
+
+    def sendLaser2(self, header, cmd):
+        values = (header, cmd)
+        fmt = '>B B'
+        packer = struct.Struct(fmt)
+        sendData = packer.pack(*values)
+
+        self.lc.send(sendData)
     
     def sendCooler(self, header, cmd, addr, data):
         trans = 0
@@ -679,23 +693,23 @@ class CWidget(QWidget):
     
     def mainToggle(self):
         if self.lconnect == True and self.mainStart == False:
-            header = 0x41
-            cmd = 0x21
-            data = 0x0001
+            header = 0x29
+            cmd = 0x12
+            data = 0x0000
             self.sendLaser(header, cmd, data)
-            # self.mainBtn.setText('Stop')
-            # self.mainBtn.setStyleSheet("background-color: green")
-            # self.mainStart = True
-        # elif self.lconnect == True and self.mainStart == True:
-        #     header = 0x41
-        #     cmd = 0x01
-        #     data = 0x0000
-        #     self.sendLaser(header, cmd, data)
-        #     if self.lconnect == True and self.ldStart == True:
-        #         self.ldToggle()
-        #     self.mainBtn.setText('Start')
-        #     self.mainBtn.setStyleSheet("background-color: lightgray")
-        #     self.mainStart = False
+            self.mainBtn.setText('Stop')
+            self.mainBtn.setStyleSheet("background-color: green")
+            self.mainStart = True
+        elif self.lconnect == True and self.mainStart == True:
+            header = 0x41
+            cmd = 0x01
+            data = 0x0000
+            self.sendLaser(header, cmd, data)
+            if self.lconnect == True and self.ldStart == True:
+                self.ldToggle()
+            self.mainBtn.setText('Start')
+            self.mainBtn.setStyleSheet("background-color: lightgray")
+            self.mainStart = False
 
     def ldToggle(self):
         if self.lconnect == True and self.ldStart == False:
@@ -730,10 +744,9 @@ class CWidget(QWidget):
 
     def ld1On(self):
         if self.ldStart == True:
-            header = 0x41
-            cmd = 0x11
-            data = 0x0002
-            self.sendLaser(header, cmd, data)
+            header = 0x28
+            cmd = 0x21
+            self.sendLaser2(header, cmd)
             self.ld1 = True
             self.ld1Btn.setStyleSheet("background-color: green")            
 
