@@ -695,13 +695,13 @@ class CWidget(QWidget):
         if self.lconnect == True and self.mainStart == False:
             header = 0x29
             cmd = 0x12
-            data = 0x0000
+            data = 0x0100
             self.sendLaser(header, cmd, data)
             self.mainBtn.setText('Stop')
             self.mainBtn.setStyleSheet("background-color: green")
             self.mainStart = True
         elif self.lconnect == True and self.mainStart == True:
-            header = 0x41
+            header = 0x29
             cmd = 0x01
             data = 0x0000
             self.sendLaser(header, cmd, data)
@@ -713,20 +713,21 @@ class CWidget(QWidget):
 
     def ldToggle(self):
         if self.lconnect == True and self.ldStart == False:
-            header = 0x41
-            cmd = 0x11
-            data = 0x0001
-            self.sendLaser(header, cmd, data)
+            header = 0x29
             cmd = 0x01
-            data = 0x0004
+            data = 0x0500
             self.sendLaser(header, cmd, data)
+            # sleep(0.1)
+            # cmd = 0x11
+            # data = 0x0100
+            # self.sendLaser(header, cmd, data)
             self.ldBtn.setText('LD Stop')
             self.ldBtn.setStyleSheet("background-color: green")
             self.ldStart = True
         elif self.lconnect == True and self.ldStart == True:
-            header = 0x41
+            header = 0x29
             cmd = 0x11
-            data = 0x0000
+            data = 0x0100
             self.sendLaser(header, cmd, data)
             self.ld1 = False
             self.ld2 = False
@@ -740,24 +741,25 @@ class CWidget(QWidget):
             self.ld3Btn.setStyleSheet("background-color: lightgray")
             self.ld4Btn.setStyleSheet("background-color: lightgray")
             self.ld5Btn.setStyleSheet("background-color: lightgray")
-            self.ldStart = False
+            # self.ldStart = False
 
     def ld1On(self):
         if self.ldStart == True:
-            header = 0x28
-            cmd = 0x21
-            self.sendLaser2(header, cmd)
+            header = 0x41
+            cmd = 0x11
+            data = 0x0002
+            self.sendLaser(header, cmd, data)
             self.ld1 = True
             self.ld1Btn.setStyleSheet("background-color: green")            
 
     def ld2On(self):
-        if self.ldStart == True:
-            header = 0x41
-            cmd = 0x11
-            data = 0x0004
-            self.sendLaser(header, cmd, data)
-            self.ld2 = True
-            self.ld2Btn.setStyleSheet("background-color: green")
+        # if self.ldStart == True:
+        header = 0x28
+        cmd = 0x21
+        # data = 0x0004
+        self.sendLaser2(header, cmd)
+        self.ld2 = True
+        self.ld2Btn.setStyleSheet("background-color: green")
 
     def ld3On(self):
         if self.ldStart == True:
@@ -787,44 +789,49 @@ class CWidget(QWidget):
             self.ld5Btn.setStyleSheet("background-color: green")
 
     def ld1AmpSet(self):
-        if self.ld1 == True:
-            header = 0x41
-            cmd = 0x14
-            data = float(self.ld1Amp.toPlainText())
-            data = np.uint16(3822.0*data - 608)   
-            self.sendLaser(header, cmd, data)
+        # if self.ld1 == True:
+        header = 0x29
+        cmd = 0x14
+        # data = float(self.ld1Amp.toPlainText())
+        # data = np.uint16(3822.0*data - 608)  
+        data = 0x0000 
+        self.sendLaser(header, cmd, data)
 
     def ld2AmpSet(self):
-        if self.ld2 == True:
-            header = 0x41
-            cmd = 0x15
-            data = float(self.ld2Amp.toPlainText())
-            data = np.uint16(3817.5 * data - 132.5)   
-            self.sendLaser(header, cmd, data)
+        # if self.ld2 == True:
+        header = 0x29
+        cmd = 0x15
+        # data = float(self.ld2Amp.toPlainText())
+        # data = np.uint16(3817.5 * data - 132.5)   
+        data = 0x0000
+        self.sendLaser(header, cmd, data)
 
     def ld3AmpSet(self):
-        if self.ld3 == True:
-            header = 0x41
-            cmd = 0x16
-            data = float(self.ld3Amp.toPlainText())
-            data = np.uint16(3832.5 * data + 432.5)   
-            self.sendLaser(header, cmd, data)
+        # if self.ld3 == True:
+        header = 0x29
+        cmd = 0x16
+        # data = float(self.ld3Amp.toPlainText())
+        # data = np.uint16(3832.5 * data + 432.5)
+        data = 0x0000   
+        self.sendLaser(header, cmd, data)
 
     def ld4AmpSet(self):
-        if self.ld4 == True:
-            header = 0x41
-            cmd = 0x17
-            data = float(self.ld4Amp.toPlainText())
-            data = np.uint16(3807.5 * data - 207.5)   
-            self.sendLaser(header, cmd, data)
+        # if self.ld4 == True:
+        header = 0x29
+        cmd = 0x17
+        # data = float(self.ld4Amp.toPlainText())
+        # data = np.uint16(3807.5 * data - 207.5)   
+        data = 0x0000
+        self.sendLaser(header, cmd, data)
 
     def ld5AmpSet(self):
-        if self.ld5 == True:
-            header = 0x41
-            cmd = 0x03
-            data = float(self.ld5Amp.toPlainText())
-            data = np.uint16(3792.5 * data - 207.5)   
-            self.sendLaser(header, cmd, data)
+        # if self.ld5 == True:
+        header = 0x29
+        cmd = 0x03
+        # data = float(self.ld5Amp.toPlainText())
+        # data = np.uint16(3792.5 * data - 207.5)   
+        data = 0x0000
+        self.sendLaser(header, cmd, data)
     
     def cPower(self):
         header = 1

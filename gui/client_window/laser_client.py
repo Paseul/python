@@ -65,7 +65,8 @@ class ClientSocket:
                 break
             else:
                 if recv:                    
-                    if recv[0] == 41 and recv[1] == 33:
+                    print(recv)
+                    if recv[0] == 2 and recv[1] == 0:
                         fmt = '>B B H H H H H H H H H H H H H H'
                         unpacked = struct.unpack(fmt, recv)
 
@@ -82,6 +83,7 @@ class ClientSocket:
         if not self.bConnect:
             return
         try:
+            print(sendData)
             self.client.send(sendData)
         except Exception as e:
             print('Send() Error : ', e)
