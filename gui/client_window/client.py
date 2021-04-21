@@ -8,12 +8,13 @@ import ser
 import struct
 import numpy as np
 import threading
+from time import sleep
 from struct import *
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
 port = 5000
-ip = '127.0.1.1' #'192.168.0.99'
+ip = '192.168.0.99' #'127.0.1.1'
 coolerPort = 502
 coolerIp = '192.168.0.3'
 coolerIp2 = '192.168.0.4'
@@ -229,37 +230,37 @@ class CWidget(QWidget):
         laserBitBox = QHBoxLayout()
         box.addLayout(laserBitBox)
 
-        label = QLabel('1단 프론트')
+        label = QLabel('PD Threthold')
         laserBitBox.addWidget(label)
         self.frontPower = QTextEdit()
         self.frontPower.setFixedHeight(27)
         laserBitBox.addWidget(self.frontPower)
 
-        label = QLabel('1단 리어')
+        label = QLabel('PD Value')
         laserBitBox.addWidget(label)
         self.rearPower = QTextEdit()
         self.rearPower.setFixedHeight(27)
         laserBitBox.addWidget(self.rearPower)
 
-        label = QLabel('1단 온도')
+        label = QLabel('FET')
         laserBitBox.addWidget(label)
         self.firstTemp = QTextEdit()
         self.firstTemp.setFixedHeight(27)
         laserBitBox.addWidget(self.firstTemp)
 
-        label = QLabel('2단 온도')
+        label = QLabel('LD')
         laserBitBox.addWidget(label)
         self.secondTemp = QTextEdit()
         self.secondTemp.setFixedHeight(27)
         laserBitBox.addWidget(self.secondTemp)
 
-        label = QLabel('3단 온도')
+        label = QLabel('Combiner')
         laserBitBox.addWidget(label)
         self.thirdTemp = QTextEdit()
         self.thirdTemp.setFixedHeight(27)
         laserBitBox.addWidget(self.thirdTemp)
 
-        label = QLabel('3단 플레이트')
+        label = QLabel('이득매질 Plate')
         laserBitBox.addWidget(label)
         self.thirdPlateTemp = QTextEdit()
         self.thirdPlateTemp.setFixedHeight(27)
@@ -271,7 +272,7 @@ class CWidget(QWidget):
         self.clsTemp.setFixedHeight(27)
         laserBitBox.addWidget(self.clsTemp)
 
-        label = QLabel('펌프')
+        label = QLabel('Dumper')
         laserBitBox.addWidget(label)
         self.pumpTemp = QTextEdit()
         self.pumpTemp.setFixedHeight(27)
@@ -502,18 +503,21 @@ class CWidget(QWidget):
                 self.btn.setStyleSheet("background-color: green")
                 self.btn.setText('접속 종료')
                 self.lconnect = True
+                self.laserBit()
             else:
                 self.lc.stop()
                 self.recvmsg.clear()
                 self.btn.setText('접속')
                 self.btn.setStyleSheet("background-color: lightgray")
                 self.lconnect = False
+                self.t3.cancel()
         else:
             self.lc.stop()
             self.recvmsg.clear()
             self.btn.setText('접속')
             self.btn.setStyleSheet("background-color: lightgray")
             self.lconnect = False
+            self.t3.cancel()
 
     def coolerConnect(self):
         if self.cc.bConnect == False:
@@ -569,25 +573,25 @@ class CWidget(QWidget):
             self.serConnect = False
 
     def updateLaser(self, ld1amp, ld2amp, ld3amp, ld4amp, ld5amp, temp1, temp2, temp3, temp3plate, tempcls, temppump, frontpower, rearpower, mdstatus):
-        self.ld1AmpRcv.setText(str(round((ld1amp+608.0) / 3822.0, 4)))
-        self.ld2AmpRcv.setText(str(round((ld2amp+132.5) / 3817.5, 4)))
-        self.ld3AmpRcv.setText(str(round((ld3amp-432.5) / 3832.5, 4)))
-        self.ld4AmpRcv.setText(str(round((ld4amp+542.5) / 3807.5, 4)))
-        self.ld5AmpRcv.setText(str(round((ld5amp+207.5) / 3792.5, 4)))
+        self.ld1AmpRcv.setText(str(round((self.swap16(ld1amp)+608.0) / 3822.0, 4)))
+        self.ld2AmpRcv.setText(str(round((self.swap16(ld2amp)+132.5) / 3817.5, 4)))
+        self.ld3AmpRcv.setText(str(round((self.swap16(ld3amp)-432.5) / 3832.5, 4)))
+        self.ld4AmpRcv.setText(str(round((self.swap16(ld4amp)+542.5) / 3807.5, 4)))
+        self.ld5AmpRcv.setText(str(round((self.swap16(ld5amp)+207.5) / 3792.5, 4)))
         if temp1 != 0:
-            self.firstTemp.setText(str(round(((1/((np.log(temp1/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1189 - 2.8153),4)))
+            self.firstTemp.setText(str(round(((1/((np.log(self.swap16(temp1)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1189 - 2.8153),4)))
         if temp2 != 0:
-            self.secondTemp.setText(str(round(((1/((np.log(temp2/26214.0) / 3950.0)+(1/298.0))-273.0)*1.2161 - 4.8080), 4)))
+            self.secondTemp.setText(str(round(((1/((np.log(self.swap16(temp2)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.2161 - 4.8080), 4)))
         if temp3 != 0:
-            self.thirdTemp.setText(str(round(((1/((np.log(temp3/26214.0) / 3950.0)+(1/298.0))-273.0)*1.4021 - 8.7607), 4)))
+            self.thirdTemp.setText(str(round(((1/((np.log(self.swap16(temp3)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.4021 - 8.7607), 4)))
         if temp3plate != 0:
-            self.thirdPlateTemp.setText(str(round(((1/((np.log(temp3plate/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1804 - 5.5092), 4)))
+            self.thirdPlateTemp.setText(str(round(((1/((np.log(self.swap16(temp3plate)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1804 - 5.5092), 4)))
         if tempcls != 0:
-            self.clsTemp.setText(str(round(((1/((np.log(tempcls/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1041 - 2.4323), 4)))
+            self.clsTemp.setText(str(round(((1/((np.log(self.swap16(tempcls)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1041 - 2.4323), 4)))
         if temppump != 0:
-            self.pumpTemp.setText(str(round(((1/((np.log(temppump/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1966 - 4.3200), 4)))
-        self.frontPower.setText(str(round(((frontpower+207.5) / 3792.5), 4)))
-        self.rearPower.setText(str(round(((rearpower+207.5) / 3792.5), 4)))
+            self.pumpTemp.setText(str(round(((1/((np.log(self.swap16(temppump)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1966 - 4.3200), 4)))
+        self.frontPower.setText(str(self.swap16(frontpower)))
+        self.rearPower.setText(str(self.swap16(rearpower)))
         # Interlock
         if mdstatus & 0b0001 == True:
             self.interBtn.setStyleSheet("background-color: red")
@@ -647,13 +651,17 @@ class CWidget(QWidget):
     def powerDisconnect(self):
         self.p_btn.setText('접속')  
 
-    def sendLaser(self, header, cmd, data):
-        values = (header, cmd, data)
+    def sendLaser(self, header, cmd, data):        
+        values = (header, cmd, self.swap16(data))
         fmt = '>B B H'
         packer = struct.Struct(fmt)
         sendData = packer.pack(*values)
 
         self.lc.send(sendData)
+
+    def swap16(self, x):
+        return ((x << 8) & 0xFF00 |
+               ((x >> 8) & 0x00FF))
 
     def sendLaser2(self, header, cmd):
         values = (header, cmd)
@@ -695,14 +703,14 @@ class CWidget(QWidget):
         if self.lconnect == True and self.mainStart == False:
             header = 0x29
             cmd = 0x12
-            data = 0x0100
+            data = 0x0001
             self.sendLaser(header, cmd, data)
             self.mainBtn.setText('Stop')
             self.mainBtn.setStyleSheet("background-color: green")
             self.mainStart = True
         elif self.lconnect == True and self.mainStart == True:
             header = 0x29
-            cmd = 0x01
+            cmd = 0x12
             data = 0x0000
             self.sendLaser(header, cmd, data)
             if self.lconnect == True and self.ldStart == True:
@@ -715,19 +723,19 @@ class CWidget(QWidget):
         if self.lconnect == True and self.ldStart == False:
             header = 0x29
             cmd = 0x01
-            data = 0x0500
+            data = 0x0005
             self.sendLaser(header, cmd, data)
-            # sleep(0.1)
-            # cmd = 0x11
-            # data = 0x0100
-            # self.sendLaser(header, cmd, data)
+            sleep(0.5)
+            cmd = 0x11
+            data = 0x0001
+            self.sendLaser(header, cmd, data)
             self.ldBtn.setText('LD Stop')
             self.ldBtn.setStyleSheet("background-color: green")
             self.ldStart = True
         elif self.lconnect == True and self.ldStart == True:
             header = 0x29
             cmd = 0x11
-            data = 0x0100
+            data = 0x0000
             self.sendLaser(header, cmd, data)
             self.ld1 = False
             self.ld2 = False
@@ -741,11 +749,11 @@ class CWidget(QWidget):
             self.ld3Btn.setStyleSheet("background-color: lightgray")
             self.ld4Btn.setStyleSheet("background-color: lightgray")
             self.ld5Btn.setStyleSheet("background-color: lightgray")
-            # self.ldStart = False
+            self.ldStart = False
 
     def ld1On(self):
         if self.ldStart == True:
-            header = 0x41
+            header = 0x29
             cmd = 0x11
             data = 0x0002
             self.sendLaser(header, cmd, data)
@@ -753,13 +761,13 @@ class CWidget(QWidget):
             self.ld1Btn.setStyleSheet("background-color: green")            
 
     def ld2On(self):
-        # if self.ldStart == True:
-        header = 0x28
-        cmd = 0x21
-        # data = 0x0004
-        self.sendLaser2(header, cmd)
-        self.ld2 = True
-        self.ld2Btn.setStyleSheet("background-color: green")
+        if self.ldStart == True:
+            header = 0x28
+            cmd = 0x21
+            data = 0x0004
+            self.sendLaser(header, cmd, data)
+            self.ld2 = True
+            self.ld2Btn.setStyleSheet("background-color: green")
 
     def ld3On(self):
         if self.ldStart == True:
@@ -789,48 +797,43 @@ class CWidget(QWidget):
             self.ld5Btn.setStyleSheet("background-color: green")
 
     def ld1AmpSet(self):
-        # if self.ld1 == True:
         header = 0x29
         cmd = 0x14
-        # data = float(self.ld1Amp.toPlainText())
-        # data = np.uint16(3822.0*data - 608)  
-        data = 0x0000 
+        data = float(self.ld1Amp.toPlainText())
+        data = np.uint16(3822.0*data - 608)  
+
         self.sendLaser(header, cmd, data)
 
     def ld2AmpSet(self):
-        # if self.ld2 == True:
         header = 0x29
         cmd = 0x15
-        # data = float(self.ld2Amp.toPlainText())
-        # data = np.uint16(3817.5 * data - 132.5)   
-        data = 0x0000
+        data = float(self.ld2Amp.toPlainText())
+        data = np.uint16(3817.5 * data - 132.5)   
+
         self.sendLaser(header, cmd, data)
 
     def ld3AmpSet(self):
-        # if self.ld3 == True:
         header = 0x29
         cmd = 0x16
-        # data = float(self.ld3Amp.toPlainText())
-        # data = np.uint16(3832.5 * data + 432.5)
-        data = 0x0000   
+        data = float(self.ld3Amp.toPlainText())
+        data = np.uint16(3832.5 * data + 432.5)
+ 
         self.sendLaser(header, cmd, data)
 
     def ld4AmpSet(self):
-        # if self.ld4 == True:
         header = 0x29
         cmd = 0x17
-        # data = float(self.ld4Amp.toPlainText())
-        # data = np.uint16(3807.5 * data - 207.5)   
-        data = 0x0000
+        data = float(self.ld4Amp.toPlainText())
+        data = np.uint16(3807.5 * data - 207.5)   
+
         self.sendLaser(header, cmd, data)
 
     def ld5AmpSet(self):
-        # if self.ld5 == True:
         header = 0x29
         cmd = 0x03
-        # data = float(self.ld5Amp.toPlainText())
-        # data = np.uint16(3792.5 * data - 207.5)   
-        data = 0x0000
+        data = float(self.ld5Amp.toPlainText())
+        data = np.uint16(3792.5 * data - 207.5)   
+
         self.sendLaser(header, cmd, data)
     
     def cPower(self):
@@ -869,6 +872,14 @@ class CWidget(QWidget):
         # self.t2 = threading.Timer(1, self.coolerBit)
         # self.t2.deamon = True
         # self.t2.start()
+
+    def laserBit(self):
+        header = 0x28
+        cmd = 0x21
+        self.sendLaser2(header, cmd)
+        self.t3 = threading.Timer(0.5, self.laserBit)
+        self.t3.deamon = True
+        self.t3.start()
 
     def clearMsg(self):
         self.recvmsg.clear()
