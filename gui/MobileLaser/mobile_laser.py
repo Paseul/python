@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from imutils.video import FPS
 from cv2 import dnn_superres
+import js
 
 class App(QWidget):
     def __init__(self):
@@ -29,6 +30,7 @@ class App(QWidget):
         self.ccd.changePixmap.connect(self.setCcdImage)        
         self.ccd.deamon = True
         self.ccd.start()        
+        js.control_start()
 
     def closeEvent(self, e):
         self.ccd.stop()
