@@ -7,7 +7,7 @@ from threading import *
 #로그인url
 url1 = "https://login.11st.co.kr/auth/front/login.tmall?returnURL=https%3A%2F%2Fwww.11st.co.kr%2Fmain%3Fgclid%3DCj0KCQiAnb79BRDgARIsAOVbhRrxibgsWBSGunpebFEvij9z7MOpeQv4iNIikxW9Uk2AlhDw9lAYl1UaAta7EALw_wcB%26utm_term%3D11%25B9%25F8%25B0%25A1%26utm_campaign%3D%2B0810%2BPC%2B%25BA%25EA%25B7%25A3%25B5%25E5%2BK%2B%25B8%25DE%25C0%25CE%25B7%25A3%25B5%25F9%25C0%25B8%25B7%25CE%25BF%25AC%25B0%25E1%26utm_source%3D%25B1%25B8%25B1%25DB_PC_S%26utm_medium%3D%25B0%25CB%25BB%25F6"
 #상품url
-url2 = 'http://www.11st.co.kr/products/3167879989?trTypeCd=03&trCtgrNo=2050639'
+url2 = 'http://www.11st.co.kr/products/3265409519?trTypeCd=03&trCtgrNo=2054107'
 # url2 = 'http://www.11st.co.kr/products/3326702930?trTypeCd=03&trCtgrNo=2051889'
 url3 = 'https://buy.11st.co.kr/cart/CartAction.tmall?method=getCartList'
 
@@ -22,19 +22,19 @@ chrome_options2 = webdriver.ChromeOptions()
 chrome_options2.add_experimental_option("prefs", prefs)
 # driver = webdriver.Chrome("/home/jh/chromedriver", options=chrome_options)
 # driver2 = webdriver.Chrome("/home/jh/chromedriver")
-driver = webdriver.Chrome("C:\chromedriver_win32\chromedriver", options=chrome_options)
-driver2 = webdriver.Chrome("C:\chromedriver_win32\chromedriver", options=chrome_options2)
+driver = webdriver.Chrome("C:\chromedriver", options=chrome_options)
+driver2 = webdriver.Chrome("C:\chromedriver", options=chrome_options2)
 driver2.maximize_window()
 
 driver.get(url1)
 driver2.get(url1)
 
 #send_keys부분에 아이디를 적어주세요
-driver.find_element_by_name('loginName').send_keys('starbgh123')
-driver2.find_element_by_name('loginName').send_keys('starbgh123')
+driver.find_element_by_name('loginName').send_keys('machianb')
+driver2.find_element_by_name('loginName').send_keys('machianb')
 #send_keys부분에 비밀번를 적어주세요
-driver.find_element_by_name('passWord').send_keys('wlgP7942')
-driver2.find_element_by_name('passWord').send_keys('wlgP7942')
+driver.find_element_by_name('passWord').send_keys('!Phoenix7')
+driver2.find_element_by_name('passWord').send_keys('!Phoenix7')
 
 driver.find_element_by_class_name("btn_Atype").click()
 driver2.find_element_by_class_name("btn_Atype").click()
