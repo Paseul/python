@@ -7,8 +7,8 @@ from threading import *
 #로그인url
 url1 = "https://login.11st.co.kr/auth/front/login.tmall?returnURL=https%3A%2F%2Fwww.11st.co.kr%2Fmain%3Fgclid%3DCj0KCQiAnb79BRDgARIsAOVbhRrxibgsWBSGunpebFEvij9z7MOpeQv4iNIikxW9Uk2AlhDw9lAYl1UaAta7EALw_wcB%26utm_term%3D11%25B9%25F8%25B0%25A1%26utm_campaign%3D%2B0810%2BPC%2B%25BA%25EA%25B7%25A3%25B5%25E5%2BK%2B%25B8%25DE%25C0%25CE%25B7%25A3%25B5%25F9%25C0%25B8%25B7%25CE%25BF%25AC%25B0%25E1%26utm_source%3D%25B1%25B8%25B1%25DB_PC_S%26utm_medium%3D%25B0%25CB%25BB%25F6"
 #상품url
-url2 = 'http://www.11st.co.kr/products/3265409519?trTypeCd=03&trCtgrNo=2054107'
-# url2 = 'http://www.11st.co.kr/products/3326702930?trTypeCd=03&trCtgrNo=2051889'
+# url2 = 'http://www.11st.co.kr/products/3265409519?trTypeCd=03&trCtgrNo=2054107'
+url2 = 'http://www.11st.co.kr/products/3127972957?trTypeCd=03&trCtgrNo=2050639'
 url3 = 'https://buy.11st.co.kr/cart/CartAction.tmall?method=getCartList'
 
 print('페이지 로딩중...')
