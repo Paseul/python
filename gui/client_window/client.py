@@ -471,7 +471,7 @@ class CWidget(QWidget):
         # data
         self.dataMsg = QTextEdit()
         self.dataMsg.setFixedHeight(30)
-        self.dataMsg.setText('1234')
+        self.dataMsg.setText('0001')
         messageBox.addWidget(self.dataMsg)
         # 전송
         self.sendBtn = QPushButton('보내기')
@@ -573,11 +573,11 @@ class CWidget(QWidget):
             self.serConnect = False
 
     def updateLaser(self, ld1amp, ld2amp, ld3amp, ld4amp, ld5amp, temp1, temp2, temp3, temp3plate, tempcls, temppump, frontpower, rearpower, mdstatus):
-        self.ld1AmpRcv.setText(str(round((self.swap16(ld1amp)+608.0) / 3822.0, 4)))
-        self.ld2AmpRcv.setText(str(round((self.swap16(ld2amp)+132.5) / 3817.5, 4)))
-        self.ld3AmpRcv.setText(str(round((self.swap16(ld3amp)-432.5) / 3832.5, 4)))
-        self.ld4AmpRcv.setText(str(round((self.swap16(ld4amp)+542.5) / 3807.5, 4)))
-        self.ld5AmpRcv.setText(str(round((self.swap16(ld5amp)+207.5) / 3792.5, 4)))
+        self.ld1AmpRcv.setText(str(round((((self.swap16(ld1amp)+608.0) / 3822.0) + 0.00615) / 1.02249, 4)))
+        self.ld2AmpRcv.setText(str(round((((self.swap16(ld2amp)+132.5) / 3817.5) + 0.00819) / 1.02040, 4)))
+        self.ld3AmpRcv.setText(str(round((((self.swap16(ld3amp)-432.5) / 3832.5) - 0.00306) / 1.02354, 4)))
+        self.ld4AmpRcv.setText(str(round((((self.swap16(ld4amp)+542.5) / 3807.5) - 0.00100) / 1.02563, 4)))
+        self.ld5AmpRcv.setText(str(round((((self.swap16(ld5amp)+207.5) / 3792.5) - 0.00106) / 1.02353, 4)))
         if temp1 != 0:
             self.firstTemp.setText(str(round(((1/((np.log(self.swap16(temp1)/26214.0) / 3950.0)+(1/298.0))-273.0)*1.1189 - 2.8153),4)))
         if temp2 != 0:
@@ -656,7 +656,7 @@ class CWidget(QWidget):
         fmt = '>B B H'
         packer = struct.Struct(fmt)
         sendData = packer.pack(*values)
-
+        print(sendData)
         self.lc.send(sendData)
 
     def swap16(self, x):
@@ -702,6 +702,14 @@ class CWidget(QWidget):
     def mainToggle(self):
         if self.lconnect == True and self.mainStart == False:
             header = 0x29
+            cmd = 0x01
+            data = 0x0001
+            self.sendLaser(header, cmd, data)
+            sleep(0.5)
+            cmd = 0x12
+            data = 0x0000
+            self.sendLaser(header, cmd, data)
+            sleep(0.5)
             cmd = 0x12
             data = 0x0001
             self.sendLaser(header, cmd, data)
@@ -710,11 +718,9 @@ class CWidget(QWidget):
             self.mainStart = True
         elif self.lconnect == True and self.mainStart == True:
             header = 0x29
-            cmd = 0x12
+            cmd = 0x01
             data = 0x0000
             self.sendLaser(header, cmd, data)
-            if self.lconnect == True and self.ldStart == True:
-                self.ldToggle()
             self.mainBtn.setText('Start')
             self.mainBtn.setStyleSheet("background-color: lightgray")
             self.mainStart = False
@@ -734,14 +740,13 @@ class CWidget(QWidget):
             self.ldStart = True
         elif self.lconnect == True and self.ldStart == True:
             header = 0x29
+            cmd = 0x01
+            data = 0x0000
+            self.sendLaser(header, cmd, data)
+            sleep(0.5)
             cmd = 0x11
             data = 0x0000
             self.sendLaser(header, cmd, data)
-            self.ld1 = False
-            self.ld2 = False
-            self.ld3 = False
-            self.ld4 = False
-            self.ld5 = False
             self.ldBtn.setText('LD Strat')
             self.ldBtn.setStyleSheet("background-color: lightgray")
             self.ld1Btn.setStyleSheet("background-color: lightgray")    
@@ -755,43 +760,42 @@ class CWidget(QWidget):
         if self.ldStart == True:
             header = 0x29
             cmd = 0x11
-            data = 0x0002
+            data = 0x0003
             self.sendLaser(header, cmd, data)
-            self.ld1 = True
             self.ld1Btn.setStyleSheet("background-color: green")            
 
     def ld2On(self):
         if self.ldStart == True:
-            header = 0x28
-            cmd = 0x21
-            data = 0x0004
+            header = 0x29
+            cmd = 0x11
+            data = 0x0005
             self.sendLaser(header, cmd, data)
             self.ld2 = True
             self.ld2Btn.setStyleSheet("background-color: green")
 
     def ld3On(self):
         if self.ldStart == True:
-            header = 0x41
+            header = 0x29
             cmd = 0x11
-            data = 0x0008
+            data = 0x0009
             self.sendLaser(header, cmd, data)
             self.ld3 = True
             self.ld3Btn.setStyleSheet("background-color: green")
 
     def ld4On(self):
         if self.ldStart == True:
-            header = 0x41
+            header = 0x29
             cmd = 0x11
-            data = 0x0010
+            data = 0x0011
             self.sendLaser(header, cmd, data)
             self.ld4 = True
             self.ld4Btn.setStyleSheet("background-color: green")
 
     def ld5On(self):
         if self.ldStart == True:
-            header = 0x41
+            header = 0x29 
             cmd = 0x01
-            data = 0x0010
+            data = 0x0015
             self.sendLaser(header, cmd, data)
             self.ld5 = True
             self.ld5Btn.setStyleSheet("background-color: green")
@@ -800,7 +804,7 @@ class CWidget(QWidget):
         header = 0x29
         cmd = 0x14
         data = float(self.ld1Amp.toPlainText())
-        data = np.uint16(3822.0*data - 608)  
+        data = np.uint16((3822.0*data - 608)*1.02249 + 0.00615)  
 
         self.sendLaser(header, cmd, data)
 
@@ -808,7 +812,7 @@ class CWidget(QWidget):
         header = 0x29
         cmd = 0x15
         data = float(self.ld2Amp.toPlainText())
-        data = np.uint16(3817.5 * data - 132.5)   
+        data = np.uint16((3817.5 * data - 132.5)*1.02040 0.00819)   
 
         self.sendLaser(header, cmd, data)
 
@@ -816,7 +820,7 @@ class CWidget(QWidget):
         header = 0x29
         cmd = 0x16
         data = float(self.ld3Amp.toPlainText())
-        data = np.uint16(3832.5 * data + 432.5)
+        data = np.uint16((3832.5 * data + 432.5)*1.02354 - 0.00306)
  
         self.sendLaser(header, cmd, data)
 
@@ -824,7 +828,7 @@ class CWidget(QWidget):
         header = 0x29
         cmd = 0x17
         data = float(self.ld4Amp.toPlainText())
-        data = np.uint16(3807.5 * data - 207.5)   
+        data = np.uint16((3807.5 * data - 207.5)*1.02563 - 0.001)   
 
         self.sendLaser(header, cmd, data)
 
@@ -832,7 +836,8 @@ class CWidget(QWidget):
         header = 0x29
         cmd = 0x03
         data = float(self.ld5Amp.toPlainText())
-        data = np.uint16(3792.5 * data - 207.5)   
+        data = 3792.5 * data - 207.5
+        data = np.uint16((data*1.02352 - 0.00106)*1.02352 - 0.00106)  
 
         self.sendLaser(header, cmd, data)
     
