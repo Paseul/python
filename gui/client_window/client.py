@@ -119,112 +119,119 @@ class CWidget(QWidget):
         laserBtBox.addWidget(self.interBtn)
 
         # 라벨
-        laserLabelBox = QHBoxLayout()
-        box.addLayout(laserLabelBox)
+        ampLabelBox = QHBoxLayout()
+        box.addLayout(ampLabelBox)
 
-        label = QLabel('LD No.')
-        laserLabelBox.addWidget(label)
-        label = QLabel('Amp Set')
-        laserLabelBox.addWidget(label)
-        label = QLabel('Voltage')
-        laserLabelBox.addWidget(label)
-        label = QLabel('Amp')
-        laserLabelBox.addWidget(label)
+        label = QLabel('LD 설정')
+        ampLabelBox.addWidget(label)
 
         # LD1 설정
-        ld1Box = QHBoxLayout()
-        box.addLayout(ld1Box)
+        ldBox = QHBoxLayout()
+        box.addLayout(ldBox)
 
         self.ld1SetBtn = QPushButton('LD 1')
         self.ld1SetBtn.setAutoDefault(True)
         self.ld1SetBtn.clicked.connect(self.ld1AmpSet)
-        ld1Box.addWidget(self.ld1SetBtn)
+        ldBox.addWidget(self.ld1SetBtn)
         self.ld1Amp = QTextEdit()
         self.ld1Amp.setText('0.123')
         self.ld1Amp.setFixedHeight(27)
-        ld1Box.addWidget(self.ld1Amp)
-        # self.ld1VolRcv = QTextEdit()
-        # self.ld1VolRcv.setFixedHeight(27)
-        # ld1Box.addWidget(self.ld1VolRcv)
+        ldBox.addWidget(self.ld1Amp)
         self.ld1AmpRcv = QTextEdit()
         self.ld1AmpRcv.setFixedHeight(27)
-        ld1Box.addWidget(self.ld1AmpRcv)
+        ldBox.addWidget(self.ld1AmpRcv)
 
         # LD2 설정
-        # ld2Box = QHBoxLayout()
-        # box.addLayout(ld2Box)
-
         self.ld2SetBtn = QPushButton('LD 2')
         self.ld2SetBtn.setAutoDefault(True)
         self.ld2SetBtn.clicked.connect(self.ld2AmpSet)
-        ld1Box.addWidget(self.ld2SetBtn)
+        ldBox.addWidget(self.ld2SetBtn)
         self.ld2Amp = QTextEdit()
         self.ld2Amp.setText('0.234')
         self.ld2Amp.setFixedHeight(27)
-        ld1Box.addWidget(self.ld2Amp)
-        # self.ld2VolRcv = QTextEdit()
-        # self.ld2VolRcv.setFixedHeight(27)
-        # ld2Box.addWidget(self.ld2VolRcv)
+        ldBox.addWidget(self.ld2Amp)
         self.ld2AmpRcv = QTextEdit()
         self.ld2AmpRcv.setFixedHeight(27)
-        ld1Box.addWidget(self.ld2AmpRcv)
+        ldBox.addWidget(self.ld2AmpRcv)
 
-        # # LD3 설정
-        # ld3Box = QHBoxLayout()
-        # box.addLayout(ld3Box)
-
+        # LD3 설정
         self.ld3SetBtn = QPushButton('LD 3')
         self.ld3SetBtn.setAutoDefault(True)
         self.ld3SetBtn.clicked.connect(self.ld3AmpSet)
-        ld1Box.addWidget(self.ld3SetBtn)
+        ldBox.addWidget(self.ld3SetBtn)
         self.ld3Amp = QTextEdit()
         self.ld3Amp.setText('0.345')
         self.ld3Amp.setFixedHeight(27)
-        ld1Box.addWidget(self.ld3Amp)
-        # self.ld3VolRcv = QTextEdit()
-        # self.ld3VolRcv.setFixedHeight(27)
-        # ld3Box.addWidget(self.ld3VolRcv)
+        ldBox.addWidget(self.ld3Amp)
         self.ld3AmpRcv = QTextEdit()
         self.ld3AmpRcv.setFixedHeight(27)
-        ld1Box.addWidget(self.ld3AmpRcv)
+        ldBox.addWidget(self.ld3AmpRcv)
 
         # LD4 설정
-        # ld4Box = QHBoxLayout()
-        # box.addLayout(ld4Box)
-
         self.ld4SetBtn = QPushButton('LD 4')
         self.ld4SetBtn.setAutoDefault(True)
         self.ld4SetBtn.clicked.connect(self.ld4AmpSet)
-        ld1Box.addWidget(self.ld4SetBtn)
+        ldBox.addWidget(self.ld4SetBtn)
         self.ld4Amp = QTextEdit()
         self.ld4Amp.setText('0.456')
         self.ld4Amp.setFixedHeight(27)
-        ld1Box.addWidget(self.ld4Amp)
-        # self.ld4VolRcv = QTextEdit()
-        # self.ld4VolRcv.setFixedHeight(27)
-        # ld4Box.addWidget(self.ld4VolRcv)
+        ldBox.addWidget(self.ld4Amp)
         self.ld4AmpRcv = QTextEdit()
         self.ld4AmpRcv.setFixedHeight(27)
-        ld1Box.addWidget(self.ld4AmpRcv)
+        ldBox.addWidget(self.ld4AmpRcv)
 
         # LD5 설정
-        # ld5Box = QHBoxLayout()
-        # box.addLayout(ld5Box)
-
         self.ld5SetBtn = QPushButton('LD 5')
         self.ld5SetBtn.setAutoDefault(True)
         self.ld5SetBtn.clicked.connect(self.ld5AmpSet)
-        ld1Box.addWidget(self.ld5SetBtn)
+        ldBox.addWidget(self.ld5SetBtn)
         self.ld5Amp = QTextEdit()
         self.ld5Amp.setText('0.564')
         self.ld5Amp.setFixedHeight(27)
-        ld1Box.addWidget(self.ld5Amp)
-        # self.ld5VolRcv = QTextEdit()
-        # self.ld5VolRcv.setFixedHeight(27)
-        # ld5Box.addWidget(self.ld5VolRcv)
+        ldBox.addWidget(self.ld5Amp)
         self.ld5AmpRcv = QTextEdit()
         self.ld5AmpRcv.setFixedHeight(27)
-        ld1Box.addWidget(self.ld5AmpRcv)
+        ldBox.addWidget(self.ld5AmpRcv)
+
+        # LD1 설정
+        saBox = QHBoxLayout()
+        box.addLayout(saBox)
+
+        self.ldTimeBtn = QPushButton('구동 시간')
+        self.ldTimeBtn.setAutoDefault(True)
+        self.ldTimeBtn.clicked.connect(self.ldThresSet)
+        self.ldTimeBtn.setFixedWidth(80)
+        saBox.addWidget(self.ldTimeBtn)
+        self.ldTime = QTextEdit()
+        self.ldTime.setText('10')
+        self.ldTime.setFixedHeight(27)
+        self.ldTime.setFixedWidth(118)
+        saBox.addWidget(self.ldTime)
+
+        self.ldThresBtn = QPushButton('Thres Set')
+        self.ldThresBtn.setAutoDefault(True)
+        self.ldThresBtn.clicked.connect(self.ldThresSet)
+        self.ldThresBtn.setFixedWidth(80)
+        saBox.addWidget(self.ldThresBtn)
+        self.ldThres = QTextEdit()
+        self.ldThres.setText('12345')
+        self.ldThres.setFixedHeight(27)
+        self.ldThres.setFixedWidth(118)
+        saBox.addWidget(self.ldThres)
+
+        self.ldSASetBtn = QPushButton('StandAlone Set')
+        self.ldSASetBtn.setAutoDefault(True)
+        self.ldSASetBtn.clicked.connect(self.ldSASet)
+        self.ldSASetBtn.setFixedWidth(118)
+        saBox.addWidget(self.ldSASetBtn)
+        saBox.setAlignment(Qt.AlignLeft)
+
+        # 라벨
+        tempLabelBox = QHBoxLayout()
+        box.addLayout(tempLabelBox)
+
+        label = QLabel('온도 수신')
+        tempLabelBox.addWidget(label)
 
         # 레이저 BIT 설정
         laserBitBox = QHBoxLayout()
@@ -601,13 +608,6 @@ class CWidget(QWidget):
         self.recvmsg.addItem("[Laser]: " + str(hex(ld1amp)) + " /" + str(hex(ld2amp)) + " /" + str(hex(ld3amp)) + " /" + str(hex(ld4amp)) + " /" + str(hex(ld5amp))\
              + " /" + str(hex(temp1)) + " /" + str(hex(temp2)) + " /" + str(hex(temp3)) + " /" + str(hex(temp3plate)) + " /" + str(hex(tempcls)) + " /" + str(hex(temppump))\
                   + " /" + str(hex(frontpower)) + " /" + str(hex(rearpower)) + " /" + str(hex(mdstatus)))
-
-        # self.ld1VolRcv.setText(str(round(ld1volt*0.0012 -0.0540, 4)))
-        # self.ld2VolRcv.setText(str(round(ld2volt*0.0012 -0.0332, 4)))
-        # self.ld3VolRcv.setText(str(round(ld3volt*0.0012 -0.0615, 4)))
-        # self.ld4VolRcv.setText(str(round(ld4volt*0.0012 -0.0136, 4)))
-        # self.ld5VolRcv.setText(str(round((ld5volt+207.5) / 3792.5, 4)))
-
         
     def updateCooler(self, func, val1, val2):
         if func == 5:
@@ -670,6 +670,14 @@ class CWidget(QWidget):
         sendData = packer.pack(*values)
 
         self.lc.send(sendData)
+
+    def sendLaser3(self, header, cmd, ld1, ld2, ld3, ld4, ld5, ldTime, ldThres):
+        values = (header, cmd, self.swap16(ld1), self.swap16(ld2), self.swap16(ld3), self.swap16(ld4), self.swap16(ld5), self.swap16(ldTime), self.swap16(ldThres))
+        fmt = '>B B H H H H H H H'
+        packer = struct.Struct(fmt)
+        sendData = packer.pack(*values)
+
+        self.lc.send(sendData)
     
     def sendCooler(self, header, cmd, addr, data):
         trans = 0
@@ -707,22 +715,18 @@ class CWidget(QWidget):
             self.sendLaser(header, cmd, data)
             sleep(0.5)
             cmd = 0x12
-            data = 0x0000
-            self.sendLaser(header, cmd, data)
-            sleep(0.5)
-            cmd = 0x12
             data = 0x0001
             self.sendLaser(header, cmd, data)
-            self.mainBtn.setText('Stop')
+            self.mainBtn.setText('Manual')
             self.mainBtn.setStyleSheet("background-color: green")
             self.mainStart = True
         elif self.lconnect == True and self.mainStart == True:
             header = 0x29
-            cmd = 0x01
+            cmd = 0x12
             data = 0x0000
             self.sendLaser(header, cmd, data)
-            self.mainBtn.setText('Start')
-            self.mainBtn.setStyleSheet("background-color: lightgray")
+            self.mainBtn.setText('Auto')
+            self.mainBtn.setStyleSheet("background-color: blue")
             self.mainStart = False
 
     def ldToggle(self):
@@ -812,7 +816,7 @@ class CWidget(QWidget):
         header = 0x29
         cmd = 0x15
         data = float(self.ld2Amp.toPlainText())
-        data = np.uint16((3817.5 * data - 132.5)*1.02040 0.00819)   
+        data = np.uint16((3817.5 * data - 132.5)*1.02040 + 0.00819)   
 
         self.sendLaser(header, cmd, data)
 
@@ -836,10 +840,40 @@ class CWidget(QWidget):
         header = 0x29
         cmd = 0x03
         data = float(self.ld5Amp.toPlainText())
-        data = 3792.5 * data - 207.5
         data = np.uint16((data*1.02352 - 0.00106)*1.02352 - 0.00106)  
 
         self.sendLaser(header, cmd, data)
+
+    def ldTimeSet(self):
+        header = 0x29
+        cmd = 0x13
+        data = np.uint16(float(self.ldTime.toPlainText()))  
+
+        self.sendLaser(header, cmd, data)
+
+    def ldThresSet(self):
+        header = 0x29
+        cmd = 0x0C
+        data = np.uint16(float(self.ldThres.toPlainText()))  
+
+        self.sendLaser(header, cmd, data)
+
+    def ldSASet(self):
+        header = 0x29
+        cmd = 0x0C
+        ld1 = float(self.ld1Amp.toPlainText())
+        ld1 = np.uint16((3822.0*data - 608)*1.02249 + 0.00615)  
+        ld2 = float(self.ld2Amp.toPlainText())s
+        ld2 = np.uint16((3817.5 * data - 132.5)*1.02040 + 0.00819)
+        ld3 = float(self.ld3Amp.toPlainText())
+        ld3 = np.uint16((3832.5 * data + 432.5)*1.02354 - 0.00306)
+        ld4 = float(self.ld4Amp.toPlainText())
+        ld4 = np.uint16((3807.5 * data - 207.5)*1.02563 - 0.001)   
+        ld5 = float(self.ld5Amp.toPlainText())
+        ld5 = np.uint16((data*1.02352 - 0.00106)*1.02352 - 0.00106)  
+        ldTime = np.uint16(float(self.ldTime.toPlainText()))  
+        ldThres = np.uint16(float(self.ldThres.toPlainText()))  
+        self.sendLaser3(header, cmd, ld1, ld2, ld3, ld4, ld5, ldTime, ldThres)
     
     def cPower(self):
         header = 1
