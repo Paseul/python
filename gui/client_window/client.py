@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import *
 import sys
 import laser_client
 import cooler_client
+import thermo_beacon
 import ser
 import struct
 import numpy as np
@@ -47,6 +48,8 @@ class CWidget(QWidget):
 
         self.initUI()
 
+        thermo_beacon.ThermoBeacon(self)
+
     def __del__(self):
         self.lc.stop()
         self.cc.stop()
@@ -78,9 +81,21 @@ class CWidget(QWidget):
         laserIpBox.addWidget(label)
         laserIpBox.addWidget(self.port)
 
+        label = QLabel('온도')
+        laserIpBox.addWidget(label)
+        self.temp = QTextEdit()
+        self.temp.setFixedHeight(27)
+        laserIpBox.addWidget(self.temp)
+
+        label = QLabel('습도')
+        laserIpBox.addWidget(label)
+        self.humidity = QTextEdit()
+        self.humidity.setFixedHeight(27)
+        laserIpBox.addWidget(self.humidity)
+
         self.btn = QPushButton('접속')
         self.btn.clicked.connect(self.laserConnect)
-        laserIpBox.addWidget(self.btn)
+        laserIpBox.addWidget(self.btn)        
 
         # Enable 버튼 설정
         laserBtBox = QHBoxLayout()
@@ -502,6 +517,10 @@ class CWidget(QWidget):
 
         self.show()
 
+    def thermoBeacon(self, TempData, HumidityData):
+        self.temp.setText(str(round(TempData, 4)))
+        self.humidity.setText(str(round(HumidityData, 4)))
+
     def laserConnect(self):
         if self.lc.bConnect == False:
             ip = self.ip.text()
@@ -863,7 +882,7 @@ class CWidget(QWidget):
         cmd = 0x0C
         ld1 = float(self.ld1Amp.toPlainText())
         ld1 = np.uint16((3822.0*data - 608)*1.02249 + 0.00615)  
-        ld2 = float(self.ld2Amp.toPlainText())s
+        ld2 = float(self.ld2Amp.toPlainText())
         ld2 = np.uint16((3817.5 * data - 132.5)*1.02040 + 0.00819)
         ld3 = float(self.ld3Amp.toPlainText())
         ld3 = np.uint16((3832.5 * data + 432.5)*1.02354 - 0.00306)
