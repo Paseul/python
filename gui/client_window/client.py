@@ -149,7 +149,7 @@ class CWidget(QWidget):
         self.ld1SetBtn.clicked.connect(self.ld1AmpSet)
         ldBox.addWidget(self.ld1SetBtn)
         self.ld1Amp = QTextEdit()
-        self.ld1Amp.setText('0.123')
+        self.ld1Amp.setText('1.000')
         self.ld1Amp.setFixedHeight(27)
         ldBox.addWidget(self.ld1Amp)
         self.ld1AmpRcv = QTextEdit()
@@ -162,7 +162,7 @@ class CWidget(QWidget):
         self.ld2SetBtn.clicked.connect(self.ld2AmpSet)
         ldBox.addWidget(self.ld2SetBtn)
         self.ld2Amp = QTextEdit()
-        self.ld2Amp.setText('0.234')
+        self.ld2Amp.setText('1.001')
         self.ld2Amp.setFixedHeight(27)
         ldBox.addWidget(self.ld2Amp)
         self.ld2AmpRcv = QTextEdit()
@@ -175,7 +175,7 @@ class CWidget(QWidget):
         self.ld3SetBtn.clicked.connect(self.ld3AmpSet)
         ldBox.addWidget(self.ld3SetBtn)
         self.ld3Amp = QTextEdit()
-        self.ld3Amp.setText('0.345')
+        self.ld3Amp.setText('1.002')
         self.ld3Amp.setFixedHeight(27)
         ldBox.addWidget(self.ld3Amp)
         self.ld3AmpRcv = QTextEdit()
@@ -188,7 +188,7 @@ class CWidget(QWidget):
         self.ld4SetBtn.clicked.connect(self.ld4AmpSet)
         ldBox.addWidget(self.ld4SetBtn)
         self.ld4Amp = QTextEdit()
-        self.ld4Amp.setText('0.456')
+        self.ld4Amp.setText('1.003')
         self.ld4Amp.setFixedHeight(27)
         ldBox.addWidget(self.ld4Amp)
         self.ld4AmpRcv = QTextEdit()
@@ -201,7 +201,7 @@ class CWidget(QWidget):
         self.ld5SetBtn.clicked.connect(self.ld5AmpSet)
         ldBox.addWidget(self.ld5SetBtn)
         self.ld5Amp = QTextEdit()
-        self.ld5Amp.setText('0.564')
+        self.ld5Amp.setText('1.004')
         self.ld5Amp.setFixedHeight(27)
         ldBox.addWidget(self.ld5Amp)
         self.ld5AmpRcv = QTextEdit()
@@ -695,6 +695,7 @@ class CWidget(QWidget):
         fmt = '>B B H H H H H H H'
         packer = struct.Struct(fmt)
         sendData = packer.pack(*values)
+        print(sendData)
 
         self.lc.send(sendData)
     
@@ -859,7 +860,7 @@ class CWidget(QWidget):
         header = 0x29
         cmd = 0x03
         data = float(self.ld5Amp.toPlainText())
-        data = np.uint16((data*1.02352 - 0.00106)*1.02352 - 0.00106)  
+        data = np.uint16((data*3807.5 - 542.5)*1.02352 - 0.00106)  
 
         self.sendLaser(header, cmd, data)
 
@@ -879,17 +880,17 @@ class CWidget(QWidget):
 
     def ldSASet(self):
         header = 0x29
-        cmd = 0x0C
-        ld1 = float(self.ld1Amp.toPlainText())
+        cmd = 0x23
+        data = float(self.ld1Amp.toPlainText())
         ld1 = np.uint16((3822.0*data - 608)*1.02249 + 0.00615)  
-        ld2 = float(self.ld2Amp.toPlainText())
+        data = float(self.ld2Amp.toPlainText())
         ld2 = np.uint16((3817.5 * data - 132.5)*1.02040 + 0.00819)
-        ld3 = float(self.ld3Amp.toPlainText())
+        data = float(self.ld3Amp.toPlainText())
         ld3 = np.uint16((3832.5 * data + 432.5)*1.02354 - 0.00306)
-        ld4 = float(self.ld4Amp.toPlainText())
+        data = float(self.ld4Amp.toPlainText())
         ld4 = np.uint16((3807.5 * data - 207.5)*1.02563 - 0.001)   
-        ld5 = float(self.ld5Amp.toPlainText())
-        ld5 = np.uint16((data*1.02352 - 0.00106)*1.02352 - 0.00106)  
+        data = float(self.ld5Amp.toPlainText())
+        ld5 = np.uint16((data*3807.5 - 542.5)*1.02352 - 0.00106)  
         ldTime = np.uint16(float(self.ldTime.toPlainText()))  
         ldThres = np.uint16(float(self.ldThres.toPlainText()))  
         self.sendLaser3(header, cmd, ld1, ld2, ld3, ld4, ld5, ldTime, ldThres)
