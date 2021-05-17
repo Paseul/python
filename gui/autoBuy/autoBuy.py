@@ -23,9 +23,9 @@ driver.maximize_window()
 driver.get(url1)
 
 #send_keys부분에 아이디를 적어주세요
-driver.find_element_by_name('loginName').send_keys('machianb')
+driver.find_element_by_name('loginName').send_keys('starbgh123')
 #send_keys부분에 비밀번를 적어주세요
-driver.find_element_by_name('passWord').send_keys('!Phoenix7')
+driver.find_element_by_name('passWord').send_keys('wlgP7942')
 
 driver.find_element_by_class_name("btn_Atype").click()
 print('로그인 완료')
@@ -50,7 +50,7 @@ while True:
         driver.find_element_by_xpath('//*[@id="optionContainer"]/div[1]/div[1]/button').click()
         driver.implicitly_wait(10)
         time.sleep(0.2)
-        driver.find_element_by_xpath('//*[@id="optlst_prdGrp"]/li[4]/a').click()
+        driver.find_element_by_xpath('//*[@id="optlst_0"]/li[2]/a/span[1]').click()
         driver.implicitly_wait(10)
         time.sleep(0.2)
         driver.find_element_by_xpath('//*[@id="optionContainer"]/div[3]/div[2]/button').click()
@@ -67,6 +67,6 @@ while True:
         pyautogui.click()
         pyautogui.moveTo(1490, 520, 0)
         pyautogui.click()
-        # pyautogui.click()
+        pyautogui.click()
         break
 
