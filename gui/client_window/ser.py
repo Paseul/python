@@ -7,6 +7,8 @@ import signal
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 import struct
 import numpy as np
+import csv
+import datetime
 
 line = [] #라인 단위로 데이터 가져올 리스트 변수
 

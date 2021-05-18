@@ -547,7 +547,7 @@ class CWidget(QWidget):
 
     def coolerConnect(self):
         if self.cc.bConnect == False:
-            ip = self.c_ip.text()
+            ip = self.c_ip1.text()
             port = self.c_port.text()
             if self.cc.connectServer(ip, int(port)):                
                 self.cconnect = True
@@ -860,7 +860,9 @@ class CWidget(QWidget):
         header = 0x29
         cmd = 0x03
         data = float(self.ld5Amp.toPlainText())
-        data = np.uint16((data*3807.5 - 542.5)*1.02352 - 0.00106)  
+        if data == 0:
+            data = 0.144
+        data = np.uint16((data*3807.5 - 542.5)*1.02352 - 0.00106)
 
         self.sendLaser(header, cmd, data)
 
@@ -915,8 +917,8 @@ class CWidget(QWidget):
     def coolerTemp(self):
         header = 1
         cmd = 4
-        addr = 1
-        data = 3
+        addr = 0
+        data = 2
         self.sendCooler(header, cmd, addr, data)    
         # self.t1 = threading.Timer(1, self.coolerTemp)
         # self.t1.deamon = True

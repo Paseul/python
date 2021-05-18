@@ -2,7 +2,8 @@ from threading import *
 from socket import *
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 import struct
-
+import datetime
+import csv
 
 class Signal(QObject):
     recv_signal = pyqtSignal(int, int, int)
@@ -64,27 +65,28 @@ class ClientSocket:
                 break
             else:
                 if recv:
-                    if recv[1] == 5:
+                    if recv[7] == 5:
                         val1 = recv[4]<<8 | recv[5]
                         val2 = 0
 
-                    elif recv[1] == 4:
-                        val1 = recv[3]<<8 | recv[4]     # in temp
-                        val2 = recv[5]<<8 | recv[6]     # out temp
+                    elif recv[7] == 4:
+                        val1 = recv[9]<<8 | recv[10]     # in temp
+                        val2 = recv[11]<<8 | recv[12]     # out temp                        
 
-                    elif recv[1] == 1:
-                        val1 = recv[4]
+                    elif recv[7] == 1:
+                        val1 = recv[9]
                         val2 = 0
 
                     else:
                         val1 = 0
                         val2 = 0
-                    
-                    self.recv.recv_signal.emit(recv[1], val1, val2)
+                    print(val1, val2)
+                    self.recv.recv_signal.emit(recv[7], val1, val2)
                     suffix = datetime.datetime.now().strftime("%H:%M:%S")
                     log_list = list(recv)
                     log_list.insert(0, suffix)
                     writer.writerow(log_list)
+                    print(recv)
         self.stop()
 
     def send(self, sendData):
