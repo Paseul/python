@@ -3,6 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import sys
 import ser
+import chiller
 import struct
 import numpy as np
 import threading
@@ -17,6 +18,7 @@ class CWidget(QWidget):
 
         self.ser = ser.SerialSocket(self)
         self.pilotFlag=False
+        self.chiller = chiller.SerialSocket(self)
 
         self.initUI()
 
@@ -471,7 +473,312 @@ class CWidget(QWidget):
         self.pdpowRcvEdit.setFixedHeight(27)
         rcv4Box.addWidget(self.pdpowRcvEdit)
 
-        gb.setLayout(box)       
+        gb.setLayout(box)
+
+        # 냉각장치 제어부
+        chillerBox = QHBoxLayout()
+
+        gb = QGroupBox('Chiller Control')
+        chillerBox.addWidget(gb)
+
+        box = QVBoxLayout()
+
+        tempSetBox = QHBoxLayout()
+        box.addLayout(tempSetBox)
+
+        self.chillerCntBtn = QPushButton('Connect')
+        self.chillerCntBtn.setFixedWidth(148)
+        self.chillerCntBtn.clicked.connect(self.chillerConnect)
+        tempSetBox.addWidget(self.chillerCntBtn)
+
+        self.cStartEdit = QTextEdit()
+        self.cStartEdit.setFixedHeight(27)
+        self.cStartEdit.setFixedWidth(148)
+        tempSetBox.addWidget(self.cStartEdit)
+        self.cStartBtn = QPushButton('START')
+        self.cStartBtn.setAutoDefault(True)
+        self.cStartBtn.setFixedWidth(148)
+        # self.cStartBtn.clicked.connect(self.enable)
+        tempSetBox.addWidget(self.cStartBtn)
+        label = QLabel(' ')
+        tempSetBox.addWidget(label)
+
+        chillerControlBox = QHBoxLayout()
+        box.addLayout(chillerControlBox)
+
+        self.cBitBtn = QPushButton('BIT')
+        self.cBitBtn.setAutoDefault(True)
+        self.cBitBtn.setFixedWidth(148)
+        # self.cBitBtn.clicked.connect(self.enable)
+        chillerControlBox.addWidget(self.cBitBtn)
+
+        self.targetTempSetEdit = QTextEdit()
+        self.targetTempSetEdit.setFixedHeight(27)
+        self.targetTempSetEdit.setFixedWidth(148)
+        chillerControlBox.addWidget(self.targetTempSetEdit)
+        self.tragetTempSetBtn = QPushButton('Target Temp Set')
+        self.tragetTempSetBtn.setAutoDefault(True)
+        self.tragetTempSetBtn.setFixedWidth(148)
+        # self.tragetTempSetBtn.clicked.connect(self.enable)
+        chillerControlBox.addWidget(self.tragetTempSetBtn)
+
+        self.highTemp1SetEdit = QTextEdit()
+        self.highTemp1SetEdit.setFixedHeight(27)
+        self.highTemp1SetEdit.setFixedWidth(148)
+        chillerControlBox.addWidget(self.highTemp1SetEdit)
+        self.highTemp1SetBtn = QPushButton('High Temp 1 Set')
+        self.highTemp1SetBtn.setAutoDefault(True)
+        self.highTemp1SetBtn.setFixedWidth(148)
+        # self.highTemp1SetBtn.clicked.connect(self.enable)
+        chillerControlBox.addWidget(self.highTemp1SetBtn)
+
+        self.highTemp2SetEdit = QTextEdit()
+        self.highTemp2SetEdit.setFixedHeight(27)
+        self.highTemp2SetEdit.setFixedWidth(148)
+        chillerControlBox.addWidget(self.highTemp2SetEdit)
+        self.highTemp2SetBtn = QPushButton('High Temp 2 Set')
+        self.highTemp2SetBtn.setAutoDefault(True)
+        self.highTemp2SetBtn.setFixedWidth(148)
+        # self.highTemp2SetBtn.clicked.connect(self.enable)
+        chillerControlBox.addWidget(self.highTemp2SetBtn)
+
+        self.lowTemp1SetEdit = QTextEdit()
+        self.lowTemp1SetEdit.setFixedHeight(27)
+        self.lowTemp1SetEdit.setFixedWidth(148)
+        chillerControlBox.addWidget(self.lowTemp1SetEdit)
+        self.lowTemp1SetBtn = QPushButton('Low Temp 1 Set')
+        self.lowTemp1SetBtn.setAutoDefault(True)
+        self.lowTemp1SetBtn.setFixedWidth(148)
+        # self.lowTemp1SetBtn.clicked.connect(self.enable)
+        chillerControlBox.addWidget(self.lowTemp1SetBtn)
+
+        self.lowTemp2SetEdit = QTextEdit()
+        self.lowTemp2SetEdit.setFixedHeight(27)
+        self.lowTemp2SetEdit.setFixedWidth(148)
+        chillerControlBox.addWidget(self.lowTemp2SetEdit)
+        self.lowTemp2SetBtn = QPushButton('Low Temp 2 Set')
+        self.lowTemp2SetBtn.setAutoDefault(True)
+        self.lowTemp2SetBtn.setFixedWidth(148)
+        # self.lowTemp2SetBtn.clicked.connect(self.enable)
+        chillerControlBox.addWidget(self.lowTemp2SetBtn)
+
+        label = QLabel(' ')
+        chillerControlBox.addWidget(label)
+
+        tempRcvBox = QHBoxLayout()
+        box.addLayout(tempRcvBox)
+
+        self.tragetTempBtn = QPushButton('Target Temp Rcv')
+        self.tragetTempBtn.setAutoDefault(True)
+        self.tragetTempBtn.setFixedWidth(148)
+        # self.tragetTempBtn.clicked.connect(self.enable)
+        tempRcvBox.addWidget(self.tragetTempBtn)
+        self.targetTempRcvEdit = QTextEdit()
+        self.targetTempRcvEdit.setFixedHeight(27)
+        self.targetTempRcvEdit.setFixedWidth(148)
+        tempRcvBox.addWidget(self.targetTempRcvEdit)
+
+        self.highTemp1Btn = QPushButton('High Temp 1 Rcv')
+        self.highTemp1Btn.setAutoDefault(True)
+        self.highTemp1Btn.setFixedWidth(148)
+        # self.highTemp1Btn.clicked.connect(self.enable)
+        tempRcvBox.addWidget(self.highTemp1Btn)
+        self.highTemp1RcvEdit = QTextEdit()
+        self.highTemp1RcvEdit.setFixedHeight(27)
+        self.highTemp1RcvEdit.setFixedWidth(148)
+        tempRcvBox.addWidget(self.highTemp1RcvEdit)
+
+        self.highTemp2Btn = QPushButton('High Temp 1 Rcv')
+        self.highTemp2Btn.setAutoDefault(True)
+        self.highTemp2Btn.setFixedWidth(148)
+        # self.highTemp2Btn.clicked.connect(self.enable)
+        tempRcvBox.addWidget(self.highTemp2Btn)
+        self.highTemp2RcvEdit = QTextEdit()
+        self.highTemp2RcvEdit.setFixedHeight(27)
+        self.highTemp2RcvEdit.setFixedWidth(148)
+        tempRcvBox.addWidget(self.highTemp2RcvEdit)
+
+        self.lowTemp1Btn = QPushButton('Low Temp 1 Rcv')
+        self.lowTemp1Btn.setAutoDefault(True)
+        self.lowTemp1Btn.setFixedWidth(148)
+        # self.lowTemp1Btn.clicked.connect(self.enable)
+        tempRcvBox.addWidget(self.lowTemp1Btn)
+        self.lowTemp1RcvEdit = QTextEdit()
+        self.lowTemp1RcvEdit.setFixedHeight(27)
+        self.lowTemp1RcvEdit.setFixedWidth(148)
+        tempRcvBox.addWidget(self.lowTemp1RcvEdit)
+
+        self.lowTemp2Btn = QPushButton('Low Temp 2 Rcv')
+        self.lowTemp2Btn.setAutoDefault(True)
+        self.lowTemp2Btn.setFixedWidth(148)
+        # self.lowTemp2Btn.clicked.connect(self.enable)
+        tempRcvBox.addWidget(self.lowTemp2Btn)
+        self.lowTemp2RcvEdit = QTextEdit()
+        self.lowTemp2RcvEdit.setFixedHeight(27)
+        self.lowTemp2RcvEdit.setFixedWidth(148)
+        tempRcvBox.addWidget(self.lowTemp2RcvEdit)
+        label = QLabel(' ')
+        tempRcvBox.addWidget(label)
+
+        realTempRcvBox = QHBoxLayout()
+        box.addLayout(realTempRcvBox)
+
+        self.ch0TempBtn = QPushButton('CH0 Temp Rcv')
+        self.ch0TempBtn.setAutoDefault(True)
+        self.ch0TempBtn.setFixedWidth(148)
+        # self.ch0TempBtn.clicked.connect(self.enable)
+        realTempRcvBox.addWidget(self.ch0TempBtn)
+        self.ch0TempRcvEdit = QTextEdit()
+        self.ch0TempRcvEdit.setFixedHeight(27)
+        self.ch0TempRcvEdit.setFixedWidth(148)
+        realTempRcvBox.addWidget(self.ch0TempRcvEdit)
+
+        self.ch1TempBtn = QPushButton('CH1 Temp Rcv')
+        self.ch1TempBtn.setAutoDefault(True)
+        self.ch1TempBtn.setFixedWidth(148)
+        # self.ch1TempBtn.clicked.connect(self.enable)
+        realTempRcvBox.addWidget(self.ch1TempBtn)
+        self.ch1TempRcvEdit = QTextEdit()
+        self.ch1TempRcvEdit.setFixedHeight(27)
+        self.ch1TempRcvEdit.setFixedWidth(148)
+        realTempRcvBox.addWidget(self.ch1TempRcvEdit)
+
+        self.flowBtn = QPushButton('Flow Rcv')
+        self.flowBtn.setAutoDefault(True)
+        self.flowBtn.setFixedWidth(148)
+        # self.flowBtn.clicked.connect(self.enable)
+        realTempRcvBox.addWidget(self.flowBtn)
+        self.flowRcvEdit = QTextEdit()
+        self.flowRcvEdit.setFixedHeight(27)
+        self.flowRcvEdit.setFixedWidth(148)
+        realTempRcvBox.addWidget(self.flowRcvEdit)
+
+        self.pidBtn = QPushButton('PID Rcv')
+        self.pidBtn.setAutoDefault(True)
+        self.pidBtn.setFixedWidth(148)
+        # self.pidBtn.clicked.connect(self.enable)
+        realTempRcvBox.addWidget(self.pidBtn)
+        self.pidRcvEdit = QTextEdit()
+        self.pidRcvEdit.setFixedHeight(27)
+        self.pidRcvEdit.setFixedWidth(148)
+        realTempRcvBox.addWidget(self.pidRcvEdit)
+        label = QLabel(' ')
+        realTempRcvBox.addWidget(label)
+
+        # 레이저 BIT 설정
+        cStsBox = QHBoxLayout()
+        box.addLayout(cStsBox)
+
+        self.cStanbyBtn = QPushButton('STANDBY')
+        self.cStanbyBtn.setFixedWidth(148)
+        cStsBox.addWidget(self.cStanbyBtn)
+        self.cStartCheckBtn = QPushButton('START CHECK')
+        self.cStartCheckBtn.setFixedWidth(148)
+        cStsBox.addWidget(self.cStartCheckBtn)
+        self.cPumpStartBtn = QPushButton('PUMP START')
+        self.cPumpStartBtn.setFixedWidth(148)
+        cStsBox.addWidget(self.cPumpStartBtn)
+        self.cPumpDelayBtn = QPushButton('PUMP DELAY')
+        self.cPumpDelayBtn.setFixedWidth(148)
+        cStsBox.addWidget(self.cPumpDelayBtn)
+        self.cPrepStartBtn = QPushButton('PREP START')
+        self.cPrepStartBtn.setFixedWidth(148)
+        cStsBox.addWidget(self.cPrepStartBtn)
+        self.cPrepDelayBtn = QPushButton('PREP DELAY')
+        self.cPrepDelayBtn.setFixedWidth(148)
+        cStsBox.addWidget(self.cPrepDelayBtn)
+        self.cReadyStartBtn = QPushButton('READY START')
+        self.cReadyStartBtn.setFixedWidth(148)
+        cStsBox.addWidget(self.cReadyStartBtn)
+        self.cReadyDelayBtn = QPushButton('READY DELAY')
+        self.cReadyDelayBtn.setFixedWidth(148)
+        cStsBox.addWidget(self.cReadyDelayBtn)
+        self.cRunBtn = QPushButton('RUN')
+        self.cRunBtn.setFixedWidth(148)
+        cStsBox.addWidget(self.cRunBtn)
+        self.cStopBtn = QPushButton('STOP')
+        self.cStopBtn.setFixedWidth(148)
+        cStsBox.addWidget(self.cStopBtn)
+        self.cStopDelayBtn = QPushButton('STOP DELAY')
+        self.cStopDelayBtn.setFixedWidth(148)
+        cStsBox.addWidget(self.cStopDelayBtn)
+        label = QLabel(' ')
+        cStsBox.addWidget(label)
+
+        # 레이저 BIT 설정
+        cErr1Box = QHBoxLayout()
+        box.addLayout(cErr1Box)
+
+        self.cOverHeatBtn = QPushButton('OVER HEAT')
+        cErr1Box.addWidget(self.cOverHeatBtn)
+        self.cOverCurBtn = QPushButton('OVER CURRENT')
+        cErr1Box.addWidget(self.cOverCurBtn)
+        self.cLowPresBtn = QPushButton('Low PRESSURE')
+        cErr1Box.addWidget(self.cLowPresBtn)
+        self.cHighPresBtn = QPushButton('HIGH PRESSURE')
+        cErr1Box.addWidget(self.cHighPresBtn)
+        self.cFMSBtn = QPushButton('FLOW METER SENSOR')
+        cErr1Box.addWidget(self.cFMSBtn)
+        self.cFSSBtn = QPushButton('FLOW SWITCH SENSOR')
+        cErr1Box.addWidget(self.cFSSBtn)
+        self.cFlowMeterBtn = QPushButton('FLOW METER')
+        cErr1Box.addWidget(self.cFlowMeterBtn)
+        self.cFlowSwitchBtn = QPushButton('FLOW SWITCH')
+        cErr1Box.addWidget(self.cFlowSwitchBtn)
+        self.cTSBtn = QPushButton('TEMP SENSOR')
+        cErr1Box.addWidget(self.cTSBtn)
+        self.cLSBtn = QPushButton('LEVEL SENSOR')
+        cErr1Box.addWidget(self.cLSBtn)
+        self.cLL2Btn = QPushButton('LOW LEVEL 2')
+        cErr1Box.addWidget(self.cLL2Btn)
+        self.cLL1Btn = QPushButton('LOW LEVEL 1')
+        cErr1Box.addWidget(self.cLL1Btn)
+
+        cErr2Box = QHBoxLayout()
+        box.addLayout(cErr2Box)
+
+        self.cLT2Btn = QPushButton('LOW TEMP 2')
+        self.cLT2Btn.setFixedWidth(148)
+        cErr2Box.addWidget(self.cLT2Btn)
+        self.cLT1Btn = QPushButton('LOW TEMP1')
+        self.cLT1Btn.setFixedWidth(148)
+        cErr2Box.addWidget(self.cLT1Btn)
+        self.cHT2Btn = QPushButton('HIGH TEMP2')
+        self.cHT2Btn.setFixedWidth(148)
+        cErr2Box.addWidget(self.cHT2Btn)
+        self.cHT1Btn = QPushButton('HIGH TEMP1')
+        self.cHT1Btn.setFixedWidth(148)
+        cErr2Box.addWidget(self.cHT1Btn)
+        label = QLabel(' ')
+        cErr2Box.addWidget(label)
+
+        chillerRcvBox = QHBoxLayout()
+        box.addLayout(chillerRcvBox)
+
+        self.chillerCmdRcvEdit = QTextEdit()
+        self.chillerCmdRcvEdit.setFixedHeight(27)
+        self.chillerCmdRcvEdit.setFixedWidth(148)
+        chillerRcvBox.addWidget(self.chillerCmdRcvEdit)
+
+        self.chillerScRcvEdit = QTextEdit()
+        self.chillerScRcvEdit.setFixedHeight(27)
+        self.chillerScRcvEdit.setFixedWidth(148)
+        chillerRcvBox.addWidget(self.chillerScRcvEdit)
+
+        self.chillerLengthRcvEdit = QTextEdit()
+        self.chillerLengthRcvEdit.setFixedHeight(27)
+        self.chillerLengthRcvEdit.setFixedWidth(148)
+        chillerRcvBox.addWidget(self.chillerLengthRcvEdit)
+
+        self.chillerDataRcvEdit = QTextEdit()
+        self.chillerDataRcvEdit.setFixedHeight(27)
+        self.chillerDataRcvEdit.setFixedWidth(148)
+        chillerRcvBox.addWidget(self.chillerDataRcvEdit)
+
+        label = QLabel(' ')
+        chillerRcvBox.addWidget(label)
+
+        gb.setLayout(box)
 
         # 채팅창 부분
         infobox = QHBoxLayout()
@@ -507,9 +814,34 @@ class CWidget(QWidget):
         self.sendBtn.setAutoDefault(True)
         self.sendBtn.clicked.connect(self.defaultMsg)
         messageBox.addWidget(self.sendBtn)
+        # Cmd
+        self.chillerCmd = QTextEdit()
+        self.chillerCmd.setFixedHeight(30)
+        self.chillerCmd.setText('040')
+        messageBox.addWidget(self.chillerCmd)
+        # Sc
+        self.chillerSc = QTextEdit()
+        self.chillerSc.setFixedHeight(30)
+        self.chillerSc.setText('1')
+        messageBox.addWidget(self.chillerSc)
+        # Length
+        self.chillerLength = QTextEdit()
+        self.chillerLength.setFixedHeight(30)
+        self.chillerLength.setText('05')
+        messageBox.addWidget(self.chillerLength)
+        # data
+        self.chillerData = QTextEdit()
+        self.chillerData.setFixedHeight(30)
+        self.chillerData.setText('+20.0')
+        messageBox.addWidget(self.chillerData)
+        # 전송
+        self.chillerSendBtn = QPushButton('보내기')
+        self.chillerSendBtn.setAutoDefault(True)
+        self.chillerSendBtn.clicked.connect(self.defaultChiller)
+        messageBox.addWidget(self.chillerSendBtn)
         # 채팅창 삭제
         self.clearBtn = QPushButton('채팅창 지움')
-        self.clearBtn.clicked.connect(self.clearMsg)        
+        self.clearBtn.clicked.connect(self.clearMsg)
         messageBox.addWidget(self.clearBtn)
 
         gb.setLayout(box)
@@ -517,6 +849,7 @@ class CWidget(QWidget):
         # 전체 배치
         vbox = QVBoxLayout()
         vbox.addLayout(laserBox)
+        vbox.addLayout(chillerBox)
         vbox.addLayout(infobox)
         self.setLayout(vbox)
 
@@ -791,6 +1124,193 @@ class CWidget(QWidget):
         cmd = self.cmdMsg.toPlainText()
         data = self.dataMsg.toPlainText()
         self.ser.send(cmd, data)
+
+    def chillerConnect(self):
+        if self.chiller.bConnect == False:
+            if self.chiller.connect():
+                self.chillerCntBtn.setStyleSheet("background-color: green")
+                self.chillerCntBtn.setText('Connected')
+            else:
+                self.chiller.stop()
+                self.recvmsg.clear()
+                self.chillerCntBtn.setText('Connect')
+                self.chillerCntBtn.setStyleSheet("background-color: lightgray")
+        else:
+            self.chiller.stop()
+            self.recvmsg.clear()
+            self.chillerCntBtn.setText('Connect')
+            self.chillerCntBtn.setStyleSheet("background-color: lightgray")
+
+    def updateChiller(self, cmd, sc, length, data):
+        self.chillerCmdRcvEdit.setText(str(cmd))
+        self.chillerScRcvEdit.setText(str(sc))
+        self.chillerLengthRcvEdit.setText(str(length))
+        self.chillerDataRcvEdit.setText(data)
+
+        if cmd == '040':
+            if sc == '1':
+                self.targetTempRcvEdit.setText(data)
+            elif sc == '3':
+                self.tragetTempBtn.setStyleSheet("background-color: green")
+            elif sc == '4':
+                self.tragetTempBtn.setStyleSheet("background-color: red")
+            else:
+                self.tragetTempBtn.setStyleSheet("background-color: lightgray")
+
+        elif cmd == '041':
+            if sc == '1':
+                self.highTemp1RcvEdit.setText(data)
+            elif sc == '3':
+                self.highTemp1Btn.setStyleSheet("background-color: green")
+            elif sc == '4':
+                self.highTemp1Btn.setStyleSheet("background-color: red")
+            else:
+                self.highTemp1Btn.setStyleSheet("background-color: lightgray")
+
+        elif cmd == '042':
+            if sc == '1':
+                self.highTemp2RcvEdit.setText(data)
+            elif sc == '3':
+                self.highTemp2Btn.setStyleSheet("background-color: green")
+            elif sc == '4':
+                self.highTemp2Btn.setStyleSheet("background-color: red")
+            else:
+                self.highTemp2Btn.setStyleSheet("background-color: lightgray")
+
+        elif cmd == '043':
+            if sc == '1':
+                self.lowTemp1RcvEdit.setText(data)
+            elif sc == '3':
+                self.lowTemp1Btn.setStyleSheet("background-color: green")
+            elif sc == '4':
+                self.lowTemp1Btn.setStyleSheet("background-color: red")
+            else:
+                self.lowTemp1Btn.setStyleSheet("background-color: lightgray")
+
+        elif cmd == '044':
+            if sc == '1':
+                self.lowTemp2RcvEdit.setText(data)
+            elif sc == '3':
+                self.lowTemp2Btn.setStyleSheet("background-color: green")
+            elif sc == '4':
+                self.lowTemp2Btn.setStyleSheet("background-color: red")
+            else:
+                self.lowTemp2Btn.setStyleSheet("background-color: lightgray")
+
+        elif cmd == '150':
+            self.ch0TempRcvEdit.setText(data)
+        elif cmd == '151':
+            self.ch1TempRcvEdit.setText(data)
+        elif cmd == '154':
+            if sc == '1':
+                if data == '0':
+                    self.cStanbyBtn.setStyleSheet("background-color: green")
+                elif data == '1':
+                    self.cStartCheckBtn.setStyleSheet("background-color: green")
+                elif data == '2':
+                    self.cPumpStartBtn.setStyleSheet("background-color: green")
+                elif data == '3':
+                    self.cPumpDelayBtn.setStyleSheet("background-color: green")
+                elif data == '4':
+                    self.cPrepStartBtn.setStyleSheet("background-color: green")
+                elif data == '5':
+                    self.cPrepDelayBtn.setStyleSheet("background-color: green")
+                elif data == '6':
+                    self.cReadyStartBtn.setStyleSheet("background-color: green")
+                elif data == '7':
+                    self.cReadyDelayBtn.setStyleSheet("background-color: green")
+                elif data == '8':
+                    self.cRunBtn.setStyleSheet("background-color: green")
+                elif data == '9':
+                    self.cStopBtn.setStyleSheet("background-color: green")
+                elif data == '10':
+                    self.cStopDelayBtnBtn.setStyleSheet("background-color: green")
+            elif sc == '3':
+                self.cStartBtn.setStyleSheet("background-color: green")
+            elif sc == '4':
+                self.cStartBtn.setStyleSheet("background-color: red")
+            else:
+                self.cStartBtn.setStyleSheet("background-color: lightgray")
+        elif cmd == '156':
+            if int(data) & 0b0000000000000001 == 0b0000000000000001:
+                self.cOverHeatBtn.setStyleSheet("background-color: red")
+            else:
+                self.cOverHeatBtn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0000000000000010 == 0b0000000000000010:
+                self.cOverCurBtn.setStyleSheet("background-color: red")
+            else:
+                self.cOverCurBtn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0000000000000100 == 0b0000000000000100:
+                self.cLowPresBtn.setStyleSheet("background-color: red")
+            else:
+                self.cLowPresBtn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0000000000001000 == 0b0000000000001000:
+                self.cHighPresBtn.setStyleSheet("background-color: red")
+            else:
+                self.cHighPresBtn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0000000000010000 == 0b0000000000010000:
+                self.cFMSBtn.setStyleSheet("background-color: red")
+            else:
+                self.cFMSBtn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0000000000100000 == 0b0000000000100000:
+                self.cFSSBtn.setStyleSheet("background-color: red")
+            else:
+                self.cFSSBtn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0000000001000000 == 0b0000000001000000:
+                self.cFlowMeterBtn.setStyleSheet("background-color: red")
+            else:
+                self.cFlowMeterBtn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0000000010000000 == 0b0000000010000000:
+                self.cFlowSwitchBtn.setStyleSheet("background-color: red")
+            else:
+                self.cFlowSwitchBtn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0000000100000000 == 0b0000000100000000:
+                self.cTSBtn.setStyleSheet("background-color: red")
+            else:
+                self.cTSBtn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0000001000000000 == 0b0000001000000000:
+                self.cLSBtn.setStyleSheet("background-color: red")
+            else:
+                self.cLSBtn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0000010000000000 == 0b0000010000000000:
+                self.cLL2Btn.setStyleSheet("background-color: red")
+            else:
+                self.cLL2Btn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0000100000000000 == 0b0000100000000000:
+                self.cLL1Btn.setStyleSheet("background-color: red")
+            else:
+                self.cLL1Btn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0001000000000000 == 0b0001000000000000:
+                self.cLT2Btn.setStyleSheet("background-color: red")
+            else:
+                self.cLT2Btn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0010000000000000 == 0b0010000000000000:
+                self.cLT1Btn.setStyleSheet("background-color: red")
+            else:
+                self.cLT1Btn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b0100000000000000 == 0b0100000000000000:
+                self.cHT2Btn.setStyleSheet("background-color: red")
+            else:
+                self.cHT2Btn.setStyleSheet("background-color: lightgray")
+            if int(data) & 0b1000000000000000 == 0b1000000000000000:
+                self.cHT1Btn.setStyleSheet("background-color: red")
+            else:
+                self.cHT1Btn.setStyleSheet("background-color: lightgray")
+        elif cmd == '157':
+            self.flowRcvEdit.setText(data)
+        elif cmd == '158':
+            self.pidRcvEdit.setText(data)
+
+
+    def disconnectChiller(self):
+        self.laserConnect.setText('Connect')
+
+    def defaultChiller(self):
+        cmd = self.chillerCmd.toPlainText()
+        sc = self.chillerSc.toPlainText()
+        length = self.chillerLength.toPlainText()
+        data = self.chillerData.toPlainText()
+        self.chiller.send(cmd, sc, length, data)
 
     def status(self):
         cmd='?STATUS'
