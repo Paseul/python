@@ -498,7 +498,7 @@ class CWidget(QWidget):
         self.cStartBtn = QPushButton('START')
         self.cStartBtn.setAutoDefault(True)
         self.cStartBtn.setFixedWidth(148)
-        # self.cStartBtn.clicked.connect(self.enable)
+        self.cStartBtn.clicked.connect(self.cStart)
         tempSetBox.addWidget(self.cStartBtn)
         label = QLabel(' ')
         tempSetBox.addWidget(label)
@@ -509,57 +509,62 @@ class CWidget(QWidget):
         self.cBitBtn = QPushButton('BIT')
         self.cBitBtn.setAutoDefault(True)
         self.cBitBtn.setFixedWidth(148)
-        # self.cBitBtn.clicked.connect(self.enable)
+        self.cBitBtn.clicked.connect(self.cBit)
         chillerControlBox.addWidget(self.cBitBtn)
 
         self.targetTempSetEdit = QTextEdit()
         self.targetTempSetEdit.setFixedHeight(27)
         self.targetTempSetEdit.setFixedWidth(148)
+        self.targetTempSetEdit.setText('+20.0')
         chillerControlBox.addWidget(self.targetTempSetEdit)
         self.tragetTempSetBtn = QPushButton('Target Temp Set')
         self.tragetTempSetBtn.setAutoDefault(True)
         self.tragetTempSetBtn.setFixedWidth(148)
-        # self.tragetTempSetBtn.clicked.connect(self.enable)
+        self.tragetTempSetBtn.clicked.connect(self.cTargetTemp)
         chillerControlBox.addWidget(self.tragetTempSetBtn)
 
         self.highTemp1SetEdit = QTextEdit()
         self.highTemp1SetEdit.setFixedHeight(27)
         self.highTemp1SetEdit.setFixedWidth(148)
+        self.highTemp1SetEdit.setText('+25.0')
         chillerControlBox.addWidget(self.highTemp1SetEdit)
         self.highTemp1SetBtn = QPushButton('High Temp 1 Set')
         self.highTemp1SetBtn.setAutoDefault(True)
         self.highTemp1SetBtn.setFixedWidth(148)
-        # self.highTemp1SetBtn.clicked.connect(self.enable)
+        self.highTemp1SetBtn.clicked.connect(self.cHighTemp1)
         chillerControlBox.addWidget(self.highTemp1SetBtn)
 
         self.highTemp2SetEdit = QTextEdit()
         self.highTemp2SetEdit.setFixedHeight(27)
         self.highTemp2SetEdit.setFixedWidth(148)
+        self.highTemp2SetEdit.setText('+30.0')
         chillerControlBox.addWidget(self.highTemp2SetEdit)
         self.highTemp2SetBtn = QPushButton('High Temp 2 Set')
         self.highTemp2SetBtn.setAutoDefault(True)
         self.highTemp2SetBtn.setFixedWidth(148)
-        # self.highTemp2SetBtn.clicked.connect(self.enable)
+        self.highTemp2SetBtn.clicked.connect(self.cHighTemp2)
         chillerControlBox.addWidget(self.highTemp2SetBtn)
 
         self.lowTemp1SetEdit = QTextEdit()
         self.lowTemp1SetEdit.setFixedHeight(27)
         self.lowTemp1SetEdit.setFixedWidth(148)
+        self.lowTemp1SetEdit.setText('+15.0')
         chillerControlBox.addWidget(self.lowTemp1SetEdit)
         self.lowTemp1SetBtn = QPushButton('Low Temp 1 Set')
         self.lowTemp1SetBtn.setAutoDefault(True)
         self.lowTemp1SetBtn.setFixedWidth(148)
-        # self.lowTemp1SetBtn.clicked.connect(self.enable)
+        self.lowTemp1SetBtn.clicked.connect(self.cLowTemp1)
         chillerControlBox.addWidget(self.lowTemp1SetBtn)
 
         self.lowTemp2SetEdit = QTextEdit()
         self.lowTemp2SetEdit.setFixedHeight(27)
         self.lowTemp2SetEdit.setFixedWidth(148)
+        self.lowTemp2SetEdit.setText('+10.0')
         chillerControlBox.addWidget(self.lowTemp2SetEdit)
         self.lowTemp2SetBtn = QPushButton('Low Temp 2 Set')
         self.lowTemp2SetBtn.setAutoDefault(True)
         self.lowTemp2SetBtn.setFixedWidth(148)
-        # self.lowTemp2SetBtn.clicked.connect(self.enable)
+        self.lowTemp2SetBtn.clicked.connect(self.cLowTemp2)
         chillerControlBox.addWidget(self.lowTemp2SetBtn)
 
         label = QLabel(' ')
@@ -571,7 +576,7 @@ class CWidget(QWidget):
         self.tragetTempBtn = QPushButton('Target Temp Rcv')
         self.tragetTempBtn.setAutoDefault(True)
         self.tragetTempBtn.setFixedWidth(148)
-        # self.tragetTempBtn.clicked.connect(self.enable)
+        self.tragetTempBtn.clicked.connect(self.cTargetTempRcv)
         tempRcvBox.addWidget(self.tragetTempBtn)
         self.targetTempRcvEdit = QTextEdit()
         self.targetTempRcvEdit.setFixedHeight(27)
@@ -581,7 +586,7 @@ class CWidget(QWidget):
         self.highTemp1Btn = QPushButton('High Temp 1 Rcv')
         self.highTemp1Btn.setAutoDefault(True)
         self.highTemp1Btn.setFixedWidth(148)
-        # self.highTemp1Btn.clicked.connect(self.enable)
+        self.highTemp1Btn.clicked.connect(self.cHighTemp1Rcv)
         tempRcvBox.addWidget(self.highTemp1Btn)
         self.highTemp1RcvEdit = QTextEdit()
         self.highTemp1RcvEdit.setFixedHeight(27)
@@ -591,7 +596,7 @@ class CWidget(QWidget):
         self.highTemp2Btn = QPushButton('High Temp 1 Rcv')
         self.highTemp2Btn.setAutoDefault(True)
         self.highTemp2Btn.setFixedWidth(148)
-        # self.highTemp2Btn.clicked.connect(self.enable)
+        self.highTemp2Btn.clicked.connect(self.cHighTemp2Rcv)
         tempRcvBox.addWidget(self.highTemp2Btn)
         self.highTemp2RcvEdit = QTextEdit()
         self.highTemp2RcvEdit.setFixedHeight(27)
@@ -601,7 +606,7 @@ class CWidget(QWidget):
         self.lowTemp1Btn = QPushButton('Low Temp 1 Rcv')
         self.lowTemp1Btn.setAutoDefault(True)
         self.lowTemp1Btn.setFixedWidth(148)
-        # self.lowTemp1Btn.clicked.connect(self.enable)
+        self.lowTemp1Btn.clicked.connect(self.cLowTemp1Rcv)
         tempRcvBox.addWidget(self.lowTemp1Btn)
         self.lowTemp1RcvEdit = QTextEdit()
         self.lowTemp1RcvEdit.setFixedHeight(27)
@@ -611,7 +616,7 @@ class CWidget(QWidget):
         self.lowTemp2Btn = QPushButton('Low Temp 2 Rcv')
         self.lowTemp2Btn.setAutoDefault(True)
         self.lowTemp2Btn.setFixedWidth(148)
-        # self.lowTemp2Btn.clicked.connect(self.enable)
+        self.lowTemp2Btn.clicked.connect(self.cLowTemp2Rcv)
         tempRcvBox.addWidget(self.lowTemp2Btn)
         self.lowTemp2RcvEdit = QTextEdit()
         self.lowTemp2RcvEdit.setFixedHeight(27)
@@ -626,7 +631,7 @@ class CWidget(QWidget):
         self.ch0TempBtn = QPushButton('CH0 Temp Rcv')
         self.ch0TempBtn.setAutoDefault(True)
         self.ch0TempBtn.setFixedWidth(148)
-        # self.ch0TempBtn.clicked.connect(self.enable)
+        self.ch0TempBtn.clicked.connect(self.ch0TempRcv)
         realTempRcvBox.addWidget(self.ch0TempBtn)
         self.ch0TempRcvEdit = QTextEdit()
         self.ch0TempRcvEdit.setFixedHeight(27)
@@ -636,7 +641,7 @@ class CWidget(QWidget):
         self.ch1TempBtn = QPushButton('CH1 Temp Rcv')
         self.ch1TempBtn.setAutoDefault(True)
         self.ch1TempBtn.setFixedWidth(148)
-        # self.ch1TempBtn.clicked.connect(self.enable)
+        self.ch1TempBtn.clicked.connect(self.ch1TempRcv)
         realTempRcvBox.addWidget(self.ch1TempBtn)
         self.ch1TempRcvEdit = QTextEdit()
         self.ch1TempRcvEdit.setFixedHeight(27)
@@ -646,7 +651,7 @@ class CWidget(QWidget):
         self.flowBtn = QPushButton('Flow Rcv')
         self.flowBtn.setAutoDefault(True)
         self.flowBtn.setFixedWidth(148)
-        # self.flowBtn.clicked.connect(self.enable)
+        self.flowBtn.clicked.connect(self.flowRcv)
         realTempRcvBox.addWidget(self.flowBtn)
         self.flowRcvEdit = QTextEdit()
         self.flowRcvEdit.setFixedHeight(27)
@@ -656,7 +661,7 @@ class CWidget(QWidget):
         self.pidBtn = QPushButton('PID Rcv')
         self.pidBtn.setAutoDefault(True)
         self.pidBtn.setFixedWidth(148)
-        # self.pidBtn.clicked.connect(self.enable)
+        self.pidBtn.clicked.connect(self.pidRcv)
         realTempRcvBox.addWidget(self.pidBtn)
         self.pidRcvEdit = QTextEdit()
         self.pidRcvEdit.setFixedHeight(27)
@@ -1310,6 +1315,121 @@ class CWidget(QWidget):
         sc = self.chillerSc.toPlainText()
         length = self.chillerLength.toPlainText()
         data = self.chillerData.toPlainText()
+        self.chiller.send(cmd, sc, length, data)
+
+    def cStart(self):
+        cmd = '154'
+        sc = '2'
+        data = self.cStartEdit.toPlainText()
+        if len(data) < 10:
+            length = '0' + str(len(data))
+        else:
+            length = str(len(data))
+        self.chiller.send(cmd, sc, length, data)
+
+    def cBit(self):
+        cmd = '156'
+        sc = '0'
+        length = '00'
+        data = ''
+        self.chiller.send(cmd, sc, length, data)
+
+    def cTargetTemp(self):
+        cmd = '040'
+        sc = '2'
+        data = self.targetTempSetEdit.toPlainText()
+        length = '0'+ str(len(data))
+        self.chiller.send(cmd, sc, length, data)
+
+    def cHighTemp1(self):
+        cmd = '041'
+        sc = '2'
+        data = self.highTemp1SetEdit.toPlainText()
+        length = '0'+ str(len(data))
+        self.chiller.send(cmd, sc, length, data)
+
+    def cHighTemp2(self):
+        cmd = '042'
+        sc = '2'
+        data = self.highTemp2SetEdit.toPlainText()
+        length = '05'
+        self.chiller.send(cmd, sc, length, data)
+
+    def cLowTemp1(self):
+        cmd = '043'
+        sc = '2'
+        data = self.lowTemp1SetEdit.toPlainText()
+        length = '0'+ str(len(data))
+        self.chiller.send(cmd, sc, length, data)
+
+    def cLowTemp2(self):
+        cmd = '044'
+        sc = '2'
+        data = self.lowTemp2SetEdit.toPlainText()
+        length = '0'+ str(len(data))
+        self.chiller.send(cmd, sc, length, data)
+
+    def cTargetTempRcv(self):
+        cmd = '040'
+        sc = '0'
+        data = ''
+        length = '00'
+        self.chiller.send(cmd, sc, length, data)
+
+    def cHighTemp1Rcv(self):
+        cmd = '041'
+        sc = '0'
+        data = ''
+        length = '00'
+        self.chiller.send(cmd, sc, length, data)
+
+    def cHighTemp2Rcv(self):
+        cmd = '042'
+        sc = '0'
+        data = ''
+        length = '00'
+        self.chiller.send(cmd, sc, length, data)
+
+    def cLowTemp1Rcv(self):
+        cmd = '043'
+        sc = '0'
+        data = ''
+        length = '00'
+        self.chiller.send(cmd, sc, length, data)
+
+    def cLowTemp2Rcv(self):
+        cmd = '044'
+        sc = '0'
+        data = ''
+        length = '00'
+        self.chiller.send(cmd, sc, length, data)
+
+    def ch0TempRcv(self):
+        cmd = '150'
+        sc = '0'
+        data = ''
+        length = '00'
+        self.chiller.send(cmd, sc, length, data)
+
+    def ch1TempRcv(self):
+        cmd = '151'
+        sc = '0'
+        data = ''
+        length = '00'
+        self.chiller.send(cmd, sc, length, data)
+
+    def flowRcv(self):
+        cmd = '157'
+        sc = '0'
+        data = ''
+        length = '00'
+        self.chiller.send(cmd, sc, length, data)
+
+    def pidRcv(self):
+        cmd = '158'
+        sc = '0'
+        data = ''
+        length = '00'
         self.chiller.send(cmd, sc, length, data)
 
     def status(self):
