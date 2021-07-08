@@ -5,7 +5,9 @@ import sys
 import struct
 import numpy as np
 import threading
+import csv
 import socket
+from time import sleep
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
 serverAddressPort = ("127.0.0.1", 20001)
@@ -19,6 +21,14 @@ class CWidget(QWidget):
         # 클라이언트 쪽에서 UDP 소켓 생성
         self.UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
         self.seqNum = 0
+        self.x_data = []
+        self.y_data = []
+
+        with open('test.csv', newline='') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            for row in spamreader:
+                self.x_data.append(row[0])
+                self.y_data.append(row[1])
 
     def __del__(self):
         print("Quit")
@@ -66,9 +76,9 @@ class CWidget(QWidget):
         self.sendBtn.clicked.connect(self.defaultMsg)
         messageBox.addWidget(self.sendBtn)
         # 채팅창 삭제
-        self.clearBtn = QPushButton('채팅창 지움')
-        self.clearBtn.clicked.connect(self.clearMsg)        
-        messageBox.addWidget(self.clearBtn)
+        self.autoConBtn = QPushButton('자동 제어')
+        self.autoConBtn.clicked.connect(self.autoControl)
+        messageBox.addWidget(self.autoConBtn)
 
         gb.setLayout(box)
 
@@ -85,8 +95,6 @@ class CWidget(QWidget):
         tip = int(self.tipMsg.toPlainText())
         checksum = mode + tilt + tip + self.seqNum
 
-        print(self.seqNum)
-
         values = (mode, tilt, tip, (self.seqNum % pow(2, 32)), (checksum % pow(2, 32)))
         fmt = '>I i i I I'
         packer = struct.Struct(fmt)
@@ -97,8 +105,26 @@ class CWidget(QWidget):
         self.UDPClientSocket.sendto(bytesToSend, serverAddressPort)
         self.seqNum += 1
 
-    def clearMsg(self):
+    def sendData(self, mode, tilt, tip):
+        checksum = mode + tilt + tip + self.seqNum
+        values = (mode, tilt, tip, (self.seqNum % pow(2, 32)), (checksum % pow(2, 32)))
+        fmt = '>I i i I I'
+        packer = struct.Struct(fmt)
+        bytesToSend = packer.pack(*values)
+
+        print(bytesToSend)
+
+        self.UDPClientSocket.sendto(bytesToSend, serverAddressPort)
+        self.seqNum += 1
+
+    def autoControl(self):
         self.recvmsg.clear()
+        mode = 4
+        for i in range(len(self.x_data)):
+            tilt = float(self.x_data[i])*100
+            tip = float(self.y_data[i])*100
+            self.sendData(mode, int(tilt), int(tip))
+            sleep(0.1)
 
     def closeEvent(self, e):
         print("Close")
