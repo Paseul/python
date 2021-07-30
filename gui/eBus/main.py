@@ -8,19 +8,44 @@ clr.AddReference("PvDotNet")
 
 from PvDotNet import *
 from PvGUIDotNet import *
+import numpy as np
+import cv2
 
-PvDeviceInfo.lForm = PvDeviceFinderForm()
-PvDeviceInfo lForm
+cBufferCount = 16
 
-PvDeviceInfo.lForm.ShowDialog()
+lForm = PvDeviceFinderForm()
+
+lForm.ShowDialog()
 lDeviceInfo = PvDeviceInfo
-lDeviceInfo = PvDeviceInfo.lForm.Selected
+lDeviceInfo = lForm.Selected
 print(lDeviceInfo)
 mDevice = PvDevice.CreateAndConnect(lDeviceInfo)
 mStream = PvStream.CreateAndOpen(lDeviceInfo)
 
-PvDeviceGEV.lDGEV = mDevice
-PvDeviceGEV.lDGEV.NegotiatePacketSize()
+lPayloadSize = mDevice.PayloadSize
+if mStream.QueuedBufferMaximum < cBufferCount:
+    lBufferCount = mStream.QueuedBufferMaximum
+else:
+    lBufferCount = cBufferCount
 
-PvStreamGEV.lSGEV = mStream
-PvDeviceGEV.lDGEV.SetStreamDestination(PvStreamGEV.lSGEV.LocalIPAddress, PvStreamGEV.lSGEV.LocalPort)
+
+for i in range(lBufferCount):
+    lBuffers[i] = PvBuffer()
+    mStream.QueueBuffer(lBuffers[i])
+
+lBuffer = None
+lBuffer = PvBuffer(lBuffer)
+
+lOperationResult = PvResult(PvResultCode.OK)
+mDevice.StreamEnable()
+mDevice.Parameters.ExecuteCommand("AcquisitionStart")
+
+while(True):
+    lResult = mStream.RetrieveBuffer(lBuffer, lOperationResult, np.int32(100))
+    for i in range(len(lResult)):
+        print(lResult[i])
+
+    if (lResult[0].IsOK):
+        if (lOperationResult.IsOK):
+            print(lBuffer[0])
+            mStream.QueueBuffer(lBuffer)
