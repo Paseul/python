@@ -12,35 +12,37 @@ import numpy as np
 import cv2
 
 cBufferCount = 16
+lBuffers = []
 
 lForm = PvDeviceFinderForm()
 
 lForm.ShowDialog()
 lDeviceInfo = PvDeviceInfo
 lDeviceInfo = lForm.Selected
-print(lDeviceInfo)
+
 mDevice = PvDevice.CreateAndConnect(lDeviceInfo)
 mStream = PvStream.CreateAndOpen(lDeviceInfo)
 
+
+
 lPayloadSize = mDevice.PayloadSize
+
 if mStream.QueuedBufferMaximum < cBufferCount:
     lBufferCount = mStream.QueuedBufferMaximum
 else:
     lBufferCount = cBufferCount
 
-
 for i in range(lBufferCount):
-    lBuffers[i] = PvBuffer()
+    lBuffers.append(PvBuffer())
     mStream.QueueBuffer(lBuffers[i])
 
-lBuffer = None
-lBuffer = PvBuffer(lBuffer)
-
-lOperationResult = PvResult(PvResultCode.OK)
 mDevice.StreamEnable()
 mDevice.Parameters.ExecuteCommand("AcquisitionStart")
 
 while(True):
+    lBuffer = None
+    lOperationResult = PvResult(PvResultCode.OK)
+
     lResult = mStream.RetrieveBuffer(lBuffer, lOperationResult, np.int32(100))
     for i in range(len(lResult)):
         print(lResult[i])
