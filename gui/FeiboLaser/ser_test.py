@@ -3,8 +3,8 @@
 
 import serial
 
-port = '/dev/tty2' # 시리얼 포트
-baud = 115200 # 시리얼 보드레이트(통신속도)
+port = '/dev/ttyUSB0' # 시리얼 포트
+baud = 9600 # 시리얼 보드레이트(통신속도)
 ser = serial.Serial(port, baud, timeout = 1)
 line = []
 

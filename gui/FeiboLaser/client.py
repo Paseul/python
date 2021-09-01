@@ -879,182 +879,183 @@ class CWidget(QWidget):
     def updateLaser(self, cmd, data):
         # print(cmd, data)
         if cmd == 'STATUS':
+            print(data)
             if int(data[0], 16)&1 == 1:
                 self.t1LowBtn.setStyleSheet("background-color: red")
             else:
-                self.t1LowBtn.setStyleSheet("background-color: lightgray")
+                self.t1LowBtn.setStyleSheet("background-color: green")
             if int(data[0], 16)&2 == 2:
                 self.t2LowBtn.setStyleSheet("background-color: red")
             else:
-                self.t2LowBtn.setStyleSheet("background-color: lightgray")
+                self.t2LowBtn.setStyleSheet("background-color: green")
             if int(data[0], 16)&4 == 4:
                 self.t3LowBtn.setStyleSheet("background-color: red")
             else:
-                self.t3LowBtn.setStyleSheet("background-color: lightgray")           
+                self.t3LowBtn.setStyleSheet("background-color: green")           
             if int(data[0], 16)&8 == 8:
                 self.t4LowBtn.setStyleSheet("background-color: red")
             else:
-                self.t4LowBtn.setStyleSheet("background-color: lightgray")
+                self.t4LowBtn.setStyleSheet("background-color: green")
             if int(data[1], 16)&1 == 1:
                 self.t5LowBtn.setStyleSheet("background-color: red")
             else:
-                self.t5LowBtn.setStyleSheet("background-color: lightgray")
+                self.t5LowBtn.setStyleSheet("background-color: green")
             if int(data[1], 16)&2 == 2:
                 self.t6LowBtn.setStyleSheet("background-color: red")
             else:
-                self.t6LowBtn.setStyleSheet("background-color: lightgray")
+                self.t6LowBtn.setStyleSheet("background-color: green")
             if int(data[1], 16)&4 == 4:
                 self.t7LowBtn.setStyleSheet("background-color: red")
             else:
-                self.t7LowBtn.setStyleSheet("background-color: lightgray")           
+                self.t7LowBtn.setStyleSheet("background-color: green")           
             if int(data[1], 16)&8 == 8:
                 self.t8LowBtn.setStyleSheet("background-color: red")
             else:
-                self.t8LowBtn.setStyleSheet("background-color: lightgray")
+                self.t8LowBtn.setStyleSheet("background-color: green")
             if int(data[2], 16)&1 == 1:
                 self.t9HighBtn.setStyleSheet("background-color: red")
             else:
-                self.t9HighBtn.setStyleSheet("background-color: lightgray")
+                self.t9HighBtn.setStyleSheet("background-color: green")
             if int(data[2], 16)&2 == 2:
                 self.t10HighBtn.setStyleSheet("background-color: red")
             else:
-                self.t10HighBtn.setStyleSheet("background-color: lightgray")
+                self.t10HighBtn.setStyleSheet("background-color: green")
             if int(data[2], 16)&4 == 4:
                 self.t11HighBtn.setStyleSheet("background-color: red")
             else:
-                self.t11HighBtn.setStyleSheet("background-color: lightgray")          
+                self.t11HighBtn.setStyleSheet("background-color: green")          
             if int(data[2], 16)&8 == 8:
                 self.t12HighBtn.setStyleSheet("background-color: red")
             else:
-                self.t12HighBtn.setStyleSheet("background-color: lightgray")
+                self.t12HighBtn.setStyleSheet("background-color: green")
             if int(data[3], 16)&1 == 1:
                 self.t9LowBtn.setStyleSheet("background-color: red")
             else:
-                self.t9LowBtn.setStyleSheet("background-color: lightgray")
+                self.t9LowBtn.setStyleSheet("background-color: green")
             if int(data[3], 16)&2 == 2:
                 self.t10LowBtn.setStyleSheet("background-color: red")
             else:
-                self.t10LowBtn.setStyleSheet("background-color: lightgray")
+                self.t10LowBtn.setStyleSheet("background-color: green")
             if int(data[3], 16)&4 == 4:
                 self.t11LowBtn.setStyleSheet("background-color: red")
             else:
-                self.t11LowBtn.setStyleSheet("background-color: lightgray")          
+                self.t11LowBtn.setStyleSheet("background-color: green")          
             if int(data[3], 16)&8 == 8:
                 self.t12LowBtn.setStyleSheet("background-color: red")
             else:
-                self.t12LowBtn.setStyleSheet("background-color: lightgray")
+                self.t12LowBtn.setStyleSheet("background-color: green")
             if int(data[4], 16)&1 == 1:
                 self.pd1HighBtn.setStyleSheet("background-color: red")
             else:
-                self.pd1HighBtn.setStyleSheet("background-color: lightgray")
+                self.pd1HighBtn.setStyleSheet("background-color: green")
             if int(data[4], 16)&2 == 2:
                 self.pd2HighBtn.setStyleSheet("background-color: red")
             else:
-                self.pd2HighBtn.setStyleSheet("background-color: lightgray")
+                self.pd2HighBtn.setStyleSheet("background-color: green")
             if int(data[5], 16)&1 == 1:
                 self.pd1LowBtn.setStyleSheet("background-color: red")
             else:
-                self.pd1LowBtn.setStyleSheet("background-color: lightgray")
+                self.pd1LowBtn.setStyleSheet("background-color: green")
             if int(data[5], 16)&2 == 2:
                 self.pd2LowBtn.setStyleSheet("background-color: red")
             else:
-                self.pd2LowBtn.setStyleSheet("background-color: lightgray")
+                self.pd2LowBtn.setStyleSheet("background-color: green")
             if int(data[6], 16)&1 == 1:
                 self.wcuErrBtn.setStyleSheet("background-color: red")
             else:
-                self.wcuErrBtn.setStyleSheet("background-color: lightgray")
+                self.wcuErrBtn.setStyleSheet("background-color: green")
             if int(data[6], 16)&8 == 8:
                 self.fiberBrkBtn.setStyleSheet("background-color: red")
             else:
-                self.fiberBrkBtn.setStyleSheet("background-color: lightgray")
+                self.fiberBrkBtn.setStyleSheet("background-color: green")
             if int(data[7], 16)&1 == 1:
                 self.dewPointBtn.setStyleSheet("background-color: red")
             else:
-                self.dewPointBtn.setStyleSheet("background-color: lightgray")
+                self.dewPointBtn.setStyleSheet("background-color: green")
             if int(data[7], 16)&2 == 2:
                 self.gateStaBtn.setStyleSheet("background-color: green")
             else:
-                self.gateStaBtn.setStyleSheet("background-color: lightgray")
+                self.gateStaBtn.setStyleSheet("background-color: green")
             if int(data[7], 16)&4 == 4:
                 self.tecBtn.setStyleSheet("background-color: green")
             else:
-                self.tecBtn.setStyleSheet("background-color: lightgray")         
+                self.tecBtn.setStyleSheet("background-color: green")         
             if int(data[7], 16)&8 == 8:
                 self.tecErrBtn.setStyleSheet("background-color: red")
             else:
-                self.tecErrBtn.setStyleSheet("background-color: lightgray")   
+                self.tecErrBtn.setStyleSheet("background-color: green")   
             if int(data[10], 16)&1 == 1:
                 self.t1HighBtn.setStyleSheet("background-color: red")
             else:
-                self.t1HighBtn.setStyleSheet("background-color: lightgray")
+                self.t1HighBtn.setStyleSheet("background-color: green")
             if int(data[10], 16)&2 == 2:
                 self.t2HighBtn.setStyleSheet("background-color: red")
             else:
-                self.t2HighBtn.setStyleSheet("background-color: lightgray")
+                self.t2HighBtn.setStyleSheet("background-color: green")
             if int(data[10], 16)&4 == 4:
                 self.t3HighBtn.setStyleSheet("background-color: red")
             else:
-                self.t3HighBtn.setStyleSheet("background-color: lightgray")           
+                self.t3HighBtn.setStyleSheet("background-color: green")           
             if int(data[10], 16)&8 == 8:
                 self.t4HighBtn.setStyleSheet("background-color: red")
             else:
-                self.t4HighBtn.setStyleSheet("background-color: lightgray")
+                self.t4HighBtn.setStyleSheet("background-color: green")
             if int(data[11], 16)&1 == 1:
                 self.t5HighBtn.setStyleSheet("background-color: red")
             else:
-                self.t5HighBtn.setStyleSheet("background-color: lightgray")
+                self.t5HighBtn.setStyleSheet("background-color: green")
             if int(data[11], 16)&2 == 2:
                 self.t6HighBtn.setStyleSheet("background-color: red")
             else:
-                self.t6HighBtn.setStyleSheet("background-color: lightgray")
+                self.t6HighBtn.setStyleSheet("background-color: green")
             if int(data[11], 16)&4 == 4:
                 self.t7HighBtn.setStyleSheet("background-color: red")
             else:
-                self.t7HighBtn.setStyleSheet("background-color: lightgray")           
+                self.t7HighBtn.setStyleSheet("background-color: green")           
             if int(data[11], 16)&8 == 8:
                 self.t8HighBtn.setStyleSheet("background-color: red")
             else:
-                self.t8HighBtn.setStyleSheet("background-color: lightgray")
+                self.t8HighBtn.setStyleSheet("background-color: green")
             if int(data[13], 16)&1 == 1:
-                self.pilotEnBtn.setStyleSheet("background-color: green")
+                self.pilotEnBtn.setStyleSheet("background-color: red")
             else:
-                self.pilotEnBtn.setStyleSheet("background-color: lightgray")
+                self.pilotEnBtn.setStyleSheet("background-color: green")
             if int(data[13], 16)&2 == 2:
                 self.interlockBtn.setStyleSheet("background-color: red")
             else:
-                self.interlockBtn.setStyleSheet("background-color: lightgray")
+                self.interlockBtn.setStyleSheet("background-color: green")
             if int(data[13], 16)&4 == 4:
-                self.standbyBtn.setStyleSheet("background-color: green")
+                self.standbyBtn.setStyleSheet("background-color: red")
             else:
-                self.standbyBtn.setStyleSheet("background-color: lightgray")  
+                self.standbyBtn.setStyleSheet("background-color: green")  
             if int(data[14], 16)&1 == 1:
-                self.globalEnBtn.setStyleSheet("background-color: green")
+                self.globalEnBtn.setStyleSheet("background-color: red")
             else:
-                self.globalEnBtn.setStyleSheet("background-color: lightgray")
+                self.globalEnBtn.setStyleSheet("background-color: green")
             if int(data[14], 16)&2 == 2:
                 self.frEnBtn.setStyleSheet("background-color: red")
             else:
-                self.frEnBtn.setStyleSheet("background-color: lightgray")
+                self.frEnBtn.setStyleSheet("background-color: green")
             if int(data[14], 16)&4 == 4:
                 self.frEmBtn.setStyleSheet("background-color: red")
             else:
-                self.frEmBtn.setStyleSheet("background-color: lightgray")         
+                self.frEmBtn.setStyleSheet("background-color: green")         
             if int(data[14], 16)&8 == 8:
                 self.frFaultBtn.setStyleSheet("background-color: red")
             else:
-                self.frFaultBtn.setStyleSheet("background-color: lightgray") 
+                self.frFaultBtn.setStyleSheet("background-color: green") 
             if int(data[15], 16)&1 == 1:
                 self.frWarnBtn.setStyleSheet("background-color: red")
             else:
-                self.frWarnBtn.setStyleSheet("background-color: lightgray") 
+                self.frWarnBtn.setStyleSheet("background-color: green") 
             if int(data[15], 16)&8 == 8:
                 self.expiredBtn.setStyleSheet("background-color: red")
             else:
-                self.expiredBtn.setStyleSheet("background-color: lightgray") 
+                self.expiredBtn.setStyleSheet("background-color: green") 
 
         elif cmd == 'DSN':
             self.dsnRcvEdit.setText(data)
-        elif cmd == 'OPMD':
+        elif cmd == 'OPMOD':
             self.opmdRcvEdit.setText(data)
         elif cmd == 'IMAX_CW':
             imax_cw = int(data,16)/100
@@ -1067,29 +1068,29 @@ class CWidget(QWidget):
             self.psetRcvEdit.setText(str(iset))
         elif cmd == 'TOFW':
             t9, t10, t11 = data.split(',')
-            t9 = int(t9,16)/10
+            t9 = int(t9,16)/100
             self.t9RcvEdit.setText(str(t9))
-            t10 = int(t10,16)/10
+            t10 = int(t10,16)/100
             self.t10RcvEdit.setText(str(t10))
-            t11 = int(t11,16)/10
+            t11 = int(t11,16)/100
             self.t11RcvEdit.setText(str(t11))
         elif cmd == 'TMONRT':
             t1, t2, t3, t4, t5, t6, t7, t8 = data.split(',')
-            t1 = int(t1,16)/10
+            t1 = int(t1,16)/100
             self.t1RcvEdit.setText(str(t1))
-            t2 = int(t2,16)/10
+            t2 = int(t2,16)/100
             self.t2RcvEdit.setText(str(t2))
-            t3 = int(t3,16)/10
+            t3 = int(t3,16)/100
             self.t3RcvEdit.setText(str(t3))
-            t4 = int(t4,16)/10
+            t4 = int(t4,16)/100
             self.t4RcvEdit.setText(str(t4))
-            t5 = int(t5,16)/10
+            t5 = int(t5,16)/100
             self.t5RcvEdit.setText(str(t5))
-            t6 = int(t6,16)/10
+            t6 = int(t6,16)/100
             self.t6RcvEdit.setText(str(t6))
-            t7 = int(t7,16)/10
+            t7 = int(t7,16)/100
             self.t7RcvEdit.setText(str(t7))
-            t8 = int(t8,16)/10
+            t8 = int(t8,16)/100
             self.t8RcvEdit.setText(str(t8))
         elif cmd == 'ENVC':
             temp, humid, dew = data.split(',')
@@ -1100,6 +1101,7 @@ class CWidget(QWidget):
             dew = int(dew,16)/100
             self.envDewRcvEdit.setText(str(dew))
         elif cmd == 'PD':
+            print(cmd, data)
             pd1, pd2, reserved = data.split(',')
             self.pd1RcvEdit.setText(str(int(pd1,16)))
             self.pd2RcvEdit.setText(str(int(pd2,16)))

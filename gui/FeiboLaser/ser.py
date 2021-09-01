@@ -11,8 +11,8 @@ import datetime
 
 line = [] #라인 단위로 데이터 가져올 리스트 변수
 
-port = 'COM7' # 시리얼 포트
-baud = 115200 # 시리얼 보드레이트(통신속도)
+port = '/dev/ttyUSB0' # 시리얼 포트
+baud = 9600 # 시리얼 보드레이트(통신속도)
 
 class Signal(QObject):
   recv_signal = pyqtSignal(str, str)
@@ -66,8 +66,10 @@ class SerialSocket:
   def receive(self, ser):
     while self.bConnect:
       #데이터가 있있다면
+
       for c in ser.readline():  
-        #line 변수에 차곡차곡 추가하여 넣는다.      
+        #line 변수에 차곡차곡 추가하여 넣는다.  
+  
         self.rcvFlag = True
         if chr(c) == '=':
           self.cmdFlag = True
@@ -100,4 +102,4 @@ class SerialSocket:
     self.stop()
 
   def send(self, cmd, data):
-    self.ser.write((cmd+data).encode())
+    self.ser.write((cmd+data+"\r\n").encode())

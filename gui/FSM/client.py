@@ -10,7 +10,7 @@ import socket
 from time import sleep
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
-serverAddressPort = ("127.0.0.1", 20001)
+serverAddressPort = ("192.168.99.11", 51200)
 bufferSize = 1024
 
 class CWidget(QWidget):
