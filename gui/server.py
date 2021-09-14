@@ -2,6 +2,8 @@ from threading import *
 from socket import *
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from struct import *
+import numpy as np
+import cv2
 
 
 class Signal(QObject):
@@ -23,6 +25,7 @@ class ServerSocket:
 
         self.conn.conn_signal.connect(self.parent.updateClient)
         self.recv.recv_signal.connect(self.parent.updateMsg)
+        self.s = b''
 
     def __del__(self):
         self.stop()
@@ -73,20 +76,18 @@ class ServerSocket:
     def receive(self, addr, client):
         while True:
             try:
-                recv = client.recv(1024)
+                recv = client.recv(518400*2)
             except Exception as e:
                 print('Recv() Error :', e)
                 break
             else:
-                if recv:               
-                    header = hex(recv[0])
-                    cmd = hex(recv[1])
-                    addr = hex((recv[2]<<8) | recv[3])
-                    data = hex((recv[4]<<8) | recv[5])
+                if recv:
+                    self.s += recv
 
-                    self.recv.recv_signal.emit(header, cmd, addr, data)
-                    # self.recv.recv_signal.emit(cmd)
-                    # self.recv.recv_signal.emit(data)
+                    if len(self.s) == (518400):
+                        frame = np.fromstring(self.s, dtype=np.uint8)
+                        frame = frame.reshape(1080, 1920)
+                        cv2.imshow("frame", frame)
 
         self.removeCleint(addr, client)
 
