@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import *
 import sys
 import laser_client
 import cooler_client
-import thermo_beacon
+# import thermo_beacon
 import ser
 import struct
 import numpy as np
@@ -34,7 +34,7 @@ class CWidget(QWidget):
         self.serConnect = False
         self.mainStart = False
         self.ldStart = False
-        self.coolerStart = True
+        self.coolerStart = False
         self.ld1 = False
         self.ld2 = False
         self.ld3 = False
@@ -48,7 +48,7 @@ class CWidget(QWidget):
 
         self.initUI()
 
-        thermo_beacon.ThermoBeacon(self)
+        # thermo_beacon.ThermoBeacon(self)
 
     def __del__(self):
         self.lc.stop()
@@ -629,15 +629,15 @@ class CWidget(QWidget):
                   + " /" + str(hex(frontpower)) + " /" + str(hex(rearpower)) + " /" + str(hex(mdstatus)))
         
     def updateCooler(self, func, val1, val2):
-        if func == 5:
-            if val1 == 65280:
-                self.cPowerBtn.setStyleSheet("background-color: green")
-            elif val1 == 0:
-                self.cPowerBtn.setStyleSheet("background-color: lightgray")
-            else:
-                self.cPowerBtn.setStyleSheet("background-color: red")
+        # if func == 5:
+        #     if val1 == 65280:
+        #         self.cPowerBtn.setStyleSheet("background-color: green")
+        #     elif val1 == 0:
+        #         self.cPowerBtn.setStyleSheet("background-color: lightgray")
+        #     else:
+        #         self.cPowerBtn.setStyleSheet("background-color: red")
                 
-        elif func == 4:
+        if func == 4:
             coolerInTemp = (val1/65535)*500 - 100
             coolerOutTemp = (val2/65535)*500 - 100
             self.compIn.setText(str(round(coolerInTemp, 4)))
@@ -906,12 +906,14 @@ class CWidget(QWidget):
             data = 0xFF00
             self.coolerStart = True
             # self.coolerBit()       
-            # self.coolerTemp()     
+            # self.coolerTemp()
+            self.cPowerBtn.setStyleSheet("background-color: green")
         else:
             data = 0
             self.coolerStart = False
             # self.t1.cancel()
             # self.t2.cancel()
+            self.cPowerBtn.setStyleSheet("background-color: lightgray")
         self.sendcCooler(header, cmd, addr, data)        
 
     def coolerTemp(self):
@@ -920,9 +922,9 @@ class CWidget(QWidget):
         addr = 0
         data = 2
         self.sendCooler(header, cmd, addr, data)    
-        # self.t1 = threading.Timer(1, self.coolerTemp)
-        # self.t1.deamon = True
-        # self.t1.start()
+        self.t1 = threading.Timer(1, self.coolerTemp)
+        self.t1.deamon = True
+        self.t1.start()
 
     def coolerBit(self):
         header = 1
