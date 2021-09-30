@@ -884,15 +884,25 @@ class CWidget(QWidget):
         header = 0x29
         cmd = 0x23
         data = float(self.ld1Amp.toPlainText())
-        ld1 = np.uint16((3822.0*data - 608)*1.02249 + 0.00615)  
+        ld1 = np.uint16((3822.0*data - 608)*1.02249 + 0.00615)
+        if ld1 < 0:
+            ld1 = 0
         data = float(self.ld2Amp.toPlainText())
         ld2 = np.uint16((3817.5 * data - 132.5)*1.02040 + 0.00819)
+        if ld2 < 0:
+            ld2 = 0
         data = float(self.ld3Amp.toPlainText())
         ld3 = np.uint16((3832.5 * data + 432.5)*1.02354 - 0.00306)
+        if ld3 < 0:
+            ld3 = 0
         data = float(self.ld4Amp.toPlainText())
-        ld4 = np.uint16((3807.5 * data - 207.5)*1.02563 - 0.001)   
+        ld4 = np.uint16((3807.5 * data - 207.5)*1.02563 - 0.001)
+        if ld4 < 0:
+            ld4 = 0
         data = float(self.ld5Amp.toPlainText())
-        ld5 = np.uint16((data*3807.5 - 542.5)*1.02352 - 0.00106)  
+        ld5 = np.uint16((data*3807.5 - 542.5)*1.02352 - 0.00106)
+        if ld5 < 0:
+            ld5 = 0
         ldTime = np.uint16(float(self.ldTime.toPlainText()))  
         ldThres = np.uint16(float(self.ldThres.toPlainText()))  
         self.sendLaser3(header, cmd, ld1, ld2, ld3, ld4, ld5, ldTime, ldThres)
