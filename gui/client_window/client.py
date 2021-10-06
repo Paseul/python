@@ -10,7 +10,6 @@ import struct
 import numpy as np
 import threading
 from time import sleep
-import time
 from struct import *
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -601,13 +600,7 @@ class CWidget(QWidget):
             self.p_Btn.setStyleSheet("background-color: lightgray")
             self.serConnect = False
 
-    def updateLaser(self, ld1amp, ld2amp, ld3amp, ld4amp, ld5amp, temp1, temp2, temp3, temp3plate, tempcls, temppump, frontpower, rearpower, mdstatus):
-        received_time = time.time()
-        if (received_time - self.current_time < 3):
-            self.ldSASet()
-        else:
-            reply = QMessageBox.question(self, '레이저 수치 변경', '정상적으로 변경되었습니다', QMessageBox.Ok)
-
+    def updateLaser(self, ld1amp, ld2amp, ld3amp, ld4amp, ld5amp, temp1, temp2, temp3, temp3plate, tempcls, temppump, frontpower, rearpower, mdstatus):        
         self.ld1AmpRcv.setText(str(round((((self.swap16(ld1amp)+608.0) / 3822.0) + 0.00615) / 1.02249, 4)))
         self.ld2AmpRcv.setText(str(round((((self.swap16(ld2amp)+132.5) / 3817.5) + 0.00819) / 1.02040, 4)))
         self.ld3AmpRcv.setText(str(round((((self.swap16(ld3amp)-432.5) / 3832.5) - 0.00306) / 1.02354, 4)))
@@ -925,7 +918,6 @@ class CWidget(QWidget):
         ldTime = np.uint16(float(self.ldTime.toPlainText()))  
         ldThres = np.uint16(float(self.ldThres.toPlainText()))  
         self.sendLaser3(header, cmd, ld1, ld2, ld3, ld4, ld5, ldTime, ldThres)
-        self.current_time = time.time()
     
     def cPower(self):
         header = 1
