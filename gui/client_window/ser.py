@@ -35,15 +35,15 @@ class SerialSocket:
         self.bConnect = False
 
     #쓰레드 종료용 시그널 함수+
-    def handler(signum, frame):
-        self.bConnect = True
+    # def handler(self, signum, frame):
+    #     self.bConnect = True
 
     def __del__(self):
         self.stop()
 
     def connect(self):
-        #종료 시그널 등록
-        signal.signal(signal.SIGINT, self.handler)
+        # #종료 시그널 등록
+        # signal.signal(signal.SIGINT, self.handler)
     
         self.ser = serial.Serial(port, baud, timeout=0)
         self.bConnect = True
@@ -54,7 +54,12 @@ class SerialSocket:
 
         return True
 
+    def close(self):
+        print('Close')
+        self.stop()
+
     def stop(self):
+        print('Stop')
         self.bConnect = False
         if hasattr(self, 'client'):
             self.ser.close()
@@ -63,11 +68,11 @@ class SerialSocket:
             self.disconn.disconn_signal.emit()
 
     def receive(self, ser):
-        basename = "battery"
-        suffix = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
-        filename = "_".join([basename, suffix + ".csv"])
-        csvfile = open(filename, 'w', newline='') 
-        writer = csv.writer(csvfile) 
+        # basename = "battery"
+        # suffix = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
+        # filename = "_".join([basename, suffix + ".csv"])
+        # csvfile = open(filename, 'w', newline='')
+        # writer = csv.writer(csvfile)
         while self.bConnect:
             #데이터가 있있다면
             for c in self.ser.read():
@@ -90,7 +95,7 @@ class SerialSocket:
 
                     suffix = datetime.datetime.now().strftime("%H:%M:%S")
                     self.line.insert(0, suffix)
-                    writer.writerow(self.line)
+                    # writer.writerow(self.line)
                     #line 변수 초기화
                     del self.line[:]
                 elif len(self.line) == 20:

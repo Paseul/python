@@ -10,6 +10,7 @@ import struct
 import numpy as np
 import threading
 from time import sleep
+import time
 from struct import *
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -45,6 +46,8 @@ class CWidget(QWidget):
         self.coolerInTemp = 0
         self.coolerOutTemp = 0
         self.coolBit = 0
+        self.msg_count = 0
+        self.current_time = 0
 
         self.initUI()
 
@@ -599,6 +602,12 @@ class CWidget(QWidget):
             self.serConnect = False
 
     def updateLaser(self, ld1amp, ld2amp, ld3amp, ld4amp, ld5amp, temp1, temp2, temp3, temp3plate, tempcls, temppump, frontpower, rearpower, mdstatus):
+        received_time = time.time()
+        if (received_time - self.current_time < 3):
+            self.ldSASet()
+        else:
+            reply = QMessageBox.question(self, '레이저 수치 변경', '정상적으로 변경되었습니다', QMessageBox.Ok)
+
         self.ld1AmpRcv.setText(str(round((((self.swap16(ld1amp)+608.0) / 3822.0) + 0.00615) / 1.02249, 4)))
         self.ld2AmpRcv.setText(str(round((((self.swap16(ld2amp)+132.5) / 3817.5) + 0.00819) / 1.02040, 4)))
         self.ld3AmpRcv.setText(str(round((((self.swap16(ld3amp)-432.5) / 3832.5) - 0.00306) / 1.02354, 4)))
@@ -884,28 +893,39 @@ class CWidget(QWidget):
         header = 0x29
         cmd = 0x23
         data = float(self.ld1Amp.toPlainText())
-        ld1 = np.uint16((3822.0*data - 608)*1.02249 + 0.00615)
+        ld1 = (3822.0*data - 608)*1.02249 + 0.00615
         if ld1 < 0:
             ld1 = 0
+        ld1 = np.uint16(ld1)
+
         data = float(self.ld2Amp.toPlainText())
-        ld2 = np.uint16((3817.5 * data - 132.5)*1.02040 + 0.00819)
+        ld2 = (3817.5 * data - 132.5)*1.02040 + 0.00819
         if ld2 < 0:
             ld2 = 0
+        ld2 = np.uint16(ld2)
+
         data = float(self.ld3Amp.toPlainText())
-        ld3 = np.uint16((3832.5 * data + 432.5)*1.02354 - 0.00306)
+        ld3 = (3832.5 * data + 432.5)*1.02354 - 0.00306
         if ld3 < 0:
             ld3 = 0
+        ld3 = np.uint16(ld3)
+
         data = float(self.ld4Amp.toPlainText())
-        ld4 = np.uint16((3807.5 * data - 207.5)*1.02563 - 0.001)
+        ld4 = (3807.5 * data - 207.5)*1.02563 - 0.001
         if ld4 < 0:
             ld4 = 0
+        ld4 = np.uint16(ld4)
+
         data = float(self.ld5Amp.toPlainText())
-        ld5 = np.uint16((data*3807.5 - 542.5)*1.02352 - 0.00106)
+        ld5 = (data*3807.5 - 542.5)*1.02352 - 0.00106
         if ld5 < 0:
             ld5 = 0
+        ld5 = np.uint16(ld5)
+
         ldTime = np.uint16(float(self.ldTime.toPlainText()))  
         ldThres = np.uint16(float(self.ldThres.toPlainText()))  
         self.sendLaser3(header, cmd, ld1, ld2, ld3, ld4, ld5, ldTime, ldThres)
+        self.current_time = time.time()
     
     def cPower(self):
         header = 1

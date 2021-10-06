@@ -52,11 +52,11 @@ class ClientSocket:
             self.disconn.disconn_signal.emit()
 
     def receive(self, client):
-        basename = "cooler"
-        suffix = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
-        filename = "_".join([basename, suffix + ".csv"])
-        csvfile = open(filename, 'w', newline='') 
-        writer = csv.writer(csvfile) 
+        # basename = "cooler"
+        # suffix = datetime.datetime.now().strftime("%y%m%d_%H%M%S")
+        # filename = "_".join([basename, suffix + ".csv"])
+        # csvfile = open(filename, 'w', newline='')
+        # writer = csv.writer(csvfile)
         while self.bConnect:
             try:               
                 recv = client.recv(1024)
@@ -85,7 +85,7 @@ class ClientSocket:
                     suffix = datetime.datetime.now().strftime("%H:%M:%S")
                     log_list = list(recv)
                     log_list.insert(0, suffix)
-                    writer.writerow(log_list)
+                    # writer.writerow(log_list)
                     print(recv)
         self.stop()
 
