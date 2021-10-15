@@ -1,15 +1,17 @@
 import cv2
 import sys
+import os
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from pypylon import pylon
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 import ser
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
 class Thread(QThread):
-    changePixmap = pyqtSignal(QImage)
+    changePixmap = pyqtSignal(QImage, QImage)
 
     def run(self):
         # conecting to the first available camera
@@ -36,7 +38,8 @@ class Thread(QThread):
                 h, w = img.shape
                 convertToQtFormat = QImage(img, w, h, w, QImage.Format_Grayscale8)
                 p = convertToQtFormat.scaled(1024, 1024, Qt.KeepAspectRatio)
-                self.changePixmap.emit(p)
+                q = convertToQtFormat.scaled(640, 640, Qt.KeepAspectRatio)
+                self.changePixmap.emit(p, q)
 
     def stop(self):
         self.camera.StopGrabbing()
@@ -49,19 +52,20 @@ class App(QWidget):
 
         self.initUI()
 
-    @pyqtSlot(QImage)
-    def setImage(self, image):
+    @pyqtSlot(QImage, QImage)
+    def setImage(self, image, image2):
         self.picture.setPixmap(QPixmap.fromImage(image))
+        self.swirLabel.setPixmap(QPixmap.fromImage(image2))
 
     def initUI(self):
         self.setWindowTitle('Mobile Laser')
 
         # 채팅창 부분
-        infobox = QHBoxLayout()
+        mainView = QVBoxLayout()
         gb = QGroupBox('디스플레이')
-        infobox.addWidget(gb)
+        mainView.addWidget(gb)
 
-        box = QVBoxLayout()
+        box = QHBoxLayout()
 
         self.picture = QLabel(self)
         self.picture.resize(1024, 1024)
@@ -69,16 +73,78 @@ class App(QWidget):
 
         gb.setLayout(box)
 
-        # 전원 제어부
-        lensControlBox = QHBoxLayout()
+        swirGpsBox = QVBoxLayout()
+        box.addLayout(swirGpsBox)
 
-        gb = QGroupBox('렌즈 제어부')
-        lensControlBox.addWidget(gb)
+        self.swirLabel = QLabel(self)
+        self.swirLabel.resize(640, 640)
+        swirGpsBox.addWidget(self.swirLabel)
+        self.webView = QWebEngineView()
+        filepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "map.html"))
+        self.webView.load(QUrl.fromLocalFile(filepath))
+        swirGpsBox.addWidget(self.webView)
+        gb.setLayout(swirGpsBox)
+
+        # 전원 제어부
+        bitDisplayBox = QHBoxLayout()
+        gb = QGroupBox('BIT')
+        bitDisplayBox.addWidget(gb)
 
         box = QVBoxLayout()
 
         # 전원 BIT
-        controlBtnBox = QHBoxLayout()
+        bitBox = QVBoxLayout()
+        box.addLayout(bitBox)
+
+        self.laser_bit = QPushButton('레이저 BIT')
+        self.laser_bit.setStyleSheet("background-color: green")
+        bitBox.addWidget(self.laser_bit)
+
+        self.power_bit = QPushButton('전원 BIT')
+        self.power_bit.setStyleSheet("background-color: green")
+        bitBox.addWidget(self.power_bit)
+
+        self.chiller_bit = QPushButton('냉각기 BIT')
+        self.chiller_bit.setStyleSheet("background-color: green")
+        bitBox.addWidget(self.chiller_bit)
+
+        self.act_bit = QPushButton('구동장치 BIT')
+        self.act_bit.setStyleSheet("background-color: green")
+        bitBox.addWidget(self.act_bit)
+
+        self.camera_bit = QPushButton('카메라 BIT')
+        self.camera_bit.setStyleSheet("background-color: green")
+        bitBox.addWidget(self.camera_bit)
+
+        self.lens_bit = QPushButton('줌랜즈 BIT')
+        self.lens_bit.setStyleSheet("background-color: green")
+        bitBox.addWidget(self.lens_bit)
+
+        self.lrf_bit = QPushButton('LRF BIT')
+        self.lrf_bit.setStyleSheet("background-color: green")
+        bitBox.addWidget(self.lrf_bit)
+
+        self.gps_bit = QPushButton('GPS BIT')
+        self.gps_bit.setStyleSheet("background-color: green")
+        bitBox.addWidget(self.gps_bit)
+
+        self.joystick_bit = QPushButton('조이스틱 BIT')
+        self.joystick_bit.setStyleSheet("background-color: green")
+        bitBox.addWidget(self.joystick_bit)
+
+        self.label = QLabel(self)
+        bitBox.addWidget(self.label)
+
+        gb.setLayout(box)
+
+        # 전원 BIT
+        lensControlBox = QHBoxLayout()
+        gb = QGroupBox('Control')
+        lensControlBox.addWidget(gb)
+
+        box = QVBoxLayout()
+
+        controlBtnBox = QVBoxLayout()
         box.addLayout(controlBtnBox)
 
         self.p_Btn = QPushButton('접속')
@@ -113,13 +179,17 @@ class App(QWidget):
         self.stopBtn.clicked.connect(self.stop)
         controlBtnBox.addWidget(self.stopBtn)
 
+        self.label = QLabel(self)
+        controlBtnBox.addWidget(self.label)
+
         gb.setLayout(box)
 
         # 전체 배치
-        vbox = QVBoxLayout()
-        vbox.addLayout(infobox)
-        vbox.addLayout(lensControlBox)
-        self.setLayout(vbox)
+        hbox = QHBoxLayout()
+        hbox.addLayout(mainView)
+        hbox.addLayout(bitDisplayBox)
+        hbox.addLayout(lensControlBox)
+        self.setLayout(hbox)
 
         self.th = Thread(self)
         self.th.changePixmap.connect(self.setImage)
