@@ -27,6 +27,13 @@ class Thread(QThread):
         # converting to opencv bgr format
         converter.OutputPixelFormat = pylon.PixelType_BGR8packed
         converter.OutputBitAlignment = pylon.OutputBitAlignment_MsbAligned
+
+        # save video
+        videoWriter = cv2.VideoWriter()
+
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        videoWriter.open("output.mp4", fourcc, 30, (2048, 2048), False)
+
         while self.camera.IsGrabbing():
             grabResult = self.camera.RetrieveResult(5000, pylon.TimeoutHandling_ThrowException)
 
@@ -36,6 +43,7 @@ class Thread(QThread):
                 img = image.GetArray()
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                 h, w = img.shape
+                videoWriter.write(img)
                 convertToQtFormat = QImage(img, w, h, w, QImage.Format_Grayscale8)
                 p = convertToQtFormat.scaled(1024, 1024, Qt.KeepAspectRatio)
                 q = convertToQtFormat.scaled(640, 640, Qt.KeepAspectRatio)
