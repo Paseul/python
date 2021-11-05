@@ -7,13 +7,34 @@ from PyQt5.QtWidgets import *
 from pypylon import pylon
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import ser
+import socket
+import struct
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
+port = 5000
+ip = '127.0.1.1'
+serverAddressPort = ("192.168.1.31", 55000)
+
 class Thread(QThread):
     changePixmap = pyqtSignal(QImage, QImage)
+    thread_signal = pyqtSignal(int, int)
+    def __init__(self, parent=None):
+        super(Thread, self).__init__(parent)
+        self.val = ""
+        self.x = 0
+        self.y = 0
+        self.w = 0
+        self.h = 0
 
     def run(self):
+        trackers = [cv2.TrackerCSRT_create,
+                    cv2.TrackerMIL_create,
+                    cv2.TrackerKCF_create
+                    ]
+
+        tracker = cv2.TrackerCSRT_create
+
         # conecting to the first available camera
         self.camera = pylon.InstantCamera(pylon.TlFactory.GetInstance().CreateFirstDevice())
 
@@ -28,11 +49,7 @@ class Thread(QThread):
         converter.OutputPixelFormat = pylon.PixelType_BGR8packed
         converter.OutputBitAlignment = pylon.OutputBitAlignment_MsbAligned
 
-        # save video
-        videoWriter = cv2.VideoWriter()
-
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        videoWriter.open("output.mp4", fourcc, 30, (2048, 2048), False)
+        initBB = None
 
         while self.camera.IsGrabbing():
             grabResult = self.camera.RetrieveResult(5000, pylon.TimeoutHandling_ThrowException)
@@ -42,21 +59,53 @@ class Thread(QThread):
                 image = converter.Convert(grabResult)
                 img = image.GetArray()
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+                if initBB is not None:
+                    # grab the new bounding box coordinates of the object
+                    (success, box) = tracker.update(img)
+                    # check to see if the tracking was a success
+                    if success:
+                        (x, y, w, h) = [int(v) for v in box]
+                        cv2.rectangle(img, (x, y), (x + w, y + h),
+                                      (0, 255, 0), 1)
+                        self.thread_signal.emit(x-1020, y-1020)
+
                 h, w = img.shape
-                videoWriter.write(img)
+
                 convertToQtFormat = QImage(img, w, h, w, QImage.Format_Grayscale8)
-                p = convertToQtFormat.scaled(1024, 1024, Qt.KeepAspectRatio)
+                p = convertToQtFormat.scaled(1020, 1020, Qt.KeepAspectRatio)
                 q = convertToQtFormat.scaled(640, 640, Qt.KeepAspectRatio)
+
+                if self.val == "c":
+                    self.val = ""
+                    tracker = trackers[0]()
+                    initBB = (self.x, self.y, self.w, self.h)
+                    # start OpenCV object tracker using the supplied bounding box
+                    # coordinates, then start the FPS throughput estimator as well
+                    tracker.init(img, initBB)
+
                 self.changePixmap.emit(p, q)
 
     def stop(self):
         self.camera.StopGrabbing()
 
+    def recive_signal(self, val, x, y, w, h):
+        self.val = val
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+
+
 class App(QWidget):
+    main_signal = pyqtSignal(str, int, int, int, int)
     def __init__(self):
         super().__init__()
 
         self.ser = ser.SerialSocket(self)
+        self.UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+        self.start_x = 0
+        self.start_y = 0
 
         self.initUI()
 
@@ -76,7 +125,7 @@ class App(QWidget):
         box = QHBoxLayout()
 
         self.picture = QLabel(self)
-        self.picture.resize(1024, 1024)
+        self.picture.resize(1020, 1020)
         box.addWidget(self.picture)
 
         gb.setLayout(box)
@@ -187,6 +236,35 @@ class App(QWidget):
         self.stopBtn.clicked.connect(self.stop)
         controlBtnBox.addWidget(self.stopBtn)
 
+        # Cmd
+        self.cmdMsg = QTextEdit()
+        self.cmdMsg.setFixedHeight(30)
+        self.cmdMsg.setText('4')
+        controlBtnBox.addWidget(self.cmdMsg)
+        # data
+        self.aziMsg = QTextEdit()
+        self.aziMsg.setFixedHeight(30)
+        self.aziMsg.setText('11')
+        controlBtnBox.addWidget(self.aziMsg)
+        # data
+        self.eleMsg = QTextEdit()
+        self.eleMsg.setFixedHeight(30)
+        self.eleMsg.setText('22')
+        controlBtnBox.addWidget(self.eleMsg)
+
+        # data
+        self.distanceMsg = QTextEdit()
+        self.distanceMsg.setFixedHeight(30)
+        self.distanceMsg.setText('12345')
+        controlBtnBox.addWidget(self.distanceMsg)
+
+        self.udpSendBtn = QPushButton('UDP Send')
+        self.udpSendBtn.clicked.connect(self.udpSend)
+        controlBtnBox.addWidget(self.udpSendBtn)
+
+        self.recvmsg = QListWidget()
+        box.addWidget(self.recvmsg)
+
         self.label = QLabel(self)
         controlBtnBox.addWidget(self.label)
 
@@ -201,9 +279,25 @@ class App(QWidget):
 
         self.th = Thread(self)
         self.th.changePixmap.connect(self.setImage)
+        self.main_signal.connect(self.th.recive_signal)
+        self.th.thread_signal.connect(self.udpSend)
         self.th.daemon = True
         self.th.start()
         self.show()
+
+    def udpUpdate(self, mode, cbit, aziLocalAngle, eleLocalAngle, aziLocalSpeed, eleLocalSpeed, aziGlobalAngle, eleGlobalAngle, aziGlobalSpeed, eleGlobalSpeed):
+        self.recvmsg.addItem(mode, cbit, aziLocalAngle, eleLocalAngle, aziLocalSpeed, eleLocalSpeed, aziGlobalAngle, eleGlobalAngle, aziGlobalSpeed, eleGlobalSpeed)
+
+    def udpSend(self, x, y):
+        distance = int(self.distanceMsg.toPlainText(), 32)
+
+        values = (32770, 0, 0, 0, 0, x, y, distance)
+        fmt = '>H i i i i i i I'
+        packer = struct.Struct(fmt)
+        sendData = packer.pack(*values)
+        # print(x, y)
+        # print(sendData)
+        # self.UDPClientSocket.sendto(sendData, serverAddressPort)
 
     def powerConnect(self):
         if self.ser.bConnect == False:
@@ -254,6 +348,18 @@ class App(QWidget):
     def closeEvent(self, e):
         self.hide()
         self.th.stop()
+
+    def mousePressEvent(self, e):  # e ; QMouseEvent
+        self.start_x = e.x()
+        self.start_y = e.y()
+
+    def mouseReleaseEvent(self, e): # e ; QMouseEvent
+        x = self.start_x + e.x()-42
+        y = self.start_y + e.y()-66
+        w = (e.x() - self.start_x)*2
+        h = (e.y() - self.start_y)*2
+
+        self.main_signal.emit("c", x, y, w, h)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
