@@ -9,6 +9,11 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 import ser
 import socket
 import struct
+import numpy as np
+from cv2 import dnn_superres
+from filterpy.kalman import UnscentedKalmanFilter as UKF
+from filterpy.kalman import MerweScaledSigmaPoints
+from filterpy.common import Q_discrete_white_noise
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -26,8 +31,35 @@ class Thread(QThread):
         self.y = 0
         self.w = 0
         self.h = 0
+        self.dt = 1.0 / 30.0
+
+    def f_cv(self, x, dt):
+        """ state transition function for a
+        constant velocity aircraft"""
+
+        F = np.array([[1, self.dt, 0, 0],
+                      [0, 1, 0, 0],
+                      [0, 0, 1, self.dt],
+                      [0, 0, 0, 1]])
+        return np.dot(F, x)
+
+    def h_cv(self, x):
+        return x[[0, 2]]
 
     def run(self):
+        sigmas = MerweScaledSigmaPoints(4, alpha=.1, beta=2., kappa=-1.)
+        ukf = UKF(dim_x=4, dim_z=2, fx=self.f_cv,
+                  hx=self.h_cv, dt=self.dt, points=sigmas)
+
+        # assume error is 0.3m
+        ukf.R = np.diag([0.09, 0.09])
+
+        ukf.Q[0:2, 0:2] = Q_discrete_white_noise(2, dt=self.dt, var=0.02)
+        ukf.Q[2:4, 2:4] = Q_discrete_white_noise(2, dt=self.dt, var=0.02)
+
+        last_measurement = None
+        last_prediction = None
+
         trackers = [cv2.TrackerCSRT_create,
                     cv2.TrackerMIL_create,
                     cv2.TrackerKCF_create
@@ -49,6 +81,16 @@ class Thread(QThread):
         converter.OutputPixelFormat = pylon.PixelType_BGR8packed
         converter.OutputBitAlignment = pylon.OutputBitAlignment_MsbAligned
 
+        # Create an SR object
+        sr = dnn_superres.DnnSuperResImpl_create()
+
+        # Read the desired model
+        path = "ESPCN_x4.pb"
+        sr.readModel(path)
+
+        # Set the desired model and scale to get correct pre- and post-processing
+        sr.setModel("espcn", 4)
+
         initBB = None
 
         while self.camera.IsGrabbing():
@@ -67,14 +109,43 @@ class Thread(QThread):
                     if success:
                         (x, y, w, h) = [int(v) for v in box]
                         cv2.rectangle(img, (x, y), (x + w, y + h),
-                                      (0, 255, 0), 1)
-                        self.thread_signal.emit(x-1020, y-1020)
+                                      (0, 255, 0), 2)
+                        (img_h, img_w) = img.shape
+                        center_x, center_y = x + w / 2, y + h / 2
 
+                        measurement = np.array([center_x, center_y], np.float32)
+                        if last_measurement is None:
+                            ukf.x = np.array([center_x, 0, center_y, 0], np.float32)
+                            # prediction = measurement
+                            self.thread_signal.emit((int)(measurement[0] - img_w / 2), (int)(measurement[1] - img_h / 2))
+                        else:
+                            ukf.predict()
+                            ukf.update(measurement)
+
+                            # Trace the path of the prediction in red.
+                            # cv2.arrowedLine(frame, (measurement[0], measurement[1]),
+                            # 	((int)(ukf.x[0]), (int)(ukf.x[2])), (0, 0, 255), 1)
+                            # cv2.rectangle(frame, (last_prediction[0], last_prediction[1]), (last_prediction[0] + w, last_prediction[1] + h),
+                            # 	(0, 0, 255), 2)
+                            self.thread_signal.emit((int)(measurement[0] - img_w - ukf.x[0]), (int)(center_y - img_h / 2 - ukf.x[2]))
+                        last_prediction = ukf.x.copy()
+                        last_measurement = measurement
+
+                        try:
+                            frame = img[(int)(y - h * 2):(int)(y + h * 3), (int)(x - w * 2):(int)(x + w * 3)]
+                            frame = sr.upsample(frame)
+                            frame = cv2.resize(frame, dsize=(640, 480), interpolation=cv2.INTER_CUBIC)
+                            convertToQtFormat2 = QImage(frame, 640, 480, 640, QImage.Format_Grayscale8)
+                            q = convertToQtFormat2.scaled(640, 640, Qt.KeepAspectRatio)
+                        except Exception as e:
+                            q = convertToQtFormat.scaled(640, 640, Qt.KeepAspectRatio)
                 h, w = img.shape
 
                 convertToQtFormat = QImage(img, w, h, w, QImage.Format_Grayscale8)
+
                 p = convertToQtFormat.scaled(1020, 1020, Qt.KeepAspectRatio)
-                q = convertToQtFormat.scaled(640, 640, Qt.KeepAspectRatio)
+                if initBB is None:
+                    q = convertToQtFormat.scaled(640, 640, Qt.KeepAspectRatio)
 
                 if self.val == "c":
                     self.val = ""
@@ -85,6 +156,7 @@ class Thread(QThread):
                     tracker.init(img, initBB)
 
                 self.changePixmap.emit(p, q)
+
 
     def stop(self):
         self.camera.StopGrabbing()
@@ -113,6 +185,7 @@ class App(QWidget):
     def setImage(self, image, image2):
         self.picture.setPixmap(QPixmap.fromImage(image))
         self.swirLabel.setPixmap(QPixmap.fromImage(image2))
+
 
     def initUI(self):
         self.setWindowTitle('Mobile Laser')
@@ -189,84 +262,45 @@ class App(QWidget):
         self.joystick_bit.setStyleSheet("background-color: green")
         bitBox.addWidget(self.joystick_bit)
 
-        self.label = QLabel(self)
-        bitBox.addWidget(self.label)
-
-        gb.setLayout(box)
-
-        # 전원 BIT
-        lensControlBox = QHBoxLayout()
-        gb = QGroupBox('Control')
-        lensControlBox.addWidget(gb)
-
-        box = QVBoxLayout()
-
-        controlBtnBox = QVBoxLayout()
-        box.addLayout(controlBtnBox)
-
         self.p_Btn = QPushButton('접속')
         self.p_Btn.clicked.connect(self.powerConnect)
-        controlBtnBox.addWidget(self.p_Btn)
+        bitBox.addWidget(self.p_Btn)
 
         self.focusNearBtn = QPushButton('Focus Near')
         self.focusNearBtn.clicked.connect(self.focusNear)
-        controlBtnBox.addWidget(self.focusNearBtn)
+        bitBox.addWidget(self.focusNearBtn)
 
         self.focusWideBtn = QPushButton('Focus Wide')
         self.focusWideBtn.clicked.connect(self.focusWide)
-        controlBtnBox.addWidget(self.focusWideBtn)
+        bitBox.addWidget(self.focusWideBtn)
 
         self.zoomWideBtn = QPushButton('Zoom Wide')
         self.zoomWideBtn.clicked.connect(self.zoomWide)
-        controlBtnBox.addWidget(self.zoomWideBtn)
+        bitBox.addWidget(self.zoomWideBtn)
 
         self.zoomTeleBtn = QPushButton('Zoom Tele')
         self.zoomTeleBtn.clicked.connect(self.zoomTele)
-        controlBtnBox.addWidget(self.zoomTeleBtn)
+        bitBox.addWidget(self.zoomTeleBtn)
 
         self.irisCloseBtn = QPushButton('Iris Close')
         self.irisCloseBtn.clicked.connect(self.irisClose)
-        controlBtnBox.addWidget(self.irisCloseBtn)
+        bitBox.addWidget(self.irisCloseBtn)
 
         self.irisOpenBtn = QPushButton('Iris Open')
         self.irisOpenBtn.clicked.connect(self.irisOpen)
-        controlBtnBox.addWidget(self.irisOpenBtn)
+        bitBox.addWidget(self.irisOpenBtn)
 
         self.stopBtn = QPushButton('Stop')
         self.stopBtn.clicked.connect(self.stop)
-        controlBtnBox.addWidget(self.stopBtn)
+        bitBox.addWidget(self.stopBtn)
 
-        # Cmd
-        self.cmdMsg = QTextEdit()
-        self.cmdMsg.setFixedHeight(30)
-        self.cmdMsg.setText('4')
-        controlBtnBox.addWidget(self.cmdMsg)
-        # data
-        self.aziMsg = QTextEdit()
-        self.aziMsg.setFixedHeight(30)
-        self.aziMsg.setText('11')
-        controlBtnBox.addWidget(self.aziMsg)
-        # data
-        self.eleMsg = QTextEdit()
-        self.eleMsg.setFixedHeight(30)
-        self.eleMsg.setText('22')
-        controlBtnBox.addWidget(self.eleMsg)
-
-        # data
         self.distanceMsg = QTextEdit()
         self.distanceMsg.setFixedHeight(30)
         self.distanceMsg.setText('12345')
-        controlBtnBox.addWidget(self.distanceMsg)
-
-        self.udpSendBtn = QPushButton('UDP Send')
-        self.udpSendBtn.clicked.connect(self.udpSend)
-        controlBtnBox.addWidget(self.udpSendBtn)
-
-        self.recvmsg = QListWidget()
-        box.addWidget(self.recvmsg)
+        bitBox.addWidget(self.distanceMsg)
 
         self.label = QLabel(self)
-        controlBtnBox.addWidget(self.label)
+        bitBox.addWidget(self.label)
 
         gb.setLayout(box)
 
@@ -274,7 +308,6 @@ class App(QWidget):
         hbox = QHBoxLayout()
         hbox.addLayout(mainView)
         hbox.addLayout(bitDisplayBox)
-        hbox.addLayout(lensControlBox)
         self.setLayout(hbox)
 
         self.th = Thread(self)
