@@ -1,9 +1,10 @@
-from threading import *
 from socket import *
+from threading import *
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 import struct
 import csv
 import datetime
+from multiprocessing import Process, Queue
 import numpy as np
 
 class Signal(QObject):
@@ -11,9 +12,8 @@ class Signal(QObject):
     disconn_signal = pyqtSignal()
 
 
-class ClientSocket:
-
-    def __init__(self, parent):
+class ClientSocket():
+    def __init__(self, parent, ip):
         self.parent = parent
 
         self.recv = Signal()
@@ -64,14 +64,14 @@ class ClientSocket:
                 print('Recv() Error :', e)
                 break
             else:
-                if recv:                    
+                if recv:
                     # print(recv)
                     if recv[0] == 2 and recv[1] == 0:
                         fmt = '>B B H H H H H H H H H H H H H H'
                         unpacked = struct.unpack(fmt, recv)
 
                         self.recv.recv_signal.emit(unpacked[2], unpacked[3], unpacked[4], unpacked[5], unpacked[6], unpacked[7], unpacked[8], unpacked[9], unpacked[10], unpacked[11], unpacked[12], unpacked[13], unpacked[14], unpacked[15])
-                    
+
                     suffix = datetime.datetime.now().strftime("%H:%M:%S")
                     log_list = list(recv)
                     log_list.insert(0, suffix)

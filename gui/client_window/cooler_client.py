@@ -1,4 +1,4 @@
-from threading import *
+from multiprocessing import Process, Queue
 from socket import *
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 import struct
@@ -36,7 +36,7 @@ class ClientSocket:
             return False
         else:
             self.bConnect = True
-            self.t = Thread(target=self.receive, args=(self.client,))
+            self.t = Process(target=self.receive, args=(self.client,))
             self.t.daemon = True
             self.t.start()
             print('Connected')
@@ -57,37 +57,40 @@ class ClientSocket:
         # filename = "_".join([basename, suffix + ".csv"])
         # csvfile = open(filename, 'w', newline='')
         # writer = csv.writer(csvfile)
-        while self.bConnect:
-            try:               
-                recv = client.recv(1024)
-            except Exception as e:
-                print('Recv() Error :', e)
-                break
-            else:
-                if recv:
-                    if recv[7] == 5:
-                        val1 = recv[4]<<8 | recv[5]
-                        val2 = 0
+        try:
+            while self.bConnect:
+                try:
+                    recv = client.recv(1024)
+                except Exception as e:
+                    print('Recv() Error :', e)
+                    break
+                else:
+                    if recv:
+                        if recv[7] == 5:
+                            val1 = recv[4]<<8 | recv[5]
+                            val2 = 0
 
-                    elif recv[7] == 4:
-                        val1 = recv[9]<<8 | recv[10]     # in temp
-                        val2 = recv[11]<<8 | recv[12]     # out temp                        
+                        elif recv[7] == 4:
+                            val1 = recv[9]<<8 | recv[10]     # in temp
+                            val2 = recv[11]<<8 | recv[12]     # out temp
 
-                    elif recv[7] == 1:
-                        val1 = recv[9]
-                        val2 = 0
+                        elif recv[7] == 1:
+                            val1 = recv[9]
+                            val2 = 0
 
-                    else:
-                        val1 = 0
-                        val2 = 0
-                    print(val1, val2)
-                    self.recv.recv_signal.emit(recv[7], val1, val2)
-                    suffix = datetime.datetime.now().strftime("%H:%M:%S")
-                    log_list = list(recv)
-                    log_list.insert(0, suffix)
-                    # writer.writerow(log_list)
-                    print(recv)
-        self.stop()
+                        else:
+                            val1 = 0
+                            val2 = 0
+                        print(val1, val2)
+                        self.recv.recv_signal.emit(recv[7], val1, val2)
+                        suffix = datetime.datetime.now().strftime("%H:%M:%S")
+                        log_list = list(recv)
+                        log_list.insert(0, suffix)
+                        # writer.writerow(log_list)
+                        print(recv)
+            self.stop()
+        except:
+            pass
 
     def send(self, sendData):
         if not self.bConnect:

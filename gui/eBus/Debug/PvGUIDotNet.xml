@@ -1,0 +1,888 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>PvGUIDotNet</name>
+    </assembly>
+    <members>
+        <member name="F:PvGUIDotNet.ErrorControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.ErrorControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:PvGUIDotNet.ErrorControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.BrowserControl.listView_Scroll(System.Object,System.EventArgs)">
+            <summary>
+            Scroll event handler
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:PvGUIDotNet.BrowserControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.BrowserControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:PvGUIDotNet.BrowserControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:PvGUIDotNet.PvGenBrowserRefreshType">
+            <summary>
+            How a GenICam browser refreshes its parameters.
+            </summary>
+        </member>
+        <member name="F:PvGUIDotNet.PvGenBrowserRefreshType.Polling">
+            <summary>
+            The GenApi feature timeout polling mechanism is used.
+            </summary>
+        </member>
+        <member name="F:PvGUIDotNet.PvGenBrowserRefreshType.Auto">
+            <summary>
+            All features are periodically polled in round-robin fashion.
+            </summary>
+        </member>
+        <member name="F:PvGUIDotNet.PvGenBrowserRefreshType.Manual">
+            <summary>
+            Refresh is handled either using the Refresh GUI button or the Refresh API call.
+            </summary>
+        </member>
+        <member name="F:PvGUIDotNet.BrowserOptions.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.BrowserOptions.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:PvGUIDotNet.BrowserOptions.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:PvGUIDotNet.SelectFromIPForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.SelectFromIPForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:PvGUIDotNet.SelectFromIPForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:PvGUIDotNet.PvCameraBridgeManagerForm">
+            <summary>
+            UI used to managed camera bridges for all the serial ports of a GigE Vision
+            or USB3 Vision frame grabber.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.Dispose(System.Boolean)">
+            <summary>
+            Dispose method which can be explicitly call to release held resources.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.PvCameraBridgeManagerForm_Load(System.Object,System.EventArgs)">
+            <summary>
+            Form load handler.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.FreeBridges">
+            <summary>
+            Frees the bridges map properly
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.PopulateBridges">
+            <summary>
+            Populates the brige map with available ports
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.LoadBridge(PvGUIDotNet.CameraBridge)">
+            <summary>
+            Loads a bridge to the UI
+            </summary>
+            <param name="aBridge"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.LoadCLPTemplates(PvGUIDotNet.CameraBridge)">
+            <summary>
+            Load CLProtocol options in the combo box
+            </summary>
+            <param name="aBridge"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.LoadGenCPXMLs(PvGUIDotNet.CameraBridge)">
+            <summary>
+            Load GenCP XML IDs in the combo box
+            </summary>
+            <param name="aBridge"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.FillPortCombo">
+            <summary>
+            Fills the port combo box with available ports
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.FillSourceCombo">
+            <summary>
+            Fills the source combo box with all available sources
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.ChangeBridgeType(PvDotNet.PvCameraBridgeType)">
+            <summary>
+            Changes the bridge type for the selected port
+            </summary>
+            <param name="aType"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.UpdateStatistics">
+            <summary>
+            Updates the bridge statistics
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.EnableInterface">
+            <summary>
+            Syncs the state of the UI
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.ResetUI">
+            <summary>
+            Resets the user interface
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.SaveState(PvDotNet.PvConfigurationWriter)">
+            <summary>
+            Save manager's state
+            </summary>
+            <param name="aWriter">Configuration writer the configuration is written to.</param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.LoadState(PvDotNet.PvConfigurationReader,System.Collections.Generic.List{System.String})">
+            <summary>
+            Loads manager's state from persistence information
+            </summary>
+            <param name="aReader">Configuration the persistence data is retrieved from.</param>
+            <param name="aErrors">List of errors compiled when loading from persistence.</param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.Recover">
+            <summary>
+            Completes a recovery (reconnection) operation based on the manager's configuration
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.radioButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Radio button clicked handler
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.portComboBox_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            Port combo changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.clpTemplateComboBox_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            CLP option combo changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.clpXMLComboBox_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            CLP XML combo changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.genCPXMLComboBox_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            GenCP XML combo
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.sourceComboBox_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            Source combo box change handler.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.pcfPathButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            PCF path button: select PCF file location
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.pcfLoadButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            PCF load button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.clpProbeButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            CLP probe button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.clpConnectButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            CLP load button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.genCPConnectButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            GenCP load button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.statsResetButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Reset statistics button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.syncCheckBox_Click(System.Object,System.EventArgs)">
+            <summary>
+            Parameters sync check box click handler.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.timer_Tick(System.Object,System.EventArgs)">
+            <summary>
+            Timer message handler
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.GetBridgePort(System.Int32)">
+            <summary>
+            Returns the port used by one of the managed bridge
+            </summary>
+            <param name="aIndex">The bridge index.</param>
+            <returns>The bridge port.</returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.GetBridge(System.Int32)">
+            <summary>
+            Returns one of the managed bridges
+            </summary>
+            <param name="aIndex">The bridge index.</param>
+            <returns>The bridge.</returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.SyncBridges">
+            <summary>
+            Sync our bridge structs vs the real bridge status
+            </summary>
+            <remarks>
+            It is possible that the bridge status is modified when the dialog is not visible.
+            Here we are making sure that the bridge array elements are in sync with the
+            real camera bridge.
+            </remarks>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.GetNiceCLPTemplate(System.String)">
+            <summary>
+            Turns the very informative but cryptic CLProtocol option into something users can relate to
+            </summary>
+            <param name="aTemplate"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.GetNiceCLPCameraID(System.String)">
+            <summary>
+            Turns the very informative but cryptic camera ID into something users can relate to
+            </summary>
+            <param name="aCameraID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.GetNiceCLPXMLID(System.String)">
+            <summary>
+            Turns the very informative but cryptic CLProtocol XML ID into something users can relate to
+            </summary>
+            <param name="aXMLID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.GetNiceGenCPXMLID(System.String)">
+            <summary>
+            Turns the very informative but cryptic GenCP XML ID into something users can relate to
+            </summary>
+            <param name="aXMLID"></param>
+            <returns></returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.UpdateStatus(PvGUIDotNet.CameraBridge)">
+            <summary>
+            Updates the text status of a bridge
+            </summary>
+            <param name="aBridge"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.PvCameraBridgeManagerForm_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <summary>
+            If non modal and user closing, just hide - don't close just yet
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:PvGUIDotNet.PvCameraBridgeManagerForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvCameraBridgeManagerForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvCameraBridgeManagerForm.Device">
+            <summary>
+            GigE Vision or USB3 Vision frame grabber device the camera(s) are attached to.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvCameraBridgeManagerForm.Stream">
+            <summary>
+            Stream used to receive images from the camera
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvCameraBridgeManagerForm.BridgeCount">
+            <summary>
+            How many bridges are currently managed for the assigned device controller.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvCameraBridgeManagerForm.SelectedBridge">
+            <summary>
+            Returns the current active bridge - or NULL
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:PvGUIDotNet.PvIPAddressEdit">
+            <summary>
+            Control used to edit IP addresses.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvIPAddressEdit.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvIPAddressEdit.Clear">
+            <summary>
+            Clears the content of the control.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvIPAddressEdit.Focus(System.Int32)">
+            <summary>
+            Sets the focus on a specific octet of the IP address.
+            </summary>
+            <param name="aComponent">Octet of IP address to focus on</param>
+        </member>
+        <member name="F:PvGUIDotNet.PvIPAddressEdit.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvIPAddressEdit.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:PvGUIDotNet.PvIPAddressEdit.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvIPAddressEdit.IsValid">
+            <summary>
+            Evaluates to true when the IP address is valid.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvIPAddressEdit.IsFilled">
+            <summary>
+            Evaluates to true if all 4 components of the IP address are present.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvIPAddressEdit.AddressText">
+            <summary>
+            Returns a string representing the IP address.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvIPAddressEdit.AddressUInt32">
+            <summary>
+            Returns the IP address as an integer
+            </summary>
+        </member>
+        <member name="F:PvGUIDotNet.IPConfigurationForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.IPConfigurationForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:PvGUIDotNet.IPConfigurationForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:PvGUIDotNet.PvNetworkUtils">
+            <summary>
+            Utilities to manipulate IP and MAC addresses.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvNetworkUtils.MACStrToQuad(System.String)">
+            <summary>
+            Converts a MAC string to integer. ':' and '-' separators are allowed.
+            Throws an exception if the string is not a valid MAC address.
+            </summary>
+            <param name="aString">MAC string.</param>
+            <returns>MAC address as an integer.</returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvNetworkUtils.IPStrToDWORD(System.String)">
+            <summary>
+            Converts an IP address string to an integer.
+            Throws an exception if the string is not a valid IP address.
+            </summary>
+            <param name="aString">IP address as a string.</param>
+            <returns>IP address as an integer.</returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvNetworkUtils.MACQuadToStr(System.Int64)">
+            <summary>
+            Converts a integer representing a MAC address to a string.
+            </summary>
+            <param name="aValue">MAC address as an integer.</param>
+            <returns>MAC address as a string.</returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvNetworkUtils.IPDWORDToStr(System.UInt32)">
+            <summary>
+            Converts an integer representing an IP address to a string.
+            </summary>
+            <param name="aValue">IP address as an integer.</param>
+            <returns>IP address as a string.</returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvNetworkUtils.GetSubnet(System.String,System.String)">
+            <summary>
+            From an IP address and a subnet mask (strings) returns the active subnet.
+            </summary>
+            <param name="aIP">IP address as a string.</param>
+            <param name="aSubnetMask">Subnet mask as a string.</param>
+            <returns>Subnet as a string.</returns>
+        </member>
+        <member name="T:PvGUIDotNet.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:PvGUIDotNet.PvDeviceFinderForm">
+            <summary>
+            Form (usually displayed as modal) that can be used to detect and select
+            a GigE Vision, USB3 Vision and Pleora Protocol devices on the network.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvDeviceFinderForm.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="F:PvGUIDotNet.PvDeviceFinderForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvDeviceFinderForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:PvGUIDotNet.PvDeviceFinderForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvDeviceFinderForm.Selected">
+            <summary>
+            Selected device as a PvDeviceInfo reference. Null if no device was selected.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvDeviceFinderForm.GEVVisible">
+            <summary>
+            If true, detected GigE Vision devices are displayed.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvDeviceFinderForm.GEVSelectable">
+            <summary>
+            If true, detected GigE Vision can be selected.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvDeviceFinderForm.PleoraProtocolVisible">
+            <summary>
+            If true, detected Pleora Protocol devices are displayed.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvDeviceFinderForm.PleoraProtocolSelectable">
+            <summary>
+            If true, detected Pleora Protocol can be selected.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvDeviceFinderForm.U3VVisible">
+            <summary>
+            If true, detected USB3 Vision devices are displayed.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvDeviceFinderForm.U3VSelectable">
+            <summary>
+            If true, detected USB3 Vision devices can be selected.
+            </summary>
+        </member>
+        <member name="T:PvGUIDotNet.PvDisplayControl">
+            <summary>
+            Display control used to view PvImage content. Can be embedded in a .NET
+            form to view PvImage content.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvDisplayControl.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="F:PvGUIDotNet.PvDisplayControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvDisplayControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:PvGUIDotNet.PvDisplayControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvDisplayControl.TextOverlay">
+            <summary>
+            Sets the text overlay.
+            </summary>
+            <remarks>
+            <para>The display is not immediately updated: the new text overlay is used with all Display 
+            method calls until changed or reset.</para>
+            <para>To clear the text overlay, set it to an empty string.</para>
+            </remarks>
+        </member>
+        <member name="P:PvGUIDotNet.PvDisplayControl.TextOverlayColor">
+            <summary>
+            Color of the text overlay.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvDisplayControl.TextOverlaySize">
+            <summary>
+            Text overlay font size.
+            </summary>
+            <remarks>
+            <para>The size is native font size on MFC, Qt or .NET.</para>
+            <para>A good way of managing the font size is to start with the default size and 
+            increase or decrease it relatively:</para>
+            <para>Make text size 50% of original: display.SetTextOverlaySize( display.GetTextOverlaySize()  / 2 );</para>
+            <para>Make text size 200% of original: display.SetTextOverlaySize( display.GetTextOverlaySize() * 2 );</para>
+            </remarks>
+        </member>
+        <member name="P:PvGUIDotNet.PvDisplayControl.TextOverlayOffsetX">
+            <summary>
+            X offset of the text overlay on the image in screen pixels.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvDisplayControl.TextOverlayOffsetY">
+            <summary>
+            Y offset of the text overlay on the image in screen pixels.
+            </summary>
+        </member>
+        <member name="T:PvGUIDotNet.PvMessageBox">
+            <summary>
+            Message box used to display PvError or PvException to the user.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvMessageBox.Show(PvDotNet.PvException)">
+            <summary>
+            Shows the content of a PvException in a dialog box.
+            </summary>
+            <param name="aException">Exception to display.</param>
+            <returns>Message box DialogResult.</returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvMessageBox.Show(PvDotNet.PvException,System.String)">
+            <summary>
+            Shows content of a PvException and a custom message in a dialog box.
+            </summary>
+            <param name="aException">Exception to display.</param>
+            <param name="aMessage">Custom message.</param>
+            <returns>Message box DialogResult.</returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvMessageBox.Show(PvDotNet.PvException,System.String,System.String)">
+            <summary>
+            Shows content of a PvException and a custom message in a dialog box.
+            </summary>
+            <param name="aException">Exception to display.</param>
+            <param name="aMessage">Custom message.</param>
+            <param name="aCaption">Title of the message box.</param>
+            <returns>Message box DialogResult.</returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvMessageBox.Show(PvDotNet.PvResult)">
+            <summary>
+            Shows content of a PvResult in a dialog box.
+            </summary>
+            <param name="aResult">Result to display.</param>
+            <returns>Message box DialogResult.</returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvMessageBox.Show(PvDotNet.PvResult,System.String)">
+            <summary>
+            Shows content of a PvResult and a custom message in a dialog box.
+            </summary>
+            <param name="aResult">Result to display.</param>
+            <param name="aMessage">Custom message.</param>
+            <returns>Message box DialogResult.</returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvMessageBox.Show(PvDotNet.PvResult,System.String,System.String)">
+            <summary>
+            Shows content of a PvResult and a custom message in a dialog box.
+            </summary>
+            <param name="aResult">Result to display.</param>
+            <param name="aMessage">Custom message.</param>
+            <param name="aCaption">Title of the message box.</param>
+            <returns>Message box DialogResult.</returns>
+        </member>
+        <member name="T:PvGUIDotNet.PvStatusControl">
+            <summary>
+            Simple text box displaying the current status of a display thread. Also 
+            allows displaying warnings. An optional image saving form can be provided
+            so that recording statuses are provided as well.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvStatusControl.#ctor">
+            <summary>
+            Constructor.
+            </summary>
+        </member>
+        <member name="F:PvGUIDotNet.PvStatusControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvStatusControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:PvGUIDotNet.PvStatusControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvStatusControl.Stream">
+            <summary>
+            Stream object attribute. Most statistics are retrieved from that stream object.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvStatusControl.DisplayThread">
+            <summary>
+            Display thread attribute. Optional. If provided some statistics (like display 
+            frame rate) are retrieved from the displayed thread. 
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvStatusControl.Warning">
+            <summary>
+            Attribute allowing a custom warning to be added to the status control.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvStatusControl.BuffersReallocated">
+            <summary>
+            Attribute that can be set to true when buffers are reallocated. Allows
+            displaying a message informing the user of that event.
+            </summary>
+        </member>
+        <member name="T:PvGUIDotNet.PvGenBrowserControl">
+            <summary>
+            GenICam browser control. Can be used to embed the browser in a form. To use as a modal or modeless
+            window, embed the control in one of your form control.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.#ctor">
+            <summary>
+            Contructor.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.IsParameterDisplayed(PvDotNet.PvGenParameter)">
+            <summary>
+            Can be overridden to filter out some parameters from the browser.
+            </summary>
+            <param name="aParameter">GenICam parameter.</param>
+            <returns>True to have the feature displayed, false to filter it out.</returns>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.RefreshBrowser">
+            <summary>
+            Refreshes the content of the browser.
+            </summary>
+            <remarks>
+            <para>When in automatic or polling time mode, the browser refreshes itself autonomously. When
+            in manual mode, refresh operations are triggered by the refresh button of the browser
+            or they can be triggered with this method.</para>
+            <para>This method refreshes the parameters of the browser but it is possible (and likely) that
+            some parameter values are stored in the register cache of the parameter array.</para>
+            <para>To refresh (invalidate) the register cache, call PvGenParameterArray::InvalidateCache. This
+            should in turn cause all the parameters of the browser to be updated.</para>
+            <para>This operation is performed in the the context of the user interface.</para>
+            </remarks>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.EnableInterface">
+            <summary>
+            Syncs the enabled interface state
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.visibilityComboBox_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            Visibility combo box selection changed handler
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.propertiesButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Properties button is clicked handler, show properties form and re-configure
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.expandButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Expand button click handler: expand all categories
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.collapseButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Collapse button click handler: collapse all categories
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.SaveToPropertyList(System.Collections.Generic.List{PvDotNet.PvProperty})">
+            <summary>
+            Saves the content of the form to a property list.
+            </summary>
+            <param name="aPropertyList">Property list where the data is stored.</param>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.LoadFromPropertyList(System.Collections.Generic.List{PvDotNet.PvProperty})">
+            <summary>
+            Loads the content of the form from a property list.
+            </summary>
+            <param name="aPropertyList">Property list the data is read from.</param>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.refreshButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Refresh button handler. Perform a synchronous update on the whole tree.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:PvGUIDotNet.PvGenBrowserControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:PvGUIDotNet.PvGenBrowserControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvGenBrowserControl.GenParameterArray">
+            <summary>
+            The GenICam parameter array the browser allows the user to interact with.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvGenBrowserControl.Visibility">
+            <summary>
+            Current visibility. Only features at or above that visibility level are displayed by the control.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvGenBrowserControl.RefreshType">
+            <summary>
+            Selects the refresh method used by the GenICam browser.
+            </summary>
+        </member>
+        <member name="P:PvGUIDotNet.PvGenBrowserControl.CategoryFilter">
+            <summary>
+            List of categories to display. If empty (default) all categories are displayed.
+            Subcategories are provided with their root category (or categories) split with backslashes.
+            When a category is defined as part of the category filter, all its subcategories are
+            also displayed. The category filter must be set before assigning the parameter array 
+            as updating the filter does not trigger a rebuild of the tree.
+            </summary>
+        </member>
+    </members>
+</doc>

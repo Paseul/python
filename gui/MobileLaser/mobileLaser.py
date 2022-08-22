@@ -14,6 +14,7 @@ from cv2 import dnn_superres
 from filterpy.kalman import UnscentedKalmanFilter as UKF
 from filterpy.kalman import MerweScaledSigmaPoints
 from filterpy.common import Q_discrete_white_noise
+import js
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -22,7 +23,7 @@ ip = '127.0.1.1'
 serverAddressPort = ("192.168.1.31", 55000)
 
 class Thread(QThread):
-    changePixmap = pyqtSignal(QImage, QImage)
+    changePixmap = pyqtSignal(QImage)
     thread_signal = pyqtSignal(int, int)
     def __init__(self, parent=None):
         super(Thread, self).__init__(parent)
@@ -128,24 +129,24 @@ class Thread(QThread):
                             # cv2.rectangle(frame, (last_prediction[0], last_prediction[1]), (last_prediction[0] + w, last_prediction[1] + h),
                             # 	(0, 0, 255), 2)
                             self.thread_signal.emit((int)(measurement[0] - img_w - ukf.x[0]), (int)(center_y - img_h / 2 - ukf.x[2]))
-                        last_prediction = ukf.x.copy()
+                        # last_prediction = ukf.x.copy()
                         last_measurement = measurement
 
-                        try:
-                            frame = img[(int)(y - h * 2):(int)(y + h * 3), (int)(x - w * 2):(int)(x + w * 3)]
-                            frame = sr.upsample(frame)
-                            frame = cv2.resize(frame, dsize=(640, 480), interpolation=cv2.INTER_CUBIC)
-                            convertToQtFormat2 = QImage(frame, 640, 480, 640, QImage.Format_Grayscale8)
-                            q = convertToQtFormat2.scaled(640, 640, Qt.KeepAspectRatio)
-                        except Exception as e:
-                            q = convertToQtFormat.scaled(640, 640, Qt.KeepAspectRatio)
+                        # try:
+                        #     frame = img[(int)(y - h * 2):(int)(y + h * 3), (int)(x - w * 2):(int)(x + w * 3)]
+                        #     frame = sr.upsample(frame)
+                        #     frame = cv2.resize(frame, dsize=(640, 480), interpolation=cv2.INTER_CUBIC)
+                        #     convertToQtFormat2 = QImage(frame, 640, 480, 640, QImage.Format_Grayscale8)
+                        #     q = convertToQtFormat2.scaled(640, 640, Qt.KeepAspectRatio)
+                        # except Exception as e:
+                        #     q = convertToQtFormat.scaled(640, 640, Qt.KeepAspectRatio)
                 h, w = img.shape
 
                 convertToQtFormat = QImage(img, w, h, w, QImage.Format_Grayscale8)
 
                 p = convertToQtFormat.scaled(1020, 1020, Qt.KeepAspectRatio)
-                if initBB is None:
-                    q = convertToQtFormat.scaled(640, 640, Qt.KeepAspectRatio)
+                # if initBB is None:
+                #     q = convertToQtFormat.scaled(640, 640, Qt.KeepAspectRatio)
 
                 if self.val == "c":
                     self.val = ""
@@ -155,7 +156,7 @@ class Thread(QThread):
                     # coordinates, then start the FPS throughput estimator as well
                     tracker.init(img, initBB)
 
-                self.changePixmap.emit(p, q)
+                self.changePixmap.emit(p)
 
 
     def stop(self):
@@ -179,12 +180,14 @@ class App(QWidget):
         self.start_x = 0
         self.start_y = 0
 
+        self.js = js.Joystick(self)
+
         self.initUI()
 
-    @pyqtSlot(QImage, QImage)
-    def setImage(self, image, image2):
+    @pyqtSlot(QImage)
+    def setImage(self, image):
         self.picture.setPixmap(QPixmap.fromImage(image))
-        self.swirLabel.setPixmap(QPixmap.fromImage(image2))
+        # self.swirLabel.setPixmap(QPixmap.fromImage(image2))
 
 
     def initUI(self):
@@ -203,21 +206,21 @@ class App(QWidget):
 
         gb.setLayout(box)
 
-        swirGpsBox = QVBoxLayout()
-        box.addLayout(swirGpsBox)
-
-        self.swirLabel = QLabel(self)
-        self.swirLabel.resize(640, 640)
-        swirGpsBox.addWidget(self.swirLabel)
-        self.webView = QWebEngineView()
-        filepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "map.html"))
-        self.webView.load(QUrl.fromLocalFile(filepath))
-        swirGpsBox.addWidget(self.webView)
-        gb.setLayout(swirGpsBox)
+        # swirGpsBox = QVBoxLayout()
+        # box.addLayout(swirGpsBox)
+        #
+        # self.swirLabel = QLabel(self)
+        # self.swirLabel.resize(640, 640)
+        # swirGpsBox.addWidget(self.swirLabel)
+        # self.webView = QWebEngineView()
+        # filepath = os.path.abspath(os.path.join(os.path.dirname(__file__), "map.html"))
+        # self.webView.load(QUrl.fromLocalFile(filepath))
+        # swirGpsBox.addWidget(self.webView)
+        # gb.setLayout(swirGpsBox)
 
         # 전원 제어부
         bitDisplayBox = QHBoxLayout()
-        gb = QGroupBox('BIT')
+        gb = QGroupBox('Control')
         bitDisplayBox.addWidget(gb)
 
         box = QVBoxLayout()
@@ -226,73 +229,57 @@ class App(QWidget):
         bitBox = QVBoxLayout()
         box.addLayout(bitBox)
 
-        self.laser_bit = QPushButton('레이저 BIT')
-        self.laser_bit.setStyleSheet("background-color: green")
+        self.laser_bit = QPushButton('Stop')
+        self.laser_bit.clicked.connect(self.gimbalStop)
         bitBox.addWidget(self.laser_bit)
 
-        self.power_bit = QPushButton('전원 BIT')
-        self.power_bit.setStyleSheet("background-color: green")
+        self.power_bit = QPushButton('Zero')
+        self.power_bit.clicked.connect(self.gimbalCenter)
         bitBox.addWidget(self.power_bit)
 
-        self.chiller_bit = QPushButton('냉각기 BIT')
-        self.chiller_bit.setStyleSheet("background-color: green")
+        self.chiller_bit = QPushButton('Manual')
+        self.chiller_bit.clicked.connect(self.gimbalManual)
         bitBox.addWidget(self.chiller_bit)
 
-        self.act_bit = QPushButton('구동장치 BIT')
-        self.act_bit.setStyleSheet("background-color: green")
+        self.act_bit = QPushButton('Joystick')
+        self.act_bit.clicked.connect(self.gimbalJoystick)
         bitBox.addWidget(self.act_bit)
 
-        self.camera_bit = QPushButton('카메라 BIT')
-        self.camera_bit.setStyleSheet("background-color: green")
+        self.camera_bit = QPushButton('Pixel')
+        self.camera_bit.clicked.connect(self.gimbalPixel)
         bitBox.addWidget(self.camera_bit)
 
-        self.lens_bit = QPushButton('줌랜즈 BIT')
-        self.lens_bit.setStyleSheet("background-color: green")
-        bitBox.addWidget(self.lens_bit)
-
-        self.lrf_bit = QPushButton('LRF BIT')
-        self.lrf_bit.setStyleSheet("background-color: green")
-        bitBox.addWidget(self.lrf_bit)
-
-        self.gps_bit = QPushButton('GPS BIT')
-        self.gps_bit.setStyleSheet("background-color: green")
-        bitBox.addWidget(self.gps_bit)
-
-        self.joystick_bit = QPushButton('조이스틱 BIT')
-        self.joystick_bit.setStyleSheet("background-color: green")
-        bitBox.addWidget(self.joystick_bit)
-
-        self.p_Btn = QPushButton('접속')
-        self.p_Btn.clicked.connect(self.powerConnect)
-        bitBox.addWidget(self.p_Btn)
-
-        self.focusNearBtn = QPushButton('Focus Near')
-        self.focusNearBtn.clicked.connect(self.focusNear)
-        bitBox.addWidget(self.focusNearBtn)
-
-        self.focusWideBtn = QPushButton('Focus Wide')
-        self.focusWideBtn.clicked.connect(self.focusWide)
-        bitBox.addWidget(self.focusWideBtn)
-
-        self.zoomWideBtn = QPushButton('Zoom Wide')
-        self.zoomWideBtn.clicked.connect(self.zoomWide)
-        bitBox.addWidget(self.zoomWideBtn)
-
-        self.zoomTeleBtn = QPushButton('Zoom Tele')
-        self.zoomTeleBtn.clicked.connect(self.zoomTele)
-        bitBox.addWidget(self.zoomTeleBtn)
-
-        self.irisCloseBtn = QPushButton('Iris Close')
-        self.irisCloseBtn.clicked.connect(self.irisClose)
-        bitBox.addWidget(self.irisCloseBtn)
-
-        self.irisOpenBtn = QPushButton('Iris Open')
-        self.irisOpenBtn.clicked.connect(self.irisOpen)
-        bitBox.addWidget(self.irisOpenBtn)
-
-        self.stopBtn = QPushButton('Stop')
-        self.stopBtn.clicked.connect(self.stop)
-        bitBox.addWidget(self.stopBtn)
+        # self.p_Btn = QPushButton('접속')
+        # self.p_Btn.clicked.connect(self.powerConnect)
+        # bitBox.addWidget(self.p_Btn)
+        #
+        # self.focusNearBtn = QPushButton('Focus Near')
+        # self.focusNearBtn.clicked.connect(self.focusNear)
+        # bitBox.addWidget(self.focusNearBtn)
+        #
+        # self.focusWideBtn = QPushButton('Focus Wide')
+        # self.focusWideBtn.clicked.connect(self.focusWide)
+        # bitBox.addWidget(self.focusWideBtn)
+        #
+        # self.zoomWideBtn = QPushButton('Zoom Wide')
+        # self.zoomWideBtn.clicked.connect(self.zoomWide)
+        # bitBox.addWidget(self.zoomWideBtn)
+        #
+        # self.zoomTeleBtn = QPushButton('Zoom Tele')
+        # self.zoomTeleBtn.clicked.connect(self.zoomTele)
+        # bitBox.addWidget(self.zoomTeleBtn)
+        #
+        # self.irisCloseBtn = QPushButton('Iris Close')
+        # self.irisCloseBtn.clicked.connect(self.irisClose)
+        # bitBox.addWidget(self.irisCloseBtn)
+        #
+        # self.irisOpenBtn = QPushButton('Iris Open')
+        # self.irisOpenBtn.clicked.connect(self.irisOpen)
+        # bitBox.addWidget(self.irisOpenBtn)
+        #
+        # self.stopBtn = QPushButton('Stop')
+        # self.stopBtn.clicked.connect(self.stop)
+        # bitBox.addWidget(self.stopBtn)
 
         self.distanceMsg = QTextEdit()
         self.distanceMsg.setFixedHeight(30)
@@ -330,7 +317,7 @@ class App(QWidget):
         sendData = packer.pack(*values)
         # print(x, y)
         # print(sendData)
-        # self.UDPClientSocket.sendto(sendData, serverAddressPort)
+        self.UDPClientSocket.sendto(sendData, serverAddressPort)
 
     def powerConnect(self):
         if self.ser.bConnect == False:
@@ -350,6 +337,46 @@ class App(QWidget):
             self.p_Btn.setText('접속')
             self.p_Btn.setStyleSheet("background-color: lightgray")
             self.serConnect = False
+
+    def gimbalStop(self):
+        values = (32769, 0)
+        fmt = '>H b'
+        packer = struct.Struct(fmt)
+        sendData = packer.pack(*values)
+
+        self.UDPClientSocket.sendto(sendData, serverAddressPort)
+
+    def gimbalCenter(self):
+        values = (32769, 1)
+        fmt = '>H b'
+        packer = struct.Struct(fmt)
+        sendData = packer.pack(*values)
+
+        self.UDPClientSocket.sendto(sendData, serverAddressPort)
+
+    def gimbalManual(self):
+        values = (32769, 2)
+        fmt = '>H b'
+        packer = struct.Struct(fmt)
+        sendData = packer.pack(*values)
+
+        self.UDPClientSocket.sendto(sendData, serverAddressPort)
+
+    def gimbalJoystick(self):
+        values = (32769, 3)
+        fmt = '>H b'
+        packer = struct.Struct(fmt)
+        sendData = packer.pack(*values)
+
+        self.UDPClientSocket.sendto(sendData, serverAddressPort)
+
+    def gimbalPixel(self):
+        values = (32769, 4)
+        fmt = '>H b'
+        packer = struct.Struct(fmt)
+        sendData = packer.pack(*values)
+
+        self.UDPClientSocket.sendto(sendData, serverAddressPort)
 
     def focusNear(self):
         self.ser.send(1, 1, 0)
@@ -393,6 +420,14 @@ class App(QWidget):
         h = (e.y() - self.start_y)*2
 
         self.main_signal.emit("c", x, y, w, h)
+
+    def jsUpdate(self, azimuth, elivation):
+        values = (32770, 0, 0, azimuth, elivation, 0, 0, 0)
+        fmt = '>H i i i i i i I'
+        packer = struct.Struct(fmt)
+        sendData = packer.pack(*values)
+
+        self.UDPClientSocket.sendto(sendData, serverAddressPort)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

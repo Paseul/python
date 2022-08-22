@@ -8,7 +8,7 @@ import cv2
 
 class Signal(QObject):
     conn_signal = pyqtSignal()
-    recv_signal = pyqtSignal(str, str, str, str)
+    recv_signal = pyqtSignal(str)
 
 
 class ServerSocket:
@@ -76,18 +76,15 @@ class ServerSocket:
     def receive(self, addr, client):
         while True:
             try:
-                recv = client.recv(518400*2)
+                recv = client.recv(1024)
+                result = str(recv.hex())
+                self.recv.recv_signal.emit(result)
             except Exception as e:
                 print('Recv() Error :', e)
                 break
             else:
                 if recv:
-                    self.s += recv
-
-                    if len(self.s) == (518400):
-                        frame = np.fromstring(self.s, dtype=np.uint8)
-                        frame = frame.reshape(1080, 1920)
-                        cv2.imshow("frame", frame)
+                    print("??")
 
         self.removeCleint(addr, client)
 

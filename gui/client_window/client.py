@@ -10,6 +10,7 @@ import struct
 import numpy as np
 import threading
 from time import sleep
+import asyncore
 from struct import *
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -24,7 +25,8 @@ class CWidget(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.lc = laser_client.ClientSocket(self)
+        self.lc = laser_client.ClientSocket(self, "127.0.0.1")
+        # asyncore.loop()
         self.cc = cooler_client.ClientSocket(self)
         self.ccc = cooler_client.ClientSocket(self)
         self.ser = ser.SerialSocket(self)
@@ -533,19 +535,19 @@ class CWidget(QWidget):
                 self.lconnect = True
                 self.laserBit()
             else:
-                self.lc.stop()
                 self.recvmsg.clear()
                 self.btn.setText('접속')
                 self.btn.setStyleSheet("background-color: lightgray")
                 self.lconnect = False
                 self.t3.cancel()
+                self.lc.stop()
         else:
-            self.lc.stop()
             self.recvmsg.clear()
             self.btn.setText('접속')
             self.btn.setStyleSheet("background-color: lightgray")
             self.lconnect = False
             self.t3.cancel()
+            self.lc.stop()
 
     def coolerConnect(self):
         if self.cc.bConnect == False:
@@ -600,7 +602,7 @@ class CWidget(QWidget):
             self.p_Btn.setStyleSheet("background-color: lightgray")
             self.serConnect = False
 
-    def updateLaser(self, ld1amp, ld2amp, ld3amp, ld4amp, ld5amp, temp1, temp2, temp3, temp3plate, tempcls, temppump, frontpower, rearpower, mdstatus):        
+    def updateLaser(self, ld1amp, ld2amp, ld3amp, ld4amp, ld5amp, temp1, temp2, temp3, temp3plate, tempcls, temppump, frontpower, rearpower, mdstatus):
         self.ld1AmpRcv.setText(str(round((((self.swap16(ld1amp)+608.0) / 3822.0) + 0.00615) / 1.02249, 4)))
         self.ld2AmpRcv.setText(str(round((((self.swap16(ld2amp)+132.5) / 3817.5) + 0.00819) / 1.02040, 4)))
         self.ld3AmpRcv.setText(str(round((((self.swap16(ld3amp)-432.5) / 3832.5) - 0.00306) / 1.02354, 4)))
@@ -654,7 +656,6 @@ class CWidget(QWidget):
                 self.ibit.setText('Unknown')
 
     def updatePower(self, max_v, min_v, max_t, min_t, charge, capacity, discharge):
-        print(max_v, min_v, max_t, min_t, charge, capacity, discharge)
         self.max_volt.setText(str(max_v/1000))
         self.min_volt.setText(str(min_v/1000))
         self.max_temp.setText(str(max_t/10))
@@ -720,7 +721,7 @@ class CWidget(QWidget):
         fmt = '>H H H B B H H'
         packer = struct.Struct(fmt)
         sendData = packer.pack(*values)
-
+        print(sendData)
         self.ccc.send(sendData)
 
     def defaultMsg(self):
@@ -788,7 +789,7 @@ class CWidget(QWidget):
             cmd = 0x11
             data = 0x0003
             self.sendLaser(header, cmd, data)
-            self.ld1Btn.setStyleSheet("background-color: green")            
+            self.ld1Btn.setStyleSheet("background-color: green")
 
     def ld2On(self):
         if self.ldStart == True:
@@ -924,17 +925,16 @@ class CWidget(QWidget):
         cmd = 5
 
         addr = 0x0017
+        self.coolerTemp()
         if self.coolerStart == False:
             data = 0xFF00
             self.coolerStart = True
-            # self.coolerBit()       
-            # self.coolerTemp()
+
             self.cPowerBtn.setStyleSheet("background-color: green")
         else:
             data = 0
             self.coolerStart = False
-            # self.t1.cancel()
-            # self.t2.cancel()
+            self.t1.cancel()
             self.cPowerBtn.setStyleSheet("background-color: lightgray")
         self.sendcCooler(header, cmd, addr, data)        
 
@@ -943,7 +943,7 @@ class CWidget(QWidget):
         cmd = 4
         addr = 0
         data = 2
-        self.sendCooler(header, cmd, addr, data)    
+        self.sendCooler(header, cmd, addr, data)
         self.t1 = threading.Timer(1, self.coolerTemp)
         self.t1.deamon = True
         self.t1.start()
@@ -953,16 +953,18 @@ class CWidget(QWidget):
         cmd = 1
         addr = 0x0001
         data = 0x0008
-        self.sendcCooler(header, cmd, addr, data)   
-        # self.t2 = threading.Timer(1, self.coolerBit)
-        # self.t2.deamon = True
-        # self.t2.start()
+        self.sendcCooler(header, cmd, addr, data)
+
+        self.t2 = threading.Timer(1, self.coolerBit)
+        self.t2.deamon = True
+        self.t2.start()
 
     def laserBit(self):
         header = 0x28
         cmd = 0x21
         self.sendLaser2(header, cmd)
-        self.t3 = threading.Timer(0.5, self.laserBit)
+
+        self.t3 = threading.Timer(1, self.laserBit)
         self.t3.deamon = True
         self.t3.start()
 

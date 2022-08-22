@@ -1,7 +1,7 @@
 # sudo chmod 666 /dev/ttyUSB0
 # ls -al /dev/ttyUSB*
 
-from threading import *
+from multiprocessing import Process, Queue
 import serial
 import signal
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
@@ -47,7 +47,7 @@ class SerialSocket:
     
         self.ser = serial.Serial(port, baud, timeout=0)
         self.bConnect = True
-        self.t = Thread(target=self.receive, args=(self.ser,))
+        self.t = Process(target=self.receive, args=(self.ser,))
         self.t.daemon = True
         self.t.start()
         print('Connected')
@@ -63,11 +63,14 @@ class SerialSocket:
             self.disconn.disconn_signal.emit()
 
     def receive(self, ser):
-        while self.bConnect:
-            #데이터가 있있다면
-            if self.ser.read() == True:
-                self.recv.recv_signal.emit(ser.read())
-        self.stop()
+        try:
+            while self.bConnect:
+                #데이터가 있있다면
+                if self.ser.read() == True:
+                    self.recv.recv_signal.emit(ser.read())
+            self.stop()
+        except:
+            pass
 
     def send(self, address, command1, command2):
         sync = 255

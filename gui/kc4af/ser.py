@@ -12,7 +12,7 @@ import datetime
 
 line = [] #라인 단위로 데이터 가져올 리스트 변수
 
-port = 'COM6' # 시리얼 포트
+port = 'COM16' # 시리얼 포트
 baud = 9600 # 시리얼 보드레이트(통신속도)
 
 class Signal(QObject):

@@ -15,7 +15,7 @@ from PvGUIDotNet import *
 import PvDotNet
 import PvGUIDotNet
 import numpy as np
-import ctypes
+from threading import *
 
 
 class HelloApp(WinForms.Form):
@@ -74,51 +74,54 @@ class HelloApp(WinForms.Form):
         lForm = PvDeviceFinderForm()
 
         lForm.ShowDialog()
+
         lDeviceInfo = lForm.Selected
 
-        mDevice = PvDevice.CreateAndConnect(lDeviceInfo)
-        mStream = PvStream.CreateAndOpen(lDeviceInfo)
+        self.mDevice = PvDevice.CreateAndConnect(lDeviceInfo)
+        self.mStream = PvStream.CreateAndOpen(lDeviceInfo)
+        print("mDevice is Connected: ", self.mDevice.IsConnected)
+        print("mStream is Open: ", self.mStream.IsOpen)
 
-        self.browser.GenParameterArray = mStream.Parameters
+        self.browser.GenParameterArray = self.mStream.Parameters
 
-        lPayloadSize = mDevice.PayloadSize
+        self.mPipeline = PvPipeline(self.mStream)
 
+        self.mPipeline.BufferSize = self.mDevice.PayloadSize
+        self.mPipeline.BufferCount = cBufferCount
 
+        # t = Thread(target=self.ThreadProc)
+        # t.daemon = True
+        # t.start()
 
-        # if mStream.QueuedBufferMaximum < cBufferCount:
-        #     lBufferCount = mStream.QueuedBufferMaximum
-        # else:
-        #     lBufferCount = cBufferCount
-        #
-        # for i in range(lBufferCount):
-        #     lBuffers.append(PvBuffer())
-        #     mStream.QueueBuffer(lBuffers[i])
-        #
-        # mDevice.StreamEnable()
-        # mDevice.Parameters.ExecuteCommand("AcquisitionStart")
-        #
-        # print(mDevice)
-        #
-        # while (True):
-        #     lBuffer = None
-        #     lOperationResult = PvResult(PvResultCode.OK)
-        # #     # print(lOperationResult)
-        # #
-        #     lResult = mStream.RetrieveBuffer(lBuffer, lOperationResult, np.int32(100))
-        #     if(lResult[0].IsOK):
-        #         self.displayControl.Display(lBuffer)
-        #     for i in range(len(lResult)):
-        #         print(lResult[i])
+        self.mDevice.StreamEnable()
+        self.mDevice.Parameters.ExecuteCommand("AcquisitionStart")
+        print("strea")
 
     def run(self):
         WinForms.Application.Run(self)
 
+    def ThreadProc(self):
+        print(self.mDevice.IsConnected)
+        print(self.mStream.IsOpen)
+
+        lBuffer = PvBuffer(None)
+
+        while (True):
+            lResult = self.mPipeline.RetrieveNextBuffer(lBuffer)
+            print("lResult", type(lResult[0]), lResult[0].IsOK)
+            print("lBuffer", type(lBuffer), lBuffer.OperationResult.IsOK)
+
+            self.displayControl.Display(lBuffer)
+            # if(lResult.IsOK):
+            #     if lBuffer.OperationResult.IsOK:
+            #
+            # if lBuffer.OperationResult.IsOK:
+            #     print(lResult.IsOK)
+
 
 def main():
     form = HelloApp()
-    print("form created")
     app = WinForms.Application
-    print("app referenced")
     app.Run(form)
 
 

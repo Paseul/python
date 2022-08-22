@@ -10,6 +10,7 @@ from struct import *
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
+ip = '127.0.0.1'
 port = 5000
 
 
@@ -33,7 +34,8 @@ class CWidget(QWidget):
         box = QHBoxLayout()
 
         label = QLabel('Server IP')
-        self.ip = QLineEdit(socket.gethostbyname(socket.gethostname()))
+        self.ip = QLineEdit(ip)
+        # self.ip = QLineEdit(socket.gethostbyname(socket.gethostname()))
         box.addWidget(label)
         box.addWidget(self.ip)
 
@@ -84,55 +86,100 @@ class CWidget(QWidget):
         box.addLayout(hbox)
 
         # Header
-        self.headerMsg = QTextEdit()
-        self.headerMsg.setFixedHeight(30)
-        self.headerMsg.setText('1')
-        hbox.addWidget(self.headerMsg)
+        self.ack1 = QTextEdit()
+        self.ack1.setFixedHeight(30)
+        self.ack1.setText('AC')
+        hbox.addWidget(self.ack1)
         # Cmd
-        self.cmdMsg = QTextEdit()
-        self.cmdMsg.setFixedHeight(30)
-        self.cmdMsg.setText('4')
-        hbox.addWidget(self.cmdMsg)
+        self.ack2 = QTextEdit()
+        self.ack2.setFixedHeight(30)
+        self.ack2.setText('13')
+        hbox.addWidget(self.ack2)
         # data
-        self.dataLen = QTextEdit()
-        self.dataLen.setFixedHeight(30)
-        self.dataLen.setText('12')
-        hbox.addWidget(self.dataLen)
+        self.source = QTextEdit()
+        self.source.setFixedHeight(30)
+        self.source.setText('2')
+        hbox.addWidget(self.source)
+        # data
+        self.destination = QTextEdit()
+        self.destination.setFixedHeight(30)
+        self.destination.setText('1')
+        hbox.addWidget(self.destination)
+        # Header
+        self.opcode = QTextEdit()
+        self.opcode.setFixedHeight(30)
+        self.opcode.setText('5')
+        hbox.addWidget(self.opcode)
+        # Cmd
+        self.dataSize = QTextEdit()
+        self.dataSize.setFixedHeight(30)
+        self.dataSize.setText('7')
+        hbox.addWidget(self.dataSize)
+        # data
+        self.seqNum = QTextEdit()
+        self.seqNum.setFixedHeight(30)
+        self.seqNum.setText('1')
+        hbox.addWidget(self.seqNum)
         # data
         self.data1 = QTextEdit()
         self.data1.setFixedHeight(30)
-        self.data1.setText('FF')
+        self.data1.setText('2')
         hbox.addWidget(self.data1)
-        # Header
+        # data
         self.data2 = QTextEdit()
         self.data2.setFixedHeight(30)
-        self.data2.setText('42C8')
+        self.data2.setText('FF')
         hbox.addWidget(self.data2)
-        # Cmd
+        # data
         self.data3 = QTextEdit()
         self.data3.setFixedHeight(30)
-        self.data3.setText('1212')
+        self.data3.setText('FF')
         hbox.addWidget(self.data3)
-        # # data
-        # self.data4 = QTextEdit()
-        # self.data4.setFixedHeight(30)
-        # self.data4.setText('4212')
-        # hbox.addWidget(self.data4)
+        # data
+        self.data4 = QTextEdit()
+        self.data4.setFixedHeight(30)
+        self.data4.setText('FF')
+        hbox.addWidget(self.data4)
         # data
         self.data5 = QTextEdit()
         self.data5.setFixedHeight(30)
-        self.data5.setText('1')
+        self.data5.setText('FF')
         hbox.addWidget(self.data5)
-        # # data
-        # self.data6 = QTextEdit()
-        # self.data6.setFixedHeight(30)
-        # self.data6.setText('672')
-        # hbox.addWidget(self.data6)
-        # # data
-        # self.data7 = QTextEdit()
-        # self.data7.setFixedHeight(30)
-        # self.data7.setText('673')
-        # hbox.addWidget(self.data7)
+        # data
+        self.data6 = QTextEdit()
+        self.data6.setFixedHeight(30)
+        self.data6.setText('FF')
+        hbox.addWidget(self.data6)
+        # data
+        self.data7 = QTextEdit()
+        self.data7.setFixedHeight(30)
+        self.data7.setText('FF')
+        hbox.addWidget(self.data7)
+        # data
+        self.data8 = QTextEdit()
+        self.data8.setFixedHeight(30)
+        self.data8.setText('FF')
+        hbox.addWidget(self.data8)
+        # data
+        self.data9 = QTextEdit()
+        self.data9.setFixedHeight(30)
+        self.data9.setText('FF')
+        hbox.addWidget(self.data9)
+        # data
+        self.checksum = QTextEdit()
+        self.checksum.setFixedHeight(30)
+        self.checksum.setText('FF')
+        hbox.addWidget(self.checksum)
+        # data
+        self.etx1 = QTextEdit()
+        self.etx1.setFixedHeight(30)
+        self.etx1.setText('E7')
+        hbox.addWidget(self.etx1)
+        # data
+        self.etx2 = QTextEdit()
+        self.etx2.setFixedHeight(30)
+        self.etx2.setText('E8')
+        hbox.addWidget(self.etx2)
 
         hbox = QHBoxLayout()
 
@@ -180,11 +227,11 @@ class CWidget(QWidget):
             self.guest.setItem(i, 1, QTableWidgetItem(str(ip[1])))
             i += 1
 
-    def updateMsg(self, header, cmd, addr, data):
+    def updateMsg(self, header):
         self.msg.addItem(QListWidgetItem(header))
-        self.msg.addItem(QListWidgetItem(cmd))
-        self.msg.addItem(QListWidgetItem(addr))
-        self.msg.addItem(QListWidgetItem(data))
+        # self.msg.addItem(QListWidgetItem(cmd))
+        # self.msg.addItem(QListWidgetItem(addr))
+        # self.msg.addItem(QListWidgetItem(data))
         self.msg.setCurrentRow(self.msg.count() - 1)
 
     def sendMsg(self):
@@ -195,21 +242,32 @@ class CWidget(QWidget):
         # self.updateMsg(sendmsg)
         # print(sendmsg)
 
-        header = int(self.headerMsg.toPlainText(), 16)
-        cmd = int(self.cmdMsg.toPlainText(), 16)
-        datalen = int(self.dataLen.toPlainText(), 16)
-        datan1 = int(self.data1.toPlainText(), 16)
-        datan2 = int(self.data2.toPlainText(), 16)
-        datan3 = int(self.data3.toPlainText(), 16)
-        # datan4 = int(self.data4.toPlainText(), 16)
-        datan5 = int(self.data5.toPlainText(), 16)
-        # datan6 = int(self.data6.toPlainText(), 16)
-        # datan7 = int(self.data7.toPlainText(), 16)
+        ack1 = int(self.ack1.toPlainText(), 16)
+        ack2 = int(self.ack2.toPlainText(), 16)
+        source = int(self.source.toPlainText(), 16)
+        destination = int(self.destination.toPlainText(), 16)
+        opcode = int(self.opcode.toPlainText(), 16)
+        dataSize = int(self.dataSize.toPlainText(), 16)
+        seqNum = int(self.seqNum.toPlainText(), 16)
+        data1 = int(self.data1.toPlainText(), 16)
+        data2 = int(self.data2.toPlainText(), 16)
+        data3 = int(self.data3.toPlainText(), 16)
+        data4 = int(self.data4.toPlainText(), 16)
+        data5 = int(self.data5.toPlainText(), 16)
+        data6 = int(self.data6.toPlainText(), 16)
+        data7 = int(self.data7.toPlainText(), 16)
+        data8 = int(self.data8.toPlainText(), 16)
+        data9 = int(self.data9.toPlainText(), 16)
+        checksum = int(self.checksum.toPlainText(), 16)
+        etx1 = int(self.etx1.toPlainText(), 16)
+        etx2 = int(self.etx2.toPlainText(), 16)
+        dummy = 0
 
-        values = (header, cmd, datalen, datan1, datan2, datan3, datan5)
-        fmt = '>B B B B H H B'
+        values = (ack1, ack2, source, destination, opcode, dataSize, seqNum, data1, data2, data3, data4, data5, data6, data7, data8, data9, checksum, etx1, etx2)
+        fmt = '>B B B B B H H B B B B B B B B B B B B'
         packer = struct.Struct(fmt)
         sendData = packer.pack(*values)
+        print(sendData)
 
         # self.c.send(sendData)
 
